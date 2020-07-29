@@ -24,7 +24,7 @@
   composer require easy-task/easy-task
 ~~~
 
-## <h5>【一】. 快速入门->创建任务 </h5>
+## <h5>【A】. 快速入门->创建任务 </h5>
 
 ~~~
 // 初始化
@@ -64,7 +64,7 @@ $task->addFunc(function () {
 $task->start();
 ~~~
 
-## <h5>【二】. 快速入门->连贯操作 </h5>
+## <h5>【B】. 快速入门->连贯操作 </h5>
 
 ~~~
 // 初始化
@@ -139,7 +139,7 @@ $task->setDaemon(true)
 ->start();
 ~~~
 
-## <h5>【三】. 快速入门->命令整合 </h5>
+## <h5>【C】. 快速入门->命令整合 </h5>
 
 ~~~
 // 获取命令
@@ -179,7 +179,7 @@ else
 强制关闭: php console.php stop force
 ~~~
 
-## <h5>【四】. 快速入门->认识输出信息 </h5>
+## <h5>【D】. 快速入门->认识输出信息 </h5>
 
 ~~~
 ┌─────┬──────────────┬─────────────────────┬───────┬────────┬──────┐
@@ -197,7 +197,7 @@ status:任务状态
 ppid:守护进程id
 ~~~
 
-## <h5>【五】. 进阶了解->建议阅读 </h5>
+## <h5>【E】. 进阶了解->建议阅读 </h5>
 
 ~~~
 (1). 建议您使用绝对路径进行开发,是标准更是规范
@@ -212,7 +212,7 @@ ppid:守护进程id
 (10). 开发遵守先同步启动测试正常运行无任何报错再设置异步运行,有问题查看日志文件或者标准输入输出异常文件,或者上QQ群反馈
 ~~~
 
-## <h5>【六】. 进阶了解->框架集成教程 </h5>
+## <h5>【F】. 进阶了解->框架集成教程 </h5>
 
 &ensp;&ensp;[<font size=2>-> thinkphp3.2.x教程</font>](https://www.gaojiufeng.cn/?id=293). 
 
@@ -222,13 +222,13 @@ ppid:守护进程id
 
 &ensp;&ensp;[<font size=2>-> laravelPhp6.x.x教程</font>](https://www.gaojiufeng.cn/?id=295).
 
-## <h5>【七】. 进阶了解->其他知识学习 </h5>
+## <h5>【G】. 进阶了解->其他知识学习 </h5>
 
 &ensp;&ensp;[<font size=2>-> 原生PHP+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=346). 
 
 &ensp;&ensp;[<font size=2>-> EasyTask+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=347).
 
-## <h5>【八】. 进阶了解->CronTab支持 </h5>
+## <h5>【H】. 进阶了解->CronTab支持 </h5>
 
 ~~~
 自2.3.6版本为减少维护工作开始移除Crontab的支持,请通过PHP自带时间函数|DateTime类进行处理.
@@ -244,20 +244,20 @@ $task->addFunc(function () {
 }, 'request', 1, 1);
 ~~~
 
-## <h5>【九】. 特别感谢 </h5>
+## <h5>【I】. 特别感谢 </h5>
 ~~~
 (1).ThinkPHP(官方扩展页展示EasyTask),官方地址:http://www.thinkphp.cn/
 (2).ThinkPHP(命令行输出组件基于Tp_Table组件),官方地址:http://www.thinkphp.cn/
 (3).Jetbrains(提供正版授权码,支持正版),官方地址:https://www.jetbrains.com/phpstorm/
 ~~~
 
-## <h5>【十】. 使用案例(欢迎提交) </h5>
+## <h5>【J】. 使用案例(加群主反馈) </h5>
 ~~~
 (1).深圳市百木微风科技有限公司(订单自动取消)
 (2).深圳市恒信邦科技有限公司(爬虫定时采集)
 ~~~
 
-## <h5>【十一】. Bug反馈 </h5>
+## <h5>【K】. Bug反馈 </h5>
 ~~~
 请反馈至QQ群777241713,感谢持续反馈的用户,是您的反馈让EasyTask越来越稳定!
 ~~~
