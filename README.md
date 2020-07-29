@@ -1,6 +1,4 @@
-﻿<p><h4>EasyTask is an easy-to-use PHP resident memory scheduled task package</h4></p>
-<a href="//shang.qq.com/wpa/qunwpa?idkey=d436563ad70f4e19d4a98b3e86cfe5272fd4a628a0d7f4c6d552b0012c55b4d7">Click on the official ＱＱ group to join</a> | <a href="./README_zh.md">Chinese document</a>
-<br><br>
+﻿<p><h4>EasyTask简单易用的PHP常驻内存定时器</h4></p>
 <p align="">
 <a href="" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer">
 <img src="https://www.gaojiufeng.cn/static/images/stable_version.svg" style="max-width:100%;">
@@ -9,52 +7,52 @@
 </a>
 </p>
 
-## <h4 style="text-align:left">  Project Introduction </h4>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;EasyTask is a PHP resident memory timer Composer package, Same effect as Workerman timer, Multiple timers are running in multiple processes at the same time ,you can use it to complete tasks that need to be repeated (such as automatic cancellation of order timeout, asynchronous push of SMS mail, queue / consumer / channel Subscribers, etc.), and even handle Crontab scheduled tasks (such as synchronizing DB data from 1 am to 3 am every day, generating monthly unified reports on the 1st of every month, restarting the nginx server at 10 pm every night, etc.); built-in task abnormal reporting function, You can customize the handling of abnormal errors (such as automatic SMS notification of abnormal errors); it also supports automatic restart of abnormal task exits to make your task run more stable, and the toolkit supports the operation of windows, linux, and mac environments.
+## <h4 style="text-align:left">  项目介绍 </h4>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;EasyTask,PHP常驻内存定时器Composer包，与Workerman定时器效果完全一致，多个定时器是同时在多个进程中运行的，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理Crontab计划任务(如每天凌晨1点-3点同步DB数据,每月1号生成月度统一报表,每晚10点重启nginx服务器等等)；内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
 </p>
 
-## <h4>   Operating environment </h4>
+## <h4>   运行环境 </h4>
 
 <ul>
-    <li>windows：PHP>=5.4 (Rely on com_dotnet + wpc extension）<a href="https://www.kancloud.cn/a392223903/easytask/1666906" target="_blank">Installation tutorial</a></li>  
-    <li>linux|mac：PHP>=5.4 (Rely on pcntl + posix extension）<a href="https://www.kancloud.cn/a392223903/easytask/1666906" target="_blank">Installation tutorial</a></li>
+    <li>windows：PHP>=5.4 (依赖com_dotnet+wpc扩展）<a href="https://www.kancloud.cn/a392223903/easytask/1666906" target="_blank">文档+安装教程</a></li>  
+    <li>linux|mac：PHP>=5.4 (依赖pcntl+posix扩展）<a href="https://www.kancloud.cn/a392223903/easytask/1666906" target="_blank">文档+安装教程</a></li>
 </ul>  
 
-## <h4>  Composer install </h4>
+## <h4>  Composer安装 </h4>
 
 ~~~
   composer require easy-task/easy-task
 ~~~
 
-## <h5>【One】. Quick Start-> Create Task </h5>
+## <h5>【一】. 快速入门->创建任务 </h5>
 
 ~~~
-// init
+// 初始化
 $task = new Task();
 
-// set up resident memory
+// 设置非常驻内存
 $task->setDaemon(false);
 
-// set project name
+// 设置项目名称
 $task->setPrefix('EasyTask');
 
-// set the logging runtime directory (log or cache directory)
+// 设置记录运行时目录(日志或缓存目录)
 $task->setRunTimePath('./Application/Runtime/');
 
-// add closure function type timed task (open 2 processes, execute once every 10 seconds)
+// 1.添加闭包函数类型定时任务(开启2个进程,每隔10秒执行1次你写闭包方法中的代码)
 $task->addFunc(function () {
     $url = 'https://www.gaojiufeng.cn/?id=243';
     @file_get_contents($url);
 }, 'request', 10, 2);
 
-// add class method type timing task (also supports static methods) (start 1 process, execute once every 20 seconds)
+// 2.添加类的方法类型定时任务(同时支持静态方法)(开启1个进程,每隔20秒执行一次你设置的类的方法)
 $task->addClass(Sms::class, 'send', 'sendsms', 20, 1);
 
-// add instruction-type timing tasks (start a process and execute it every 10 seconds)
+// 3.添加指令类型的定时任务(开启1个进程,每隔10秒执行1次)
 $command = 'php /www/web/orderAutoCancel.php';
 $task->addCommand($command,'orderCancel',10,1);
 
-// add a closure function task, do not need a timer, execute immediately (open 1 process)
+// 4.添加闭包函数任务,不需要定时器,立即执行(开启1个进程)
 $task->addFunc(function () {
     while(true)
     {
@@ -62,92 +60,93 @@ $task->addFunc(function () {
     }
 }, 'request', 0, 1);
 
-// start task
+// 启动任务
 $task->start();
 ~~~
 
-## <h5>【Two】. Quick Start-> Coherent Operation </h5>
+## <h5>【二】. 快速入门->连贯操作 </h5>
 
 ~~~
+// 初始化
 $task = new Task();
 
-// Set non-resident memory
-$task->setDaemon(false)   
+// 设置常驻内存
+$task->setDaemon(true)   
 
-// set project name
+// 设置项目名称
 ->setPrefix('ThinkTask')   
 
-// set system time zone
+// 设置系统时区
 ->setTimeZone('Asia/Shanghai')  
 
-// set the child process to hang up and restart automatically
+// 设置子进程挂掉自动重启
 ->setAutoRecover(true)  
 
-// set the PHP running path, which is usually required for the Window system. You need to set it manually when the system cannot be found.
+// 设置PHP运行路径,一般Window系统才需要设置,当系统无法找到才需要您手动设置
 ->setPhpPath('C:/phpEnv/php/php-7.0/php.exe')
 
 /**
- * set the logging runtime directory (log or cache directory)
+ * 设置运行时目录(日志或缓存目录)
  */
 ->setRunTimePath('./Application/Runtime/')
 
 /**
- * set to turn off standard output STD file recording
+ * 设置关闭标准输出的STD文件记录
  */
 ->setCloseStdOutLog(true);
 
 /**
- * Close EasyTask's exception registration
- * EasyTask will no longer listen to set_error_handler / set_exception_handler / register_shutdown_function events
+ * 关闭EasyTask的异常注册
+ * EasyTask将不再监听set_error_handler/set_exception_handler/register_shutdown_function事件
  */
 ->setCloseErrorRegister(true)
 
 /**
- * set to receive errors or exceptions during operation (Mode 1)
- * you can customize the handling of abnormal information, such as sending them to your emails, SMS, as an early warning
- * (Not recommended, unless your code is robust)
+ * 设置接收运行中的错误或者异常(方式1)
+ * 您可以自定义处理异常信息,例如将它们发送到您的邮件中,短信中,作为预警处理
+ * (不推荐的写法,除非您的代码健壮)
  */
 ->setErrorRegisterNotify(function ($ex) {
-    //Get error information | error line | error file
+    //获取错误信息|错误行|错误文件
     $message = $ex->getMessage();
     $file = $ex->getFile();
     $line = $ex->getLine();
 })
 
 /**
- * set the Http address to receive errors or exceptions in operation (Method 2)
- * EasyTask will notify this URL and pass the following parameters:
- * errStr:errStr
- * errFile:errFile
- * errLine:errLine
- * your Url receives a POST request and can write code to send an email or SMS to notify you
- * (Recommended wording)
+ * 设置接收运行中的错误或者异常的Http地址(方式2)
+ * Easy_Task会POST通知这个url并传递以下参数:
+ * errStr:错误信息
+ * errFile:错误文件
+ * errLine:错误行
+ * 您的Url收到POST请求可以编写代码发送邮件或短信通知您
+ * (推荐的写法)
  */
 ->setErrorRegisterNotify('https://www.gaojiufeng.cn/rev.php')
 
-// add task to execute closure function regularly
+// 添加任务定时执行闭包函数
 ->addFunc(function () {
     echo 'Success3' . PHP_EOL;
 }, 'fucn', 20, 1)   
 
-// add a method for task execution class
+// 添加任务定时执行类的方法
 ->addClass(Sms::class, 'send', 'sendsms1', 20, 1)   
 
-// add tasks to execute commands regularly
+// 添加任务定时执行命令
 ->addCommand('php /www/wwwroot/learn/curl.php','cmd',6,1)
 
-// start task
+// 启动任务
 ->start();
 ~~~
 
-## <h5>【Three】. Quick Start-> Command Integration </h5>
+## <h5>【三】. 快速入门->命令整合 </h5>
 
 ~~~
-// get command
+// 获取命令
 $force = empty($_SERVER['argv']['2']) ? '' : $_SERVER['argv']['2'];
 $command = empty($_SERVER['argv']['1']) ? '' : $_SERVER['argv']['1'];
 
-// configuration tasks
+// 配置任务
 $task = new Task();
 $task->setRunTimePath('./Application/Runtime/');
 $task->addFunc(function () {
@@ -155,7 +154,7 @@ $task->addFunc(function () {
         @file_get_contents($url);
     }, 'request', 10, 2);;
 
-// execute according to the order
+// 根据命令执行
 if ($command == 'start')
 {
     $task->start();
@@ -166,7 +165,7 @@ elseif ($command == 'status')
 }
 elseif ($command == 'stop')
 {
-    $force = ($force == 'force'); //whether to force stop
+    $force = ($force == 'force'); //是否强制停止
     $task->stop($force);
 }
 else
@@ -174,13 +173,13 @@ else
     exit('Command is not exist');
 }
 
-Start task: php console.php start
-Query task: php console.php status
-Stop Task: php console.php stop
-Force close task: php console.php stop force
+启动任务: php console.php start
+查询任务: php console.php status
+普通关闭: php console.php stop
+强制关闭: php console.php stop force
 ~~~
 
-## <h5>【Four】. Quick Start-> Understanding output information </h5>
+## <h5>【四】. 快速入门->认识输出信息 </h5>
 
 ~~~
 ┌─────┬──────────────┬─────────────────────┬───────┬────────┬──────┐
@@ -190,69 +189,75 @@ Force close task: php console.php stop force
 │ 33  │ Task_request │ 2020-01-10 15:55:44 │ 10    │ active │ 31   │
 └─────┴──────────────┴─────────────────────┴───────┴────────┴──────┘
 参数:
-pid:task process id
-name:task alias
-started:task start time
-time:task execution time
-status:task status
-ppid:daemon id
+pid:任务进程id
+name:任务别名
+started:任务启动时间
+time:任务执行时间
+status:任务状态
+ppid:守护进程id
 ~~~
 
-## <h5>【Five】. Advanced understanding-> recommended reading </h5>
+## <h5>【五】. 进阶了解->建议阅读 </h5>
 
 ~~~
-(1). It is recommended that you use the absolute path for development, which is the standard and the norm
-(2). It is forbidden to use exit / die syntax in the task, otherwise it will cause the entire process to exit
-(3). Please close anti-virus software when installing Wpc extension in Windows to avoid false alarms
-(4). Windows recommends to open popen, pclose method, it will automatically try to help you solve the problem of CMD output Chinese garbled, please try to use CMD administrator mode
-(5). Windows command line does not support utf8 international standard encoding, you can switch git_bash to run, solve the garbled problem
-(6). Windows prompts Failed to create COM object `Wpc.Core ': invalid syntax, please follow the documentation to install the Wpc extension
-(7). Windows prompt com () has been disabled for security reasons, please delete disable_classes = com configuration item in php.ini
-(8). The log file is in the Log directory of the runtime directory, and the input and output abnormal files are marked in the Std directory of the runtime directory
-(9). Normally stop the task, the task will start to exit safely after the execution is successful, force the task to quit the task directly, and may quit when it is being executed
-(10). The development follows the synchronous start test, normal operation without any errors, and then the asynchronous operation. If there is a problem, check the log file or the standard input and output abnormal file, or feedback on the QQ group.
+(1). 建议您使用绝对路径进行开发,是标准更是规范
+(2). 禁止在任务中使用exit/die语法,否则导致整个进程退出
+(3). Windows安装Wpc扩展时请关闭杀毒软件,避免误报
+(4). Windows建议开启popen,pclose方法,会自动尝试帮您解决CMD输出中文乱码问题,请尽量使用CMD管理员方式运行
+(5). Windows命令行不支持utf8国际标准编码，可切换git_bash来运行,解决乱码问题
+(6). Windows提示Failed to create COM object `Wpc.Core': 无效的语法,请按照文档安装Wpc扩展
+(7). Windows提示com() has been disabled for security reasons,请在php.ini中删除disable_classes = com配置项目
+(8). 日志文件在运行时目录的Log目录下,标出输入输出异常文件在运行时目录Std目录下
+(9). 普通停止任务,任务会在执行成功后开始安全退出,强制停止任务直接退出任务,可能正在执行就强制退出
+(10). 开发遵守先同步启动测试正常运行无任何报错再设置异步运行,有问题查看日志文件或者标准输入输出异常文件,或者上QQ群反馈
 ~~~
 
-## <h5>【Six】. Advanced Understanding-> Framework Integration Tutorial </h5>
+## <h5>【六】. 进阶了解->框架集成教程 </h5>
 
-&ensp;&ensp;[<font size=2>-> thinkphp3.2.x</font>](https://www.gaojiufeng.cn/?id=293). 
+&ensp;&ensp;[<font size=2>-> thinkphp3.2.x教程</font>](https://www.gaojiufeng.cn/?id=293). 
 
-&ensp;&ensp;[<font size=2>-> thinkPhp5.x.x</font>](https://www.gaojiufeng.cn/?id=294).
+&ensp;&ensp;[<font size=2>-> thinkPhp5.x.x教程</font>](https://www.gaojiufeng.cn/?id=294).
 
-&ensp;&ensp;[<font size=2>-> thinkPhp6.x.x</font>](https://www.gaojiufeng.cn/?id=328).
+&ensp;&ensp;[<font size=2>-> thinkPhp6.x.x教程</font>](https://www.gaojiufeng.cn/?id=328).
 
-&ensp;&ensp;[<font size=2>-> laravelPhp6.x.x</font>](https://www.gaojiufeng.cn/?id=295).
+&ensp;&ensp;[<font size=2>-> laravelPhp6.x.x教程</font>](https://www.gaojiufeng.cn/?id=295).
 
-## <h5>【Seven】. Advanced understanding-> Recommended actions </h5>
+## <h5>【七】. 进阶了解->其他知识学习 </h5>
+
+&ensp;&ensp;[<font size=2>-> 原生PHP+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=346). 
+
+&ensp;&ensp;[<font size=2>-> EasyTask+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=347).
+
+## <h5>【八】. 进阶了解->CronTab支持 </h5>
 
 ~~~
-(1). It is recommended to use PHP version 7.1 or above, which supports asynchronous signals and does not depend on ticks
-(2). It is recommended to install php_event to extend the millisecond timing support based on event polling
-~~~
-
-## <h5>【Eight】. Advanced understanding-> time parameters support crontab command </h5>
-
-~~~
-Since the 2.3.6 version to reduce maintenance work, Crontab support has been removed, please use PHP's own time functionDateTime class for processing.
-For example, it only needs to be executed at 20 o'clock every night, and it is not necessary to execute Return at 20 o'clock.
+自2.3.6版本为减少维护工作开始移除Crontab的支持,请通过PHP自带时间函数|DateTime类进行处理.
+例如只需要每天晚上20点执行,判断不是20点执行Return即可.
 $task->addFunc(function () {
-     $hour = date('H');
-     if ($hour != 20)
-     {
-         return;
-     }
+    $hour = date('H');
+    if ($hour != 20)
+    {
+        return;
+    }
     
-     //Write your code
-},'request', 1, 1);
+    //Write your code
+}, 'request', 1, 1);
 ~~~
 
-## <h5>【Nine】. Special thanks to </h5>
+## <h5>【九】. 特别感谢 </h5>
 ~~~
-(1) ThinkPHP (the official extension page shows EasyTask), official address: http://www.thinkphp.cn/
-(2) ThinkPHP (command line output component based on Tp_Table component), official address: http://www.thinkphp.cn/
-(3) Jetbrains (provide genuine authorization code, support genuine), official address: https://www.jetbrains.com/phpstorm/
+(1).ThinkPHP(官方扩展页展示EasyTask),官方地址:http://www.thinkphp.cn/
+(2).ThinkPHP(命令行输出组件基于Tp_Table组件),官方地址:http://www.thinkphp.cn/
+(3).Jetbrains(提供正版授权码,支持正版),官方地址:https://www.jetbrains.com/phpstorm/
 ~~~
-## <h5>【Ten】. Bug feedback</h5>
+
+## <h5>【十】. 使用案例(欢迎提交) </h5>
 ~~~
-Please feedback to QQ group 777241713, thanks to the users who continue to feedback, your feedback makes EasyTask more and more stable!
+(1).深圳市百木微风科技有限公司(订单自动取消)
+(2).深圳市恒信邦科技有限公司(爬虫定时采集)
+~~~
+
+## <h5>【十一】. Bug反馈 </h5>
+~~~
+请反馈至QQ群777241713,感谢持续反馈的用户,是您的反馈让EasyTask越来越稳定!
 ~~~
