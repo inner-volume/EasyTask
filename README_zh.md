@@ -252,7 +252,14 @@ $task->addFunc(function () {
 (2).ThinkPHP(命令行输出组件基于Tp_Table组件),官方地址:http://www.thinkphp.cn/
 (3).Jetbrains(提供正版授权码,支持正版),官方地址:https://www.jetbrains.com/phpstorm/
 ~~~
-## <h5>【十】. Bug反馈 </h5>
+
+## <h5>【十】. 使用案例(欢迎提交) </h5>
+~~~
+(1).深圳市百木微风科技有限公司(订单自动取消)
+(2).深圳市恒信邦科技有限公司(爬虫定时采集)
+~~~
+
+## <h5>【十一】. Bug反馈 </h5>
 ~~~
 请反馈至QQ群777241713,感谢持续反馈的用户,是您的反馈让EasyTask越来越稳定!
 ~~~
