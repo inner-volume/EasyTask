@@ -232,7 +232,10 @@ class Helper
         {
             if (!is_dir($path))
             {
-                mkdir($path, 0777, true);
+                if (!mkdir($path, 0777, true))
+                {
+                    Helper::showSysError("Failed to create $path directory, please check permissions");
+                }
             }
         }
     }
