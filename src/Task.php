@@ -188,16 +188,17 @@ class Task
     }
 
     /**
-     * 新增类作为任务
+     * 新增任务
      * @param string $class 类名称
      * @param string $func 方法名称
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
+     * @param bool $persistent 持续执行
      * @return $this
      * @throws
      */
-    public function addClass($class, $func, $alas, $time = 1, $used = 1)
+    public function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
         $uniqueId = md5($alas);
         if (!class_exists($class))
@@ -222,12 +223,13 @@ class Task
             }
             Helper::checkTaskTime($time);
             $this->taskList[$uniqueId] = [
-                'type' => $method->isStatic() ? 2 : 3,
+                'type' => $method->isStatic() ? 1 : 2,
                 'func' => $func,
                 'alas' => $alas,
                 'time' => $time,
                 'used' => $used,
-                'class' => $class
+                'class' => $class,
+                'persistent' => $persistent
             ];
         }
         catch (ReflectionException $exception)
