@@ -188,38 +188,6 @@ class Task
     }
 
     /**
-     * 新增匿名函数作为任务
-     * @param Closure $func 匿名函数
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
-     * @return $this
-     * @throws
-     */
-    public function addFunc($func, $alas, $time = 1, $used = 1)
-    {
-        $uniqueId = md5($alas);
-        if (!($func instanceof Closure))
-        {
-            Helper::showSysError('func must instanceof Closure');
-        }
-        if (isset($this->taskList[$uniqueId]))
-        {
-            Helper::showSysError("task $alas already exists");
-        }
-        Helper::checkTaskTime($time);
-        $this->taskList[$uniqueId] = [
-            'type' => 1,
-            'func' => $func,
-            'alas' => $alas,
-            'time' => $time,
-            'used' => $used
-        ];
-
-        return $this;
-    }
-
-    /**
      * 新增类作为任务
      * @param string $class 类名称
      * @param string $func 方法名称
