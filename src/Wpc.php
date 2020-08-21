@@ -155,6 +155,43 @@ class Wpc
     }
 
     /**
+     * 设置进程环境变量
+     * @param string $key 变量名
+     * @param string $value 变量值
+     * @return $this
+     * @throws Exception
+     */
+    public function setEnvironment($key, $value)
+    {
+        $this->instance->SetEnvironment((string)$key, (string)$value);
+        return $this;
+    }
+
+    /**
+     * 设置使用操作系统shell启动进程
+     * @param bool $set 是否
+     * @return $this
+     * @throws Exception
+     */
+    public function setUseShellExecute($set)
+    {
+        $this->instance->SetUseShellExecute((bool)$set);
+        return $this;
+    }
+
+    /**
+     * 设置是否开启错误重定向
+     * @param $set
+     * @return $this
+     * @throws Exception
+     */
+    public function setRedirectStandardError($set)
+    {
+        $this->instance->SetRedirectStandardError((bool)$set);
+        return $this;
+    }
+
+    /**
      * 获取进程ID
      * @return int
      */
@@ -224,6 +261,16 @@ class Wpc
     public function getStopTime()
     {
         return $this->instance->GetStopTime();
+    }
+
+    /**
+     * 获取进程错误输出
+     * @return string
+     * @throws Exception
+     */
+    public function getStandardErrorToEnd()
+    {
+        return $this->instance->GetStandardErrorToEnd();
     }
 
     /**
