@@ -1,7 +1,6 @@
 <?php
 namespace EasyTask;
 
-use \Closure as Closure;
 use EasyTask\Helper\TimerHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
@@ -16,12 +15,6 @@ use \ReflectionException as ReflectionException;
  */
 class Task
 {
-    /**
-     * 任务列表
-     * @var array
-     */
-    private $taskList = [];
-
     /**
      * 构造函数
      */
@@ -244,16 +237,7 @@ class Task
      */
     private function getProcess()
     {
-        $taskList = $this->taskList;
-        $currentOs = Env::get('currentOs');
-        if ($currentOs == 1)
-        {
-            return (new Win($taskList));
-        }
-        else
-        {
-            return (new Linux($taskList));
-        }
+        return Env::get('currentOs') == 1 ? (new Win()) : new Linux();
     }
 
     /**
@@ -262,11 +246,6 @@ class Task
      */
     public function start()
     {
-        if (!$this->taskList)
-        {
-            Helper::showSysError('please add task to run');
-        }
-
         //异常注册
         if (!Env::get('closeErrorRegister'))
         {
