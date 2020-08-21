@@ -53,6 +53,17 @@ class Task
     }
 
     /**
+     * 设置运行模式
+     * @param int $mode 1.同步 2.异步
+     * @return $this
+     */
+    public function setMode($mode = 1)
+    {
+        Env::set('mode', $mode);
+        return $this;
+    }
+
+    /**
      * 设置是否守护进程
      * @param bool $daemon
      * @return $this
