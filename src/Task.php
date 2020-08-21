@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask;
 
+use \Closure as Closure;
 use EasyTask\Helper\TimerHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
