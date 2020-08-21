@@ -271,37 +271,6 @@ class Task
     }
 
     /**
-     * 新增指令作为任务
-     * @param string $command 指令
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
-     * @return $this
-     */
-    public function addCommand($command, $alas, $time = 1, $used = 1)
-    {
-        $uniqueId = md5($alas);
-        if (!Helper::canUseExcCommand())
-        {
-            Helper::showSysError('please open the disabled function of popen and pclose');
-        }
-        if (isset($this->taskList[$uniqueId]))
-        {
-            Helper::showSysError("task $alas already exists");
-        }
-        Helper::checkTaskTime($time);
-        $this->taskList[$uniqueId] = [
-            'type' => 4,
-            'alas' => $alas,
-            'time' => $time,
-            'used' => $used,
-            'command' => $command,
-        ];
-
-        return $this;
-    }
-
-    /**
      * 获取进程管理实例
      * @return  Win | Linux
      */
