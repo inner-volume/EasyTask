@@ -2,8 +2,10 @@
 namespace EasyTask;
 
 use \Closure as Closure;
+use EasyTask\Helper\TimerHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
+use Exception;
 use \ReflectionClass as ReflectionClass;
 use \ReflectionMethod as ReflectionMethod;
 use \ReflectionException as ReflectionException;
@@ -196,27 +198,27 @@ class Task
      * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
      * @return $this
-     * @throws
+     * @throws Exception
      */
     public function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
         if (!class_exists($class))
         {
-            throw new \Exception("class {$class} is not exist");
+            throw new Exception("class {$class} is not exist");
         }
         try
         {
             $reflect = new ReflectionClass($class);
             if (!$reflect->hasMethod($func))
             {
-                throw new \Exception("class {$class}'s func {$func} is not exist");
+                throw new Exception("class {$class}'s func {$func} is not exist");
             }
             $method = new ReflectionMethod($class, $func);
             if (!$method->isPublic())
             {
-                throw new \Exception("class {$class}'s func {$func} must public");
+                throw new Exception("class {$class}'s func {$func} must public");
             }
-            Helper::checkTaskTime($time);
+            TimerHelper::checkTime($time);
             $uniqueId = md5($alas);
             $this->taskList[$uniqueId] = [
                 'type' => $method->isStatic() ? 1 : 2,
