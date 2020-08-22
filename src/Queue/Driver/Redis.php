@@ -1,15 +1,23 @@
 <?php
 namespace EasyTask\Queue\Driver;
 
+use EasyTask\Queue\Driver;
+
 /**
  * Class File
  * @package EasyTask
  */
-class File
+class Redis extends Driver
 {
-    public function lPush()
+
+
+    public function rPop($key)
     {
-        $a = new \Redis();
-        $a->lPush();
+        // TODO: Implement rPop() method.
+    }
+
+    public function lPush($key, $value)
+    {
+        // TODO: Implement lPush() method.
     }
 }
