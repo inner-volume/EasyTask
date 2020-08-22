@@ -2,6 +2,7 @@
 namespace EasyTask\Helper;
 
 use EasyTask\Env;
+use EasyTask\Helper;
 use Exception;
 
 /**
@@ -113,4 +114,51 @@ class FileHelper
             }
         }
     }
+
+    /**
+     * 保存标准输入|输出
+     * @param string $char 输入|输出
+     * @throws Exception
+     */
+    public static function saveStdChar($char)
+    {
+        $path = static::getStdPath();
+        $file = $path . date('Y_m_d') . '.std';
+        $char = static::convert_char($char);
+        file_put_contents($file, $char, FILE_APPEND);
+    }
+
+    /**
+     * 保存日志
+     * @param string $message
+     * @throws Exception
+     */
+    public static function writeLog($message)
+    {
+        //日志文件
+        $path = static::getLogPath();
+        $file = $path . date('Y_m_d') . '.log';
+
+        //加锁保存
+        $message = static::convert_char($message);
+        file_put_contents($file, $message, FILE_APPEND | LOCK_EX);
+    }
+
+    /**
+     * 保存类型日志
+     * @param string $message
+     * @param string $type
+     * @param bool $isExit
+     * @throws Exception
+     */
+    public static function writeTypeLog($message, $type = 'info', $isExit = false)
+    {
+        //格式化信息
+        $text = Helper::formatMessage($message, $type);
+
+        //记录日志
+        static::writeLog($text);
+        if ($isExit) exit();
+    }
+
 }
