@@ -258,7 +258,7 @@ class Task
     public function start()
     {
         //异常注册
-        if (!Env::get('closeErrorRegister'))
+        if (Env::get('error_register'))
         {
             Error::register();
         }
