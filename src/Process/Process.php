@@ -70,6 +70,24 @@ abstract class Process
     }
 
     /**
+     * 主进程
+     * @return mixed
+     */
+    abstract function master();
+
+    /**
+     * 管理进程(同步:分发进程+响应状态 异步:响应状态+创建调度进程)
+     * @return mixed
+     */
+    abstract function manager();
+
+    /**
+     * 调度进程(异步:分发进程)
+     * @return mixed
+     */
+    abstract function scheduler();
+
+    /**
      * 初始化任务数量
      */
     protected function setTaskCount()
