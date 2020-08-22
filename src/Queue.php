@@ -11,12 +11,10 @@ class Queue
     public static $handler;
 
     /**
-     * 自动初始化缓存
-     * @access public
-     * @param array $options 配置数组
+     * 自动初始化
      * @return Driver
      */
-    public static function init(array $options = [])
+    public static function init()
     {
         //提取配置
         $config = Env::get('queue_config');
@@ -29,5 +27,24 @@ class Queue
         return self::$handler;
     }
 
+    /**
+     * rPop
+     * @param string $key
+     * @return bool|mixed|string
+     */
+    public function rPop($key)
+    {
+        return self::init()->rPop($key);
+    }
 
+    /**
+     * lPush
+     * @param string $key
+     * @param string $value
+     * @return bool|int
+     */
+    public function lPush($key, $value)
+    {
+        return self::init()->lPush($key, $value);
+    }
 }
