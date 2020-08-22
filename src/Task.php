@@ -118,7 +118,7 @@ class Task
      * @param array $options
      * @return $this
      */
-    public function setQueueConfig($driver = 'file', $options = [])
+    public function setQueueConfig($driver = 'file', $options = ['prefix' => 'Task'])
     {
         Env::set('queue_config', ['driver' => $driver, 'options' => $options]);
         return $this;

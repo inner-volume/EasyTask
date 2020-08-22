@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask\Queue\Driver;
 
+use EasyTask\Env;
 use EasyTask\Helper\FileHelper;
 use EasyTask\Lock;
 use EasyTask\Queue\Driver;
@@ -19,6 +20,23 @@ class File extends Driver
     private $file;
 
     /**
+     * 默认配置
+     * @var array
+     */
+    protected $options = [
+        'prefix' => '',
+    ];
+
+    /**
+     * 构造函数
+     * @param array $options
+     */
+    public function __construct($options = [])
+    {
+        $this->options = $options;
+    }
+
+    /**
      * 初始化
      * @param $name
      * @throws Exception
@@ -27,7 +45,7 @@ class File extends Driver
     {
         $path = FileHelper::getQuePath();
         $file = $path . '%s.dat';
-        $this->file = sprintf($file, md5($name));
+        $this->file = sprintf($file, md5($this->options['prefix'] . $name));
         if (!file_exists($this->file))
         {
             if (!file_put_contents($this->file, '[]', LOCK_EX | LOCK_NB))

@@ -10,6 +10,21 @@ use EasyTask\Queue\Driver;
 class Redis extends Driver
 {
     /**
+     * 默认配置
+     * @var array
+     */
+    protected $options = [
+        'host' => '127.0.0.1',
+        'port' => 6379,
+        'password' => '',
+        'select' => 0,
+        'timeout' => 0,
+        'expire' => 0,
+        'persistent' => false,
+        'prefix' => '',
+    ];
+
+    /**
      * 构造函数
      */
     public function __construct()
