@@ -1,6 +1,9 @@
 <?php
 namespace EasyTask;
 
+
+use Exception;
+
 /**
  * Class Check
  * @package EasyTask
@@ -68,6 +71,7 @@ class Check
     /**
      *  解析运行环境
      * @param int $currentOs
+     * @throws Exception
      */
     public static function analysis($currentOs)
     {
@@ -77,7 +81,7 @@ class Check
         {
             if (!extension_loaded($extend))
             {
-                Helper::showSysError("php_{$extend}.(dll/so) is not load,please check php.ini file");
+                throw new Exception("php_{$extend}.(dll/so) is not load,please check php.ini file");
             }
         }
         //检查函数
@@ -86,7 +90,7 @@ class Check
         {
             if (!function_exists($func))
             {
-                Helper::showSysError("function $func may be disabled,please check disable_functions in php.ini");
+                throw new Exception("function $func may be disabled,please check disable_functions in php.ini");
             }
         }
     }

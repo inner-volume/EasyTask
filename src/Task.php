@@ -215,7 +215,7 @@ class Task
         }
         catch (ReflectionException $exception)
         {
-            Helper::showException($exception);
+            throw new Exception($exception->getMessage());
         }
 
         return $this;

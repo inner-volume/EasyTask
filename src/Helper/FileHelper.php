@@ -49,16 +49,6 @@ class FileHelper
     }
 
     /**
-     * 获取进程命令通信目录
-     * @return  string
-     * @throws Exception
-     */
-    public static function getCsgPath()
-    {
-        return static::getRunTimePath() . 'Csg' . DIRECTORY_SEPARATOR;
-    }
-
-    /**
      * 获取进程管道目录
      * @return  string
      * @throws Exception
@@ -100,7 +90,6 @@ class FileHelper
             static::getLogPath(),
             static::getLokPath(),
             static::getPiePath(),
-            static::getCsgPath(),
             static::getStdPath(),
         ];
         foreach ($paths as $path)
