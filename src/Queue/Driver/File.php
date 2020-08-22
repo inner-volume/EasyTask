@@ -7,7 +7,9 @@ namespace EasyTask\Queue\Driver;
  */
 class File
 {
-    public function lPush()
+
+
+    public function lPusha()
     {
         $a = new \Redis();
         $a->lPush();
