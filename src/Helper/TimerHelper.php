@@ -45,13 +45,30 @@ class TimerHelper
 
     /**
      * 添加定时器到队列
-     * @param array $timer
+     * @param string $class 类名称
+     * @param string $func 方法名称
+     * @param string $alas 任务别名
+     * @param mixed $time 定时器间隔
+     * @param int $used 定时器占用进程数
+     * @param bool $persistent 持续执行
      * @return bool
      * @throws
      */
-    public static function addTimer($timer)
+    public static function addTimer($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
-        return;
+        //检查定时器时间
+        TimerHelper::checkTime($time);
+
+        //构建定时器信息
+        $timer = [
+            'id' => uniqid(),
+            'func' => $func,
+            'alas' => $alas,
+            'time' => $time,
+            'used' => $used,
+            'class' => $class,
+            'persistent' => $persistent
+        ];
 
         //加锁管道
         $name = 'timer_queue';
@@ -64,7 +81,7 @@ class TimerHelper
             return $pipe->write($timer);
         }, true);
 
-        return (bool)$isWrite;
+        return $isWrite ? $timer['id'] : 0;
     }
 
     /**

@@ -217,27 +217,30 @@ class Task
                 throw new Exception("class {$class}'s func {$func} must public");
             }
             FileHelper::initAllPath();
-            TimerHelper::checkTime($time);
-            $timerId = uniqid();
-            if (TimerHelper::addTimer([
-                'id' => $timerId,
-                'type' => $method->isStatic() ? 1 : 2,
-                'func' => $func,
-                'alas' => $alas,
-                'time' => $time,
-                'used' => $used,
-                'class' => $class,
-                'persistent' => $persistent
-            ]))
-            {
-                return $timerId;
-            }
-            return false;
+            return TimerHelper::addTimer($class, $func, $alas, $time, $used, $persistent);
         }
         catch (ReflectionException $exception)
         {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    /**
+     * 移除任务
+     * @param string $timerId 定时器Id
+     */
+    public function removeTask($timerId)
+    {
+
+    }
+
+    /**
+     * 清空任务
+     * @param bool $exit 清空完成退出
+     */
+    public function clearTask($exit = false)
+    {
+
     }
 
     /**
