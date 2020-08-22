@@ -2,6 +2,7 @@
 namespace EasyTask;
 
 use \Closure as Closure;
+use EasyTask\Helper\FileHelper;
 use EasyTask\Helper\TimerHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
@@ -35,10 +36,8 @@ class Task
     {
         //初始化基础配置
         Env::set('prefix', 'Task');
-        Env::set('canEvent', Helper::canUseEvent());
-        Env::set('currentOs', $currentOs);
-        Env::set('canAsync', Helper::canUseAsyncSignal());
-        Env::set('closeErrorRegister', false);
+        $this->setMode();
+        $this->setQueueConfig();
 
         //初始化PHP_BIN|CODE_PAGE
         if ($currentOs == 1)
@@ -74,12 +73,13 @@ class Task
      * 设置任务前缀
      * @param string $prefix
      * @return $this
+     * @throws Exception
      */
     public function setPrefix($prefix = 'Task')
     {
-        if (Env::get('runTimePath'))
+        if (Env::get('runtime_path'))
         {
-            Helper::showSysError('should use setPrefix before setRunTimePath');
+            throw new Exception('should use setPrefix before setRunTimePath');
         }
         Env::set('prefix', $prefix);
         return $this;
@@ -109,6 +109,18 @@ class Task
     public function setTimeZone($timeIdent)
     {
         date_default_timezone_set($timeIdent);
+        return $this;
+    }
+
+    /**
+     * 设置队列驱动
+     * @param string $driver
+     * @param array $config
+     * @return $this
+     */
+    public function setQueueConfig($driver = 'file', $config = [])
+    {
+        Env::set('queueConfig', ['driver' => $driver, 'config' => $config]);
         return $this;
     }
 
@@ -180,7 +192,7 @@ class Task
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
-     * @return $this
+     * @return int|false
      * @throws Exception
      */
     public function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
@@ -201,9 +213,11 @@ class Task
             {
                 throw new Exception("class {$class}'s func {$func} must public");
             }
+            FileHelper::initAllPath();
             TimerHelper::checkTime($time);
-            $uniqueId = md5($alas);
-            $this->taskList[$uniqueId] = [
+            $timerId = uniqid();
+            if (TimerHelper::addTimer([
+                'id' => $timerId,
                 'type' => $method->isStatic() ? 1 : 2,
                 'func' => $func,
                 'alas' => $alas,
@@ -211,14 +225,16 @@ class Task
                 'used' => $used,
                 'class' => $class,
                 'persistent' => $persistent
-            ];
+            ]))
+            {
+                return $timerId;
+            }
+            return false;
         }
         catch (ReflectionException $exception)
         {
             throw new Exception($exception->getMessage());
         }
-
-        return $this;
     }
 
     /**
@@ -242,8 +258,7 @@ class Task
             Error::register();
         }
 
-        //目录构建
-        Helper::initAllPath();
+        FileHelper::initAllPath();
 
         //进程启动
         $process = $this->getProcess();

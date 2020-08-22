@@ -2,6 +2,7 @@
 namespace EasyTask\Helper;
 
 use EasyTask\Lock;
+use EasyTask\Pipe;
 use Exception;
 
 /**
@@ -23,7 +24,7 @@ class TimerHelper
         }
         elseif (is_float($time))
         {
-            if (!static::canUseEvent()) throw new Exception('please install php_event.(dll/so) extend for using milliseconds');
+            if (!static::fcsdxcanUseEvent()) throw new Exception('please install php_event.(dll/so) extend for using milliseconds');
         }
         elseif (is_string($time))
         {
@@ -43,11 +44,33 @@ class TimerHelper
     }
 
     /**
-     * 添加定时器到管道
+     * 添加定时器到队列
      * @param array $timer
+     * @return bool
+     * @throws
      */
-    public static function addTimerToPipe($timer)
+    public static function addTimer($timer)
     {
-        $lock = new Lock();
+        //加锁管道
+        $name = 'timer_queue';
+        $lock = new Lock($name);
+        $pipe = new Pipe($name);
+
+        //处理消息
+        $timer = base64_encode(json_encode($timer)) . PHP_EOL;
+        $isWrite = $lock->execute(function () use ($pipe, $timer) {
+            return $pipe->write($timer);
+        }, true);
+
+        return (bool)$isWrite;
+    }
+
+    /**
+     *
+     * @param string $timerId
+     */
+    public static function delTimer($timerId)
+    {
+
     }
 }
