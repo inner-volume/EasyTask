@@ -1,5 +1,7 @@
 <?php
 namespace EasyTask\Helper;
+
+use EasyTask\Lock;
 use Exception;
 
 /**
@@ -38,5 +40,14 @@ class TimerHelper
         {
             throw new Exception('time parameter is an unsupported type');
         }
+    }
+
+    /**
+     * 添加定时器到管道
+     * @param array $timer
+     */
+    public static function addTimerToPipe($timer)
+    {
+        $lock = new Lock();
     }
 }
