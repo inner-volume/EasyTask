@@ -54,7 +54,7 @@ class TimerHelper
      * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
      * @return bool
-     * @throws
+     * @throws Exception
      */
     public static function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
@@ -96,11 +96,38 @@ class TimerHelper
     }
 
     /**
-     *
+     * 通知队列移除定时器
      * @param string $timerId
+     * @return int|string
+     * @throws Exception
      */
-    public static function delTimer($timerId)
+    public static function removeTimer($timerId)
     {
+        //构建队列信息
+        $timerId = uniqid();
+        $data = [
+            'act' => 'remove',
+            'info' => [
+                'id' => $timerId
+            ]
+        ];
 
+        //定时器添加到队列
+        $queue = new Queue();
+        $queueName = 'easy_timer_list';
+        $queueConfig = Env::get('queue_config');
+        if ($queueConfig['driver'] === 'file')
+        {
+            $lock = new Lock($queueName);
+            $isPush = $lock->execute(function () use ($queue, $data, $queueName) {
+
+                return $queue->lPush($queueName, json_encode($data));
+            }, true);
+        }
+        else
+        {
+            $isPush = $queue->lPush($queueName, json_encode($data));
+        }
+        return $isPush ? $timerId : 0;
     }
 }
