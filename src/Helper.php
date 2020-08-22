@@ -110,20 +110,24 @@ class Helper
 
     /**
      * 开启异步信号
-     * @return bool
      */
-    public static function openAsyncSignal()
+    public static function open_async_signals()
     {
-        return pcntl_async_signals(true);
+        if (function_exists('pcntl_async_signals'))
+        {
+            pcntl_async_signals();
+        }
     }
 
     /**
-     * 是否支持异步信号
-     * @return bool
+     * 调用信号调度
      */
-    public static function canUseAsyncSignal()
+    public static function invoke_signal_dispatch()
     {
-        return (function_exists('pcntl_async_signals'));
+        if (function_exists('pcntl_signal_dispatch'))
+        {
+            pcntl_signal_dispatch();
+        }
     }
 
     /**
@@ -143,7 +147,6 @@ class Helper
     {
         return function_exists('popen') && function_exists('pclose');
     }
-
 
 
     /**
