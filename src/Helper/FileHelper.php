@@ -2,7 +2,6 @@
 namespace EasyTask\Helper;
 
 use EasyTask\Env;
-use EasyTask\Helper;
 use Exception;
 
 /**

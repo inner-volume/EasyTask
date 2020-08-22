@@ -51,6 +51,8 @@ class TimerHelper
      */
     public static function addTimer($timer)
     {
+        return;
+
         //加锁管道
         $name = 'timer_queue';
         $lock = new Lock($name);
