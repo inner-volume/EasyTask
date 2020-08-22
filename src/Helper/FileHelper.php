@@ -53,9 +53,9 @@ class FileHelper
      * @return  string
      * @throws Exception
      */
-    public static function getPiePath()
+    public static function getQuePath()
     {
-        return static::getRunTimePath() . 'Pie' . DIRECTORY_SEPARATOR;
+        return static::getRunTimePath() . 'Que' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -89,7 +89,7 @@ class FileHelper
             static::getWinPath(),
             static::getLogPath(),
             static::getLokPath(),
-            static::getPiePath(),
+            static::getQuePath(),
             static::getStdPath(),
         ];
         foreach ($paths as $path)
