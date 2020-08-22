@@ -183,7 +183,7 @@ class Task
         }
         if (!$notify instanceof Closure && !is_string($notify))
         {
-            Helper::showSysError('notify parameter can only be string or closure');
+            throw new Exception('notify parameter can only be string or closure');
         }
         Env::set('error_register_notify', $notify);
         return $this;
