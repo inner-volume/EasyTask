@@ -54,7 +54,7 @@ class TimerHelper
      * @return bool
      * @throws
      */
-    public static function addTimer($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
+    public static function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
         //检查定时器时间
         TimerHelper::checkTime($time);

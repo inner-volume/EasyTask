@@ -217,7 +217,7 @@ class Task
                 throw new Exception("class {$class}'s func {$func} must public");
             }
             FileHelper::initAllPath();
-            return TimerHelper::addTimer($class, $func, $alas, $time, $used, $persistent);
+            return TimerHelper::addTask($class, $func, $alas, $time, $used, $persistent);
         }
         catch (ReflectionException $exception)
         {
