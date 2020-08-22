@@ -239,10 +239,12 @@ class Task
     /**
      * 清空任务
      * @param bool $exit 清空完成退出
+     * @return bool
+     * @throws Exception
      */
     public function clearTask($exit = false)
     {
-
+        return TimerHelper::clearTask($exit);
     }
 
     /**
