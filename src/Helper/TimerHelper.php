@@ -72,6 +72,7 @@ class TimerHelper
 
         //加锁管道
         $name = 'timer_queue';
+        return;
         $lock = new Lock($name);
         $pipe = new Pipe($name);
 

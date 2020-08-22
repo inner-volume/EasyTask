@@ -26,9 +26,11 @@ class Redis extends Driver
 
     /**
      * 构造函数
+     * @param array $options
      */
-    public function __construct()
+    public function __construct($options = [])
     {
+        $this->options = array_merge($this->options, $options);
         $this->handler = new \Redis();
         if ($this->options['persistent'])
         {
