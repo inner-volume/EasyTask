@@ -38,4 +38,45 @@ class Pipe
             }
         }
     }
+
+    /**
+     * 读取管道
+     * @param int $size
+     * @return string|false
+     * @throws Exception
+     */
+    public function read($size = 0)
+    {
+        if ($size === 0)
+        {
+            $size = Helper::isWin() ? filesize($this->file) : $size = 4096;
+        }
+        $fileHand = fopen($this->file, 'r');
+        if (!$fileHand)
+        {
+            throw new Exception("open pipe file:{$this->file} failed");
+        }
+        return fread($fileHand, $size);
+    }
+
+    /**
+     * 写入管道
+     * @param string $text
+     * @return int|false
+     * @throws Exception
+     */
+    public function write($text = '')
+    {
+        $allow_size = 4096;
+        if (!Helper::isWin() && strlen($text) > 4096)
+        {
+            throw new Exception("The text size must not be greater than $allow_size");
+        }
+        $fileHand = fopen($this->file, 'a+');
+        if (!$fileHand)
+        {
+            throw new Exception("open pipe file:{$this->file} failed");
+        }
+        return fwrite($fileHand, $text);
+    }
 }
