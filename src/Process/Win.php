@@ -366,42 +366,17 @@ class Win extends Process
                         break;
                 }
             }, $this->startTime);
-
-            //检查进程
-            if (Env::get('canAutoRec'))
-            {
-                $this->getReport(true);
-                if ($this->autoRecEvent)
-                {
-                    $this->autoRecEvent = false;
-                }
-            }
         }
     }
 
     /**
      * 获取报告
-     * @param bool $output
      * @return array
      * @throws
      */
-    protected function getReport($output = false)
+    protected function getReport()
     {
-        $report = $this->workerStatus($this->taskCount);
-        foreach ($report as $key => $item)
-        {
-            if ($item['status'] == 'stop' && Env::get('canAutoRec'))
-            {
-                $this->joinWpcContainer($this->forkItemExec());
-                if ($output)
-                {
-                    $this->autoRecEvent = true;
-                    Helper::showInfo("the worker {$item['name']}(pid:{$item['pid']}) is stop,try to fork a new one");
-                }
-            }
-        }
-
-        return $report;
+        return $this->workerStatus($this->taskCount);
     }
 
     /**
