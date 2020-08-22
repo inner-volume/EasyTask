@@ -89,13 +89,14 @@ class Task
      * 设置PHP执行路径(windows)
      * @param string $path
      * @return $this
+     * @throws Exception
      */
     public function setPhpPath($path)
     {
         $file = realpath($path);
         if (!file_exists($file))
         {
-            Helper::showSysError("the path {$path} is not exists");
+            throw new Exception("the path {$path} is not exists");
         }
         Helper::setPhpPath($path);
         return $this;
