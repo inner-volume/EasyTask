@@ -17,16 +17,6 @@ abstract class Driver
      */
     protected $options = [];
 
-    /**
-     * Driver constructor.
-     * @param string $driver
-     * @param array $options
-     */
-    public function __construct($driver,$options)
-    {
-
-    }
-
 
     /**
      * 获取列表头部元素
