@@ -1,7 +1,7 @@
 <?php
 namespace EasyTask;
 
-use \Closure as Closure;
+use Exception;
 
 /**
  * Class Command
@@ -10,117 +10,47 @@ use \Closure as Closure;
 class Command
 {
     /**
-     * 通讯文件
+     * 通讯管道
      */
-    private $msgFile;
+    private $pipe;
 
     /**
      * 构造函数
+     * @param string $name ('manage同步|manage+scheduler异步')
      * @throws
      */
-    public function __construct()
+    public function __construct($name = 'pipe')
     {
-        $this->initMsgFile();
-    }
-
-    /**
-     * 初始化文件
-     */
-    private function initMsgFile()
-    {
-        //创建文件
-        $path = Helper::getCsgPath();
-        $file = $path . '%s.csg';
-        $this->msgFile = sprintf($file, md5(__FILE__));
-        if (!file_exists($this->msgFile))
-        {
-            if (!file_put_contents($this->msgFile, '[]', LOCK_EX))
-            {
-                Helper::showError('failed to create msgFile');
-            }
-        }
-    }
-
-    /**
-     * 获取数据
-     * @return array
-     * @throws
-     */
-    public function get()
-    {
-        $content = @file_get_contents($this->msgFile);
-        if (!$content)
-        {
-            return [];
-        }
-        $data = json_decode($content, true);
-        return is_array($data) ? $data : [];
-    }
-
-    /**
-     * 重置数据
-     * @param array $data
-     */
-    public function set($data)
-    {
-        file_put_contents($this->msgFile, json_encode($data), LOCK_EX);
-    }
-
-    /**
-     * 投递数据
-     * @param array $command
-     */
-    public function push($command)
-    {
-        $data = $this->get();
-        array_push($data, $command);
-        $this->set($data);
+        $this->pipe = new Pipe($name);
     }
 
     /**
      * 发送命令
      * @param array $command
+     * @return int|false
+     * @throws
      */
     public function send($command)
     {
         $command['time'] = time();
-        $this->push($command);
+        $command = base64_encode(json_encode($command));
+        return $this->pipe->write($command);
     }
 
     /**
      * 接收命令
-     * @param string $msgType 消息类型
-     * @param mixed $command 收到的命令
+     * @return array
+     * @throws Exception
      */
-    public function receive($msgType, &$command)
+    public function receive()
     {
-        $data = $this->get();
-        foreach ($data as $key => $item)
+        $command = $this->pipe->write();
+        $command = json_decode(base64_decode($command));
+        if (!$command)
         {
-            if ($item['msgType'] == $msgType)
-            {
-                $command = $item;
-                unset($data[$key]);
-                break;
-            }
+            return [];
         }
-        $this->set($data);
-    }
 
-    /**
-     * 根据命令执行对应操作
-     * @param int $msgType 消息类型
-     * @param Closure $func 执行函数
-     * @param int $time 等待方时间戳
-     */
-    public function waitCommandForExecute($msgType, $func, $time)
-    {
-        $command = '';
-        $this->receive($msgType, $command);
-        if (!$command || (!empty($command['time']) && $command['time'] < $time))
-        {
-            return;
-        }
-        $func($command);
+        return $command;
     }
 }

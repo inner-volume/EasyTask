@@ -24,33 +24,17 @@ abstract class Process
     protected $startTime;
 
     /**
-     * 任务总数
-     * @var int
-     */
-    protected $taskCount;
-
-    /**
      * 任务列表
      * @var array
      */
     protected $taskList;
 
     /**
-     * 进程命令管理
-     * @var Command
-     */
-    protected $commander;
-
-    /**
      * 构造函数
-     * @param array $taskList
      */
-    public function __construct($taskList)
+    public function __construct()
     {
         $this->startTime = time();
-        $this->taskList = $taskList;
-        $this->setTaskCount();
-        $this->commander = new Command();
     }
 
     /**
