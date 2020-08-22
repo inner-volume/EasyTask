@@ -173,7 +173,7 @@ class Task
      * 异常通知
      * @param string|Closure $notify
      * @return $this
-     * @throws
+     * @throws Exception
      */
     public function setErrorRegisterNotify($notify)
     {
@@ -185,7 +185,7 @@ class Task
         {
             Helper::showSysError('notify parameter can only be string or closure');
         }
-        Env::set('notifyHand', $notify);
+        Env::set('error_register_notify', $notify);
         return $this;
     }
 
