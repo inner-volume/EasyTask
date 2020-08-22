@@ -38,6 +38,7 @@ class Task
         Env::set('prefix', 'Task');
         $this->setMode();
         $this->setQueueConfig();
+        $this->setErrorRegister();
 
         //初始化PHP_BIN|CODE_PAGE
         if ($currentOs == 1)
@@ -121,7 +122,18 @@ class Task
      */
     public function setQueueConfig($driver = 'file', $config = [])
     {
-        Env::set('queueConfig', ['driver' => $driver, 'config' => $config]);
+        Env::set('queue_config', ['driver' => $driver, 'config' => $config]);
+        return $this;
+    }
+
+    /**
+     * 设置关闭标准输出
+     * @param bool $close
+     * @return $this
+     */
+    public function setCloseStdOut($close = false)
+    {
+        Env::set('close_std_out', $close);
         return $this;
     }
 
@@ -129,40 +141,31 @@ class Task
      * 设置运行时目录
      * @param string $path
      * @return $this
+     * @throws Exception
      */
     public function setRunTimePath($path)
     {
         if (!is_dir($path))
         {
-            Helper::showSysError("the path {$path} is not exist");
+            throw new Exception("the path {$path} is not exist");
         }
         if (!is_writable($path))
         {
-            Helper::showSysError("the path {$path} is not writeable");
+            throw new Exception("the path {$path} is not writeable");
         }
         Env::set('runTimePath', realpath($path));
+        FileHelper::initAllPath();
         return $this;
     }
 
     /**
-     * 设置关闭标准输出的日志
-     * @param bool $close
+     * 设置异常注册
+     * @param bool $isReg
      * @return $this
      */
-    public function setCloseStdOutLog($close = false)
+    public function setErrorRegister($isReg = true)
     {
-        Env::set('closeStdOutLog', $close);
-        return $this;
-    }
-
-    /**
-     * 设置关闭系统异常注册
-     * @param bool $isReg 是否关闭
-     * @return $this
-     */
-    public function setCloseErrorRegister($isReg = false)
-    {
-        Env::set('closeErrorRegister', $isReg);
+        Env::set('error_register', $isReg);
         return $this;
     }
 
@@ -170,12 +173,13 @@ class Task
      * 异常通知
      * @param string|Closure $notify
      * @return $this
+     * @throws
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (Env::get('closeErrorRegister'))
+        if (Env::get('error_register'))
         {
-            Helper::showSysError('you must set closeErrorRegister as false before use this api');
+            throw new Exception('you must set setErrorRegister as true before use this api');
         }
         if (!$notify instanceof Closure && !is_string($notify))
         {
