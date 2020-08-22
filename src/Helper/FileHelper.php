@@ -124,7 +124,7 @@ class FileHelper
     {
         $path = static::getStdPath();
         $file = $path . date('Y_m_d') . '.std';
-        $char = static::convert_char($char);
+        $char = TextHelper::convert_char($char);
         file_put_contents($file, $char, FILE_APPEND);
     }
 
@@ -140,7 +140,7 @@ class FileHelper
         $file = $path . date('Y_m_d') . '.log';
 
         //加锁保存
-        $message = static::convert_char($message);
+        $message = TextHelper::convert_char($message);
         file_put_contents($file, $message, FILE_APPEND | LOCK_EX);
     }
 
@@ -154,7 +154,7 @@ class FileHelper
     public static function writeTypeLog($message, $type = 'info', $isExit = false)
     {
         //格式化信息
-        $text = Helper::formatMessage($message, $type);
+        $text = TextHelper::formatMessage($message, $type);
 
         //记录日志
         static::writeLog($text);
