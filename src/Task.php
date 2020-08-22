@@ -195,7 +195,7 @@ class Task
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
-     * @return int|false
+     * @return int
      * @throws Exception
      */
     public function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
@@ -228,10 +228,12 @@ class Task
     /**
      * 移除任务
      * @param string $timerId 定时器Id
+     * @return bool
+     * @throws Exception
      */
     public function removeTask($timerId)
     {
-
+        return TimerHelper::removeTask($timerId);
     }
 
     /**

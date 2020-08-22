@@ -53,7 +53,7 @@ class TimerHelper
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
-     * @return bool
+     * @return int
      * @throws Exception
      */
     public static function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
@@ -87,7 +87,7 @@ class TimerHelper
     /**
      * 通知队列移除定时器
      * @param string $timerId
-     * @return int|string
+     * @return bool
      * @throws Exception
      */
     public static function removeTask($timerId)
@@ -106,6 +106,30 @@ class TimerHelper
         $queueName = 'easy_task_list';
         $isPush = $queue->lPush($queueName, json_encode($data));
 
-        return $isPush ? $timerId : 0;
+        return $isPush ? true : false;
+    }
+
+    /**
+     * 通知队列清空任务
+     * @param false $exit
+     * @return bool
+     * @throws Exception
+     */
+    public static function clearTask($exit = false)
+    {
+        //构建队列信息
+        $data = [
+            'act' => 'clear',
+            'info' => [
+                'exit' => $exit
+            ]
+        ];
+
+        //定时器添加到队列
+        $queue = new Queue();
+        $queueName = 'easy_task_list';
+        $isPush = $queue->lPush($queueName, json_encode($data));
+
+        return $isPush ? true : false;
     }
 }
