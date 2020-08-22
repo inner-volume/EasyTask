@@ -115,12 +115,12 @@ class Task
     /**
      * 设置队列驱动
      * @param string $driver
-     * @param array $config
+     * @param array $options
      * @return $this
      */
-    public function setQueueConfig($driver = 'file', $config = [])
+    public function setQueueConfig($driver = 'file', $options = [])
     {
-        Env::set('queue_config', ['driver' => $driver, 'config' => $config]);
+        Env::set('queue_config', ['driver' => $driver, 'options' => $options]);
         return $this;
     }
 
