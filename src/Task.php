@@ -4,6 +4,7 @@ namespace EasyTask;
 use \Closure as Closure;
 use EasyTask\Helper\FileHelper;
 use EasyTask\Helper\TimerHelper;
+use EasyTask\Mode\Kernel;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
 use Exception;
@@ -268,11 +269,11 @@ class Task
             Error::register();
         }
 
+        //目录构建
         FileHelper::initAllPath();
 
-        //进程启动
-        $process = $this->getProcess();
-        $process->start();
+        //启动任务
+        (new Kernel())->start();
     }
 
     /**
@@ -281,8 +282,7 @@ class Task
      */
     public function status()
     {
-        $process = $this->getProcess();
-        $process->status();
+        (new Kernel())->status();
     }
 
     /**
@@ -292,7 +292,6 @@ class Task
      */
     public function stop($force = false)
     {
-        $process = $this->getProcess();
-        $process->stop($force);
+        (new Kernel())->stop($force);
     }
 }
