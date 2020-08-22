@@ -58,7 +58,7 @@ class TimerHelper
      */
     public static function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
     {
-        //检查定时器时间
+        //检查时间
         TimerHelper::checkTime($time);
 
         //构建队列信息
@@ -78,20 +78,9 @@ class TimerHelper
 
         //定时器添加到队列
         $queue = new Queue();
-        $queueName = 'easy_timer_list';
-        $queueConfig = Env::get('queue_config');
-        if ($queueConfig['driver'] === 'file')
-        {
-            $lock = new Lock($queueName);
-            $isPush = $lock->execute(function () use ($queue, $data, $queueName) {
+        $queueName = 'easy_task_list';
+        $isPush = $queue->lPush($queueName, json_encode($data));
 
-                return $queue->lPush($queueName, json_encode($data));
-            }, true);
-        }
-        else
-        {
-            $isPush = $queue->lPush($queueName, json_encode($data));
-        }
         return $isPush ? $timerId : 0;
     }
 
@@ -101,7 +90,7 @@ class TimerHelper
      * @return int|string
      * @throws Exception
      */
-    public static function removeTimer($timerId)
+    public static function removeTask($timerId)
     {
         //构建队列信息
         $timerId = uniqid();
@@ -114,20 +103,9 @@ class TimerHelper
 
         //定时器添加到队列
         $queue = new Queue();
-        $queueName = 'easy_timer_list';
-        $queueConfig = Env::get('queue_config');
-        if ($queueConfig['driver'] === 'file')
-        {
-            $lock = new Lock($queueName);
-            $isPush = $lock->execute(function () use ($queue, $data, $queueName) {
+        $queueName = 'easy_task_list';
+        $isPush = $queue->lPush($queueName, json_encode($data));
 
-                return $queue->lPush($queueName, json_encode($data));
-            }, true);
-        }
-        else
-        {
-            $isPush = $queue->lPush($queueName, json_encode($data));
-        }
         return $isPush ? $timerId : 0;
     }
 }

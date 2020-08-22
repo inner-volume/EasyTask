@@ -2,6 +2,7 @@
 namespace EasyTask;
 
 use EasyTask\Queue\Driver;
+use Exception;
 
 class Queue
 {
@@ -42,9 +43,23 @@ class Queue
      * @param string $key
      * @param string $value
      * @return bool|int
+     * @throws Exception
      */
     public function lPush($key, $value)
     {
-        return self::init()->lPush($key, $value);
+        $config = Env::get('queue_config');
+        if ($config['driver'] === 'file')
+        {
+            $lock = new Lock($key);
+            $result = $lock->execute(function () use ($key, $value) {
+
+                return self::init()->lPush($key, $value);
+            }, true);
+        }
+        else
+        {
+            $result = self::init()->lPush($key, $value);
+        }
+        return $result;
     }
 }
