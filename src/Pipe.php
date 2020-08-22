@@ -1,6 +1,9 @@
 <?php
 namespace EasyTask;
 
+use EasyTask\Helper\FileHelper;
+use Exception;
+
 /**
  * Class Pipe
  * @package EasyTask
@@ -16,15 +19,23 @@ class Pipe
     /**
      * 构造函数
      * @param string $name
+     * @throws Exception
      */
     public function __construct($name = 'pipe')
     {
-        //初始化文件
-        $path = Helper::getLokPath();
+        $path = FileHelper::getPiePath();
         $this->file = $path . md5($name);
         if (!file_exists($this->file))
         {
-            @file_put_contents($this->file, '');
+            $error = "make pipe file:{$this->file} failed";
+            if (!Helper::isWin())
+            {
+                if (!posix_mkfifo($this->file, 0666)) throw new Exception($error);
+            }
+            else
+            {
+                if (file_put_contents($this->file, '')) throw new Exception($error);
+            }
         }
     }
 }

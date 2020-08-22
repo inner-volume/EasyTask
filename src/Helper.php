@@ -105,7 +105,7 @@ class Helper
      */
     public static function isWin()
     {
-        return (DIRECTORY_SEPARATOR == '\\') ? true : false;
+        return DIRECTORY_SEPARATOR == '\\';
     }
 
     /**
