@@ -1,8 +1,10 @@
 <?php
 namespace EasyTask\Helper;
 
+use EasyTask\Env;
 use EasyTask\Lock;
 use EasyTask\Pipe;
+use EasyTask\Queue;
 use Exception;
 
 /**
@@ -59,30 +61,38 @@ class TimerHelper
         //检查定时器时间
         TimerHelper::checkTime($time);
 
-        //构建定时器信息
-        $timer = [
-            'id' => uniqid(),
-            'func' => $func,
-            'alas' => $alas,
-            'time' => $time,
-            'used' => $used,
-            'class' => $class,
-            'persistent' => $persistent
+        //构建队列信息
+        $timerId = uniqid();
+        $data = [
+            'act' => 'add',
+            'info' => [
+                'id' => $timerId,
+                'func' => $func,
+                'alas' => $alas,
+                'time' => $time,
+                'used' => $used,
+                'class' => $class,
+                'persistent' => $persistent
+            ]
         ];
 
-        //加锁管道
-        $name = 'timer_queue';
-        return;
-        $lock = new Lock($name);
-        $pipe = new Pipe($name);
+        //定时器添加到队列
+        $queue = new Queue();
+        $queueName = 'easy_timer_list';
+        $queueConfig = Env::get('queue_config');
+        if ($queueConfig['driver'] === 'file')
+        {
+            $lock = new Lock($queueName);
+            $isPush = $lock->execute(function () use ($queue, $data, $queueName) {
 
-        //处理消息
-        $timer = base64_encode(json_encode($timer)) . PHP_EOL;
-        $isWrite = $lock->execute(function () use ($pipe, $timer) {
-            return $pipe->write($timer);
-        }, true);
-
-        return $isWrite ? $timer['id'] : 0;
+                return $queue->lPush($queueName, json_encode($data));
+            }, true);
+        }
+        else
+        {
+            $isPush = $queue->lPush($queueName, json_encode($data));
+        }
+        return $isPush ? $timerId : 0;
     }
 
     /**
