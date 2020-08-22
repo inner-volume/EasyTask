@@ -140,16 +140,6 @@ class Helper
     }
 
     /**
-     * 是否可执行命令
-     * @return bool
-     */
-    public static function canUseExcCommand()
-    {
-        return function_exists('popen') && function_exists('pclose');
-    }
-
-
-    /**
      * 输出字符串
      * @param string $char
      * @param bool $exit
