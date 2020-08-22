@@ -132,17 +132,6 @@ class Task
     }
 
     /**
-     * 设置子进程自动恢复
-     * @param bool $isRec
-     * @return $this
-     */
-    public function setAutoRecover($isRec = false)
-    {
-        Env::set('canAutoRec', $isRec);
-        return $this;
-    }
-
-    /**
      * 设置关闭标准输出的日志
      * @param bool $close
      * @return $this
