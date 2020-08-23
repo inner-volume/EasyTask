@@ -52,7 +52,6 @@ class Queue
         {
             $lock = new Lock($key);
             $result = $lock->execute(function () use ($key, $value) {
-
                 return self::init()->lPush($key, $value);
             }, true);
         }
