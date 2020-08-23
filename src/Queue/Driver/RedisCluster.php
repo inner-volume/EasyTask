@@ -2,6 +2,7 @@
 namespace EasyTask\Queue\Driver;
 
 use EasyTask\Queue\Driver;
+use \RedisClusterException as RedisClusterException;
 
 /**
  * Class File
@@ -24,11 +25,12 @@ class RedisCluster extends Driver
     /**
      * 构造函数
      * @param array $options
+     * @throws RedisClusterException
      */
     public function __construct($options = [])
     {
         $this->options = array_merge($this->options, $options);
-        $this->handler = new \RedisCluster();
+        $this->handler = new \RedisCluster(NULL, $this->options);
     }
 
     /**
