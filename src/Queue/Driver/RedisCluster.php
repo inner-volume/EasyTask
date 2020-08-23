@@ -5,7 +5,7 @@ use EasyTask\Queue\Driver;
 use \RedisClusterException as RedisClusterException;
 
 /**
- * Class File
+ * Class RedisCluster
  * @package EasyTask
  */
 class RedisCluster extends Driver
