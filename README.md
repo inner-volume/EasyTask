@@ -33,32 +33,14 @@ $task = new Task();
 // 设置非常驻内存
 $task->setDaemon(false);
 
-// 设置项目名称
+// 设置项目名称(设置的具体意义参见文档,不设置默认为Task)
 $task->setPrefix('EasyTask');
 
-// 设置记录运行时目录(日志或缓存目录)
+// 设置记录运行时目录(日志或缓存目录,不设置则自动保存到PHP.ini中设置的临时目录中)
 $task->setRunTimePath('./Application/Runtime/');
 
-// 1.添加闭包函数类型定时任务(开启2个进程,每隔10秒执行1次你写闭包方法中的代码)
-$task->addFunc(function () {
-    $url = 'https://www.gaojiufeng.cn/?id=243';
-    @file_get_contents($url);
-}, 'request', 10, 2);
-
-// 2.添加类的方法类型定时任务(同时支持静态方法)(开启1个进程,每隔20秒执行一次你设置的类的方法)
-$task->addClass(Sms::class, 'send', 'sendsms', 20, 1);
-
-// 3.添加指令类型的定时任务(开启1个进程,每隔10秒执行1次)
-$command = 'php /www/web/orderAutoCancel.php';
-$task->addCommand($command,'orderCancel',10,1);
-
-// 4.添加闭包函数任务,不需要定时器,立即执行(开启1个进程)
-$task->addFunc(function () {
-    while(true)
-    {
-       //todo
-    }
-}, 'request', 0, 1);
+// 添加定时任务执行类的方法(同时支持静态方法)(开启1个进程,每隔20秒执行一次你设置的类的方法)
+$task->addTask(Sms::class, 'send', 'sendsms', 20, 1);
 
 // 启动任务
 $task->start();
@@ -70,6 +52,9 @@ $task->start();
 // 初始化
 $task = new Task();
 
+// 设置运行模式:1.同步 2.异步
+$task->setMode(1);
+
 // 设置常驻内存
 $task->setDaemon(true)   
 
@@ -79,10 +64,7 @@ $task->setDaemon(true)
 // 设置系统时区
 ->setTimeZone('Asia/Shanghai')  
 
-// 设置子进程挂掉自动重启
-->setAutoRecover(true)  
-
-// 设置PHP运行路径,一般Window系统才需要设置,当系统无法找到才需要您手动设置
+// 设置PHP运行路径(Windows环境中默认自动设置,自动设置失败则需要手工设置。)
 ->setPhpPath('C:/phpEnv/php/php-7.0/php.exe')
 
 /**
@@ -93,13 +75,13 @@ $task->setDaemon(true)
 /**
  * 设置关闭标准输出的STD文件记录
  */
-->setCloseStdOutLog(true);
+->setCloseStdOut(true);
 
 /**
  * 关闭EasyTask的异常注册
  * EasyTask将不再监听set_error_handler/set_exception_handler/register_shutdown_function事件
  */
-->setCloseErrorRegister(true)
+->setErrorRegister(false)
 
 /**
  * 设置接收运行中的错误或者异常(方式1)
@@ -124,16 +106,8 @@ $task->setDaemon(true)
  */
 ->setErrorRegisterNotify('https://www.gaojiufeng.cn/rev.php')
 
-// 添加任务定时执行闭包函数
-->addFunc(function () {
-    echo 'Success3' . PHP_EOL;
-}, 'fucn', 20, 1)   
-
 // 添加任务定时执行类的方法
 ->addClass(Sms::class, 'send', 'sendsms1', 20, 1)   
-
-// 添加任务定时执行命令
-->addCommand('php /www/wwwroot/learn/curl.php','cmd',6,1)
 
 // 启动任务
 ->start();
