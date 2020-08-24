@@ -6,11 +6,7 @@ use EasyTask\Error;
 use EasyTask\Helper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
-use \Event as Event;
-use \EventBase as EventBase;
-use \EventConfig as EventConfig;
 use \Exception as Exception;
-use \Throwable as Throwable;
 
 /**
  * Class Kernel
