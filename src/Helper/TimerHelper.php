@@ -42,9 +42,17 @@ class TimerHelper
         }
     }
 
-    public static function nextTime($time)
+    /**
+     * 获取下一轮执行时间
+     * @param mixed $time 时间
+     * @param mixed $execTime 执行时间
+     */
+    public static function getNextExecTime($time, $execTime = 0)
     {
-
+        if (is_int($time))
+        {
+            return $execTime ? $execTime + $time : time() + $time;
+        }
     }
 
     /**
