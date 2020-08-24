@@ -109,6 +109,15 @@ class Helper
     }
 
     /**
+     * 是否Cli模式
+     * @return bool
+     */
+    public static function isCli()
+    {
+        return PHP_SAPI === 'cli';
+    }
+
+    /**
      * 开启异步信号
      */
     public static function open_async_signals()
