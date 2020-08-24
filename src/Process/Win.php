@@ -1,7 +1,6 @@
 <?php
 namespace EasyTask\Process;
 
-use EasyTask\Wts;
 use EasyTask\Wpc;
 use EasyTask\Env;
 use EasyTask\Helper;
