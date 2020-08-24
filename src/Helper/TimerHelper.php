@@ -152,6 +152,11 @@ class TimerHelper
             ]
         ];
 
+        if (Helper::isCli())
+        {
+            Timer::remove($timerId);
+        }
+
         //定时器添加到队列
         $queue = new Cache();
         $queueName = 'easy_task_list';
