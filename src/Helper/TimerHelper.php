@@ -33,7 +33,7 @@ class TimerHelper
             }
             if (!CronExpression::isValidExpression($time))
             {
-                throw new Exception("$time is not a valid CRON expression");
+                throw new Exception("the time $time is not a valid cron expression");
             }
         }
         else
