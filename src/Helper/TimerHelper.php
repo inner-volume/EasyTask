@@ -11,7 +11,7 @@ use Exception;
 class TimerHelper
 {
     /**
-     * 检查时间是否合法
+     * 检查时间
      * @param mixed $time
      * @throws Exception
      */
@@ -38,13 +38,22 @@ class TimerHelper
         }
         else
         {
-            throw new Exception('time parameter is an unsupported type');
+            throw new Exception('the time parameter does not support this type');
         }
     }
 
     public static function nextTime($time)
     {
 
+    }
+
+    public static function canUseCron()
+    {
+        $class = '';
+        if(!class_exists($class))
+        {
+
+        }
     }
 
     /**
