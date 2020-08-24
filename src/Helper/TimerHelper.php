@@ -3,6 +3,7 @@ namespace EasyTask\Helper;
 
 use EasyTask\Cache;
 use EasyTask\Helper;
+use EasyTask\Timer;
 use Exception;
 
 /**
@@ -99,6 +100,14 @@ class TimerHelper
             'next_time' => self::getNextTime($time),
             'persistent' => $persistent
         ];
+        if (Helper::isCli())
+        {
+            Timer::set($tid, $task);
+        }
+        else
+        {
+            self::addTaskByQueue($task);
+        }
     }
 
     /**
@@ -112,19 +121,17 @@ class TimerHelper
         //目录构建
         FileHelper::initAllPath();
 
-        //构建队列信息
-        $timerId = uniqid();
-        $data = [
-            'act' => 'add',
-            'info' => $task
-        ];
-
-        //定时器添加到队列
+        //添加到队列
         $queue = new Cache();
         $queueName = 'easy_task_list';
-        $isPush = $queue->lPush($queueName, json_encode($data));
-
-        return $isPush ? $timerId : 0;
+        $isPush = $queue->lPush($queueName, json_encode([
+            'act' => 'add',
+            'info' => $task
+        ]));
+        if (!$isPush)
+        {
+            throw new Exception('failed to push task to queue');
+        }
     }
 
     /**
