@@ -29,7 +29,7 @@ class TimerHelper
         {
             if (!static::canUseCron())
             {
-                throw new Exception('use CRON expression php version must be greater than 7.1');
+                throw new Exception('if the time parameter needs to be passed cron, please use composer to install dragonmantank/cron-expression');
             }
             if (!CronExpression::isValidExpression($time))
             {
@@ -47,13 +47,14 @@ class TimerHelper
 
     }
 
+    /**
+     * 是否支持Cron
+     * @return bool
+     */
     public static function canUseCron()
     {
         $class = '';
-        if(!class_exists($class))
-        {
-
-        }
+        return class_exists($class);
     }
 
     /**
