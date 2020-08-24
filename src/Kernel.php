@@ -19,6 +19,12 @@ use \Throwable as Throwable;
 class Kernel
 {
     /**
+     * 任务列表
+     * @var array
+     */
+    private $tasks;
+
+    /**
      * 进程实例
      * @var Win|Linux
      */
