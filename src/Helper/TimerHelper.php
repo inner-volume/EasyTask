@@ -82,6 +82,7 @@ class TimerHelper
      * @param $alas
      * @param int $time
      * @param bool $persistent
+     * @return string
      * @throws Exception
      */
     public static function addTask($class, $func, $alas, $time = 1, $persistent = true)
