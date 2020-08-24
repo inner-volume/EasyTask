@@ -52,4 +52,22 @@ class Lock
         fclose($fp);
         return $call_back;
     }
+
+    /**
+     * 执行状态
+     */
+    public function executeStatus()
+    {
+        $file = $this->file;
+        if (!file_exists($file))
+        {
+            return false;
+        }
+        $fp = fopen($file, "r");
+        if (flock($fp, LOCK_EX | LOCK_NB))
+        {
+            return false;
+        }
+        return true;
+    }
 }

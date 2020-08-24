@@ -12,7 +12,7 @@ use \Throwable as Throwable;
  * Class Win
  * @package EasyTask\Process
  */
-class Win
+class Win extends Process
 {
     /**
      * 进程名称
@@ -32,64 +32,16 @@ class Win
      */
     protected $wpcContainer;
 
-
     /**
-     * 开始运行
-     * @throws \Exception
+     * 开始运行的检查
+     * @throws Exception
      */
     public function checkForRun()
     {
         if (!Env::get('phpPath'))
         {
-            throw new \Exception('please use setPhpPath api to set phpPath');
+            throw new Exception('please use setPhpPath api to set phpPath');
         }
-        //构建基础
-        $this->make();
-
-        //启动检查
-        $this->checkForRun();
-
-        //进程分配
-        $func = function ($name) {
-            $this->executeByProcessName($name);
-        };
-        if (!$this->wts->allocateProcess($func))
-        {
-            Helper::showError('unexpected error, process has been allocated');
-        }
-    }
-
-    /**
-     * 启动检查
-     */
-    protected function checkForRun()
-    {
-        if (!Env::get('phpPath'))
-        {
-            Helper::showError('please use setPhpPath api to set phpPath');
-        }
-        if (!$this->chkCanStart())
-        {
-            Helper::showError('please close the running process first');
-        }
-    }
-
-    /**
-     * 检查进程
-     * @return bool
-     */
-    protected function chkCanStart()
-    {
-        $workerList = $this->workerList;
-        foreach ($workerList as $name => $item)
-        {
-            $status = $this->wts->getProcessStatus($name);
-            if (!$status)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
