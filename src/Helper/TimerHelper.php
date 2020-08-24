@@ -136,7 +136,7 @@ class TimerHelper
     }
 
     /**
-     * 通知队列移除定时器
+     * 移除定时器
      * @param string $timerId
      * @return bool
      * @throws Exception
@@ -172,10 +172,26 @@ class TimerHelper
     /**
      * 通知队列移除定时器
      * @param string $timerId
+     * @throws Exception
      */
     public static function removeTaskByQueue($timerId)
     {
+        //目录构建
+        FileHelper::initAllPath();
 
+        //添加到队列
+        $queue = new Cache();
+        $queueName = 'easy_task_list';
+        $isPush = $queue->lPush($queueName, json_encode([
+            'act' => 'remove',
+            'info' => [
+                'id' => $timerId
+            ]
+        ]));
+        if (!$isPush)
+        {
+            throw new Exception('failed to push task to queue');
+        }
     }
 
     /**
