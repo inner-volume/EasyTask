@@ -12,13 +12,13 @@ use \Throwable as Throwable;
  * Class Win
  * @package EasyTask\Process
  */
-class Win extends Process
+class Win
 {
     /**
-     * Wts服务
-     * @var Wts
+     * 进程名称
+     * @var string
      */
-    protected $wts;
+    protected $name;
 
     /**
      * 虚拟进程列表
@@ -32,21 +32,17 @@ class Win extends Process
      */
     protected $wpcContainer;
 
-    /**
-     * 构造函数
-     * @param array $taskList
-     */
-    public function __construct($taskList)
-    {
-        $this->wts = new Wts();
-        parent::__construct($taskList);
-    }
 
     /**
      * 开始运行
+     * @throws \Exception
      */
-    public function start()
+    public function checkForRun()
     {
+        if (!Env::get('phpPath'))
+        {
+            throw new \Exception('please use setPhpPath api to set phpPath');
+        }
         //构建基础
         $this->make();
 

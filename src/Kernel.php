@@ -49,7 +49,8 @@ class Kernel
         //异常注册
         if (Env::get('error_register')) Error::register();
 
-
+        //启动进程
+        $this->instance->start();
     }
 
     /**
