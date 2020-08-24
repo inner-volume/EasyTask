@@ -47,21 +47,14 @@ class TimerHelper
 
     /**
      * 添加定时器到队列
-     * @param string $class 类名称
-     * @param string $func 方法名称
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param bool $persistent 持续执行
+     * @param array $task 任务
      * @return int
      * @throws Exception
      */
-    public static function addTask($class, $func, $alas, $time = 1, $persistent = true)
+    public static function addTaskByQueue($task)
     {
         //目录构建
         FileHelper::initAllPath();
-
-        //检查时间
-        TimerHelper::checkTime($time);
 
         //构建队列信息
         $timerId = uniqid();

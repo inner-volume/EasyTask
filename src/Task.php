@@ -200,6 +200,7 @@ class Task
      */
     public function addTask($class, $func, $alas, $time = 1, $persistent = true)
     {
+        TimerHelper::checkTime($time);
         if (!class_exists($class))
         {
             throw new Exception("class {$class} is not exist");
@@ -216,7 +217,16 @@ class Task
             {
                 throw new Exception("class {$class}'s func {$func} must public");
             }
-            return TimerHelper::addTask($class, $func, $alas, $time, $persistent);
+            $tid = uniqid();
+            $task = [
+                'id' => $tid,
+                'func' => $func,
+                'alas' => $alas,
+                'time' => $time,
+                'class' => $class,
+                'persistent' => $persistent
+            ]
+            return TimerHelper::addTask($task);
         }
         catch (ReflectionException $exception)
         {
