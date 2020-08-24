@@ -169,6 +169,10 @@ class TimerHelper
         return $isPush ? true : false;
     }
 
+    /**
+     * 通知队列移除定时器
+     * @param string $timerId
+     */
     public static function removeTaskByQueue($timerId)
     {
 
