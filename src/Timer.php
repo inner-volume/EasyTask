@@ -25,6 +25,14 @@ class Timer
     }
 
     /**
+     * Get
+     */
+    public static function get()
+    {
+
+    }
+
+    /**
      * Clear
      */
     public static function clear()
