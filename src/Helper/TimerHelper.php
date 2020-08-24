@@ -188,6 +188,10 @@ class TimerHelper
      */
     public static function clearTask($exit = false)
     {
+        if(Helper::isCli())
+        {
+            Timer::clear();
+        }
         //构建队列信息
         $data = [
             'act' => 'clear',
