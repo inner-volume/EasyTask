@@ -33,12 +33,6 @@ class Win extends Process
     protected $wpcContainer;
 
     /**
-     * AutoRec事件
-     * @var bool
-     */
-    protected $autoRecEvent;
-
-    /**
      * 构造函数
      * @param array $taskList
      */
