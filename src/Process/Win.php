@@ -39,16 +39,6 @@ class Win extends Process
     protected $autoRecEvent;
 
     /**
-     * 构造函数
-     * @param array $taskList
-     */
-    public function __construct($taskList)
-    {
-        $this->wts = new Wts();
-        parent::__construct($taskList);
-    }
-
-    /**
      * 开始运行
      */
     public function start()

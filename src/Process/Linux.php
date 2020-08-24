@@ -13,22 +13,12 @@ use \Throwable as Throwable;
 class Linux extends Process
 {
     /**
-     * 进程执行记录
-     * @var array
-     */
-    protected $processList = [];
-
-    /**
      * 构造函数
      * @var array $taskList
      */
     public function __construct($taskList)
     {
-        parent::__construct($taskList);
-        if (Env::get('canAsync'))
-        {
-            Helper::openAsyncSignal();
-        }
+        Helper::open_async_signals();
     }
 
     /**

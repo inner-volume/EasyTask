@@ -4,6 +4,7 @@ namespace EasyTask\Process;
 use EasyTask\Env;
 use EasyTask\Error;
 use EasyTask\Helper;
+use EasyTask\Timer;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
@@ -24,7 +25,7 @@ abstract class Process
      */
     public function __construct()
     {
-
+        //$this->tasks[] = Timer::get();
     }
 
     /**
