@@ -13,11 +13,18 @@ use \Throwable as Throwable;
 class Linux extends Process
 {
     /**
+     * 进程执行记录
+     * @var array
+     */
+    protected $processList = [];
+
+    /**
      * 构造函数
      * @var array $taskList
      */
-    public function __construct()
+    public function __construct($taskList)
     {
+        parent::__construct($taskList);
         if (Env::get('canAsync'))
         {
             Helper::openAsyncSignal();
@@ -256,6 +263,9 @@ class Linux extends Process
 
             //信号调度
             if (!Env::get('canAsync')) pcntl_signal_dispatch();
+
+            //检查进程
+            if (Env::get('canAutoRec')) $this->processStatus();
         }
     }
 
@@ -277,6 +287,14 @@ class Linux extends Process
             {
                 //标记状态
                 $item['status'] = 'stop';
+
+                //进程退出,重新fork
+                if (Env::get('canAutoRec'))
+                {
+                    $this->forkItemExec($item['item']);
+                    Helper::writeTypeLog("the worker {$item['name']}(pid:{$pid}) is stop,try to fork a new one");
+                    unset($this->processList[$key]);
+                }
             }
 
             //记录状态

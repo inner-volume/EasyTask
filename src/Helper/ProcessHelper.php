@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask\Helper;
 
+use EasyTask\Env;
 use EasyTask\Exception\ErrorException;
 use EasyTask\Helper;
 use EasyTask\Process\Linux;
@@ -24,27 +25,11 @@ class ProcessHelper
     }
 
     /**
-     * 获取进程实例
-     * @return Win|Linux
+     * 检查是否可写标准输出日志
+     * @return bool
      */
-    public static function getInstance()
+    public static function canWriteStdOut()
     {
-        return Helper::isWin() ? new Win() : new Linux();
-    }
-
-    /**
-     * 格式化异常信息
-     * @param string $message
-     * @param string $type
-     * @return string
-     */
-    public static function formatMessage($message, $type = 'error')
-    {
-        //参数
-        $pid = getmypid();
-        $date = date('Y/m/d H:i:s', time());
-
-        //组装
-        return $date . " [$type] : " . $message . " (pid:$pid)" . PHP_EOL;
+        return Env::get('daemon') && !Env::get('close_std_out');
     }
 }

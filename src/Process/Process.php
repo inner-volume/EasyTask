@@ -1,37 +1,161 @@
 <?php
 namespace EasyTask\Process;
 
-use EasyTask\Lock;
-use EasyTask\Wts;
-use EasyTask\Wpc;
 use EasyTask\Env;
+use EasyTask\Error;
 use EasyTask\Helper;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
 /**
- * Class Win
+ * Class Process
  * @package EasyTask\Process
  */
-class Process
+abstract class Process
 {
     /**
-     * 开始运行的检查
-     * @throws Exception
+     * 任务列表
+     * @var array
      */
-    public function checkForRun()
+    protected $tasks;
+
+    /**
+     * 构造函数
+     */
+    public function __construct()
     {
-        //Win32检查PHP二进制目录
-        if (!Env::get('phpPath') && Helper::isWin())
+
+    }
+
+    /**
+     * 开始运行
+     */
+    abstract public function start();
+
+    /**
+     * 运行状态
+     */
+    public function status()
+    {
+        $this->masterWaitExit();
+    }
+
+    /**
+     * 停止运行
+     * @param bool $force 是否强制
+     */
+    public function stop($force = false)
+    {
+    }
+
+    /**
+     * 执行任务代码
+     * @param array $item
+     * @throws
+     */
+    protected function execute($item)
+    {
+        //Daemon
+        $daemon = Env::get('daemon');
+
+        //Std_Start
+        $canWriteStdOut = Helper\ProcessHelper::canWriteStdOut();
+        if ($canWriteStdOut) ob_start();
+        try
         {
-            throw new Exception('please use setPhpPath api to set phpPath');
+            //静态
+            call_user_func([$item['class'], $item['func']]);
+
+            //非静态
+            $object = new $item['class']();
+            call_user_func([$object, $item['func']]);
+
+        }
+        catch (Exception $exception)
+        {
+            if (Helper::isWin())
+            {
+                Helper::showException($exception, 'exception', !$daemon);
+            }
+            else
+            {
+                if (!$daemon) throw $exception;
+                Helper\FileHelper::writeLog(Helper\TextHelper::formatException($exception));
+            }
+        }
+        catch (Throwable $exception)
+        {
+            if (Helper::isWin())
+            {
+                Helper::showException($exception, 'exception', !$daemon);
+            }
+            else
+            {
+                if (!$daemon) throw $exception;
+                Helper\FileHelper::writeLog(Helper\TextHelper::formatException($exception));
+            }
         }
 
-        //检查Manager进程
-        $lock = new Lock('manage');
-        if ($lock->executeStatus())
+        //Std_End
+        if ($canWriteStdOut)
         {
-            throw new Exception('please close the running process first');
+            $stdChar = ob_get_contents();
+            if ($stdChar) Helper\FileHelper::saveStdChar($stdChar);
+            ob_end_clean();
         }
+
+        //检查Manage进程存活
+        $this->checkDaemonForExit($item);
+    }
+
+    /**
+     * 执行任务
+     * @param array $item
+     * @throws Throwable
+     */
+    protected function executeInvoker($item)
+    {
+        if ($item['time'] === 0)
+        {
+            $this->invokerByDirect($item);
+        }
+        else
+        {
+            Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
+        }
+    }
+
+    /**
+     * 普通执行
+     * @param array $item
+     * @throws Throwable
+     */
+    protected function invokerByDirect($item)
+    {
+        $this->execute($item);
+        exit;
+    }
+
+    /**
+     * 主进程等待结束退出
+     */
+    protected function masterWaitExit()
+    {
+        $i = $this->taskCount + 30;
+        while ($i--)
+        {
+            //接收汇报
+            $this->commander->waitCommandForExecute(1, function ($report) {
+                if ($report['type'] == 'status' && $report['status'])
+                {
+                    Helper::showTable($report['status']);
+                }
+            }, $this->startTime);
+
+            //CPU休息
+            Helper::sleep(1);
+        }
+        Helper::showInfo('this cpu is too busy,please use status command try again');
+        exit;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask\Process;
 
+use EasyTask\Wts;
 use EasyTask\Wpc;
 use EasyTask\Env;
 use EasyTask\Helper;
@@ -14,10 +15,10 @@ use \Throwable as Throwable;
 class Win extends Process
 {
     /**
-     * 进程名称
-     * @var string
+     * Wts服务
+     * @var Wts
      */
-    protected $name;
+    protected $wts;
 
     /**
      * 虚拟进程列表
@@ -30,6 +31,76 @@ class Win extends Process
      * @var array
      */
     protected $wpcContainer;
+
+    /**
+     * AutoRec事件
+     * @var bool
+     */
+    protected $autoRecEvent;
+
+    /**
+     * 构造函数
+     * @param array $taskList
+     */
+    public function __construct($taskList)
+    {
+        $this->wts = new Wts();
+        parent::__construct($taskList);
+    }
+
+    /**
+     * 开始运行
+     */
+    public function start()
+    {
+        //构建基础
+        $this->make();
+
+        //启动检查
+        $this->checkForRun();
+
+        //进程分配
+        $func = function ($name) {
+            $this->executeByProcessName($name);
+        };
+        if (!$this->wts->allocateProcess($func))
+        {
+            Helper::showError('unexpected error, process has been allocated');
+        }
+    }
+
+    /**
+     * 启动检查
+     */
+    protected function checkForRun()
+    {
+        if (!Env::get('phpPath'))
+        {
+            Helper::showError('please use setPhpPath api to set phpPath');
+        }
+        if (!$this->chkCanStart())
+        {
+            Helper::showError('please close the running process first');
+        }
+    }
+
+    /**
+     * 检查进程
+     * @return bool
+     */
+    protected function chkCanStart()
+    {
+        $workerList = $this->workerList;
+        foreach ($workerList as $name => $item)
+        {
+            $status = $this->wts->getProcessStatus($name);
+            if (!$status)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 跟进进程名称执行任务
@@ -240,6 +311,7 @@ class Win extends Process
             //执行任务
             $this->execute($item);
         }
+        exit;
     }
 
     /**
@@ -294,17 +366,42 @@ class Win extends Process
                         break;
                 }
             }, $this->startTime);
+
+            //检查进程
+            if (Env::get('canAutoRec'))
+            {
+                $this->getReport(true);
+                if ($this->autoRecEvent)
+                {
+                    $this->autoRecEvent = false;
+                }
+            }
         }
     }
 
     /**
      * 获取报告
+     * @param bool $output
      * @return array
      * @throws
      */
-    protected function getReport()
+    protected function getReport($output = false)
     {
-        return $this->workerStatus($this->taskCount);
+        $report = $this->workerStatus($this->taskCount);
+        foreach ($report as $key => $item)
+        {
+            if ($item['status'] == 'stop' && Env::get('canAutoRec'))
+            {
+                $this->joinWpcContainer($this->forkItemExec());
+                if ($output)
+                {
+                    $this->autoRecEvent = true;
+                    Helper::showInfo("the worker {$item['name']}(pid:{$item['pid']}) is stop,try to fork a new one");
+                }
+            }
+        }
+
+        return $report;
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace EasyTask\Mode;
+namespace EasyTask;
 
 use EasyTask\Env;
 use EasyTask\Error;
@@ -14,12 +14,6 @@ use \Exception as Exception;
  */
 class Kernel
 {
-    /**
-     * 任务列表
-     * @var array
-     */
-    private $tasks;
-
     /**
      * 进程实例
      * @var Win|Linux
@@ -49,8 +43,8 @@ class Kernel
         //异常注册
         if (Env::get('error_register')) Error::register();
 
-        //启动检查
-        $this->instance->checkForRun();
+        //启动进程
+        $this->instance->start();
     }
 
     /**
@@ -58,7 +52,7 @@ class Kernel
      */
     public function status()
     {
-
+        $this->instance->status();
     }
 
     /**
@@ -67,24 +61,6 @@ class Kernel
      */
     public function stop($force = false)
     {
-
-    }
-
-    /**
-     * 主进程
-     * @return mixed
-     */
-    public function master()
-    {
-
-    }
-
-    /**
-     * 管理进程
-     * @return mixed
-     */
-    public function manager()
-    {
-
+        $this->instance->stop($force = false);
     }
 }
