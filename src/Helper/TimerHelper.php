@@ -45,6 +45,11 @@ class TimerHelper
         }
     }
 
+    public static function addTask()
+    {
+
+    }
+
     /**
      * 添加定时器到队列
      * @param array $task 任务
@@ -60,14 +65,7 @@ class TimerHelper
         $timerId = uniqid();
         $data = [
             'act' => 'add',
-            'info' => [
-                'id' => $timerId,
-                'func' => $func,
-                'alas' => $alas,
-                'time' => $time,
-                'class' => $class,
-                'persistent' => $persistent
-            ]
+            'info' => $task
         ];
 
         //定时器添加到队列

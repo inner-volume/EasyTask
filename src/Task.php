@@ -225,8 +225,8 @@ class Task
                 'time' => $time,
                 'class' => $class,
                 'persistent' => $persistent
-            ]
-            return TimerHelper::addTask($task);
+            ];
+            return TimerHelper::addTaskByQueue($task);
         }
         catch (ReflectionException $exception)
         {
