@@ -1,10 +1,10 @@
 <?php
-namespace EasyTask\Queue\Driver;
+namespace EasyTask\Cache\Driver;
 
 use EasyTask\Env;
 use EasyTask\Helper\FileHelper;
 use EasyTask\Lock;
-use EasyTask\Queue\Driver;
+use EasyTask\Cache\Driver;
 use Exception;
 
 /**

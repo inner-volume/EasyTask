@@ -1,7 +1,7 @@
 <?php
-namespace EasyTask\Queue\Driver;
+namespace EasyTask\Cache\Driver;
 
-use EasyTask\Queue\Driver;
+use EasyTask\Cache\Driver;
 
 /**
  * Class File

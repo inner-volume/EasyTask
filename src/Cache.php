@@ -1,10 +1,10 @@
 <?php
 namespace EasyTask;
 
-use EasyTask\Queue\Driver;
+use EasyTask\Cache\Driver;
 use Exception;
 
-class Queue
+class Cache
 {
     /**
      * @var object 操作句柄

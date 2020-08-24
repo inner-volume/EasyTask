@@ -1,10 +1,7 @@
 <?php
 namespace EasyTask\Helper;
 
-use EasyTask\Env;
-use EasyTask\Lock;
-use EasyTask\Pipe;
-use EasyTask\Queue;
+use EasyTask\Cache;
 use Exception;
 
 /**
@@ -95,7 +92,7 @@ class TimerHelper
         ];
 
         //定时器添加到队列
-        $queue = new Queue();
+        $queue = new Cache();
         $queueName = 'easy_task_list';
         $isPush = $queue->lPush($queueName, json_encode($data));
 
@@ -120,7 +117,7 @@ class TimerHelper
         ];
 
         //定时器添加到队列
-        $queue = new Queue();
+        $queue = new Cache();
         $queueName = 'easy_task_list';
         $isPush = $queue->lPush($queueName, json_encode($data));
 
@@ -144,7 +141,7 @@ class TimerHelper
         ];
 
         //定时器添加到队列
-        $queue = new Queue();
+        $queue = new Cache();
         $queueName = 'easy_task_list';
         $isPush = $queue->lPush($queueName, json_encode($data));
 

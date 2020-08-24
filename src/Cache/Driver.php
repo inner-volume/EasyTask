@@ -1,5 +1,5 @@
 <?php
-namespace EasyTask\Queue;
+namespace EasyTask\Cache;
 
 /**
  * Class Driver
