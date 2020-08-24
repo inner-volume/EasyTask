@@ -156,6 +156,10 @@ class TimerHelper
         {
             Timer::remove($timerId);
         }
+        else
+        {
+
+        }
 
         //定时器添加到队列
         $queue = new Cache();
@@ -163,6 +167,11 @@ class TimerHelper
         $isPush = $queue->lPush($queueName, json_encode($data));
 
         return $isPush ? true : false;
+    }
+
+    public static function removeTaskByQueue()
+    {
+
     }
 
     /**
