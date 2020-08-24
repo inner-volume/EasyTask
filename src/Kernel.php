@@ -25,14 +25,6 @@ class Kernel
     private $tasks = [];
 
     /**
-     * 构造函数
-     */
-    public function __construct()
-    {
-
-    }
-
-    /**
      * 开始运行
      * @throws Exception
      */
