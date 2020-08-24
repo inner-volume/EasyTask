@@ -115,25 +115,19 @@ abstract class Process
      */
     protected function executeInvoker($item)
     {
-        if ($item['time'] === 0)
+        if ($item['time'] === 0 || Env::get('mode') === 2)
         {
-            $this->invokerByDirect($item);
+            $this->execute($item);
+            exit();
         }
         else
         {
-            Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
+            while (true)
+            {
+                Helper::sleep($item['time']);
+                $this->execute($item);
+            }
         }
-    }
-
-    /**
-     * 普通执行
-     * @param array $item
-     * @throws Throwable
-     */
-    protected function invokerByDirect($item)
-    {
-        $this->execute($item);
-        exit;
     }
 
     /**

@@ -36,12 +36,6 @@ class Linux extends Process
      */
     public function start()
     {
-        //发送命令
-        $this->commander->send([
-            'type' => 'start',
-            'msgType' => 2
-        ]);
-
         //异步处理
         if (Env::get('daemon'))
         {
@@ -142,7 +136,7 @@ class Linux extends Process
         //输出信息
         $item['ppid'] = posix_getppid();
         $text = "this worker {$item['alas']}";
-        Helper::writeTypeLog("$text is start");
+        Helper\FileHelper::writeTypeLog("$text is start");
 
         //进程标题
         Helper::cli_set_process_title($item['alas']);
@@ -154,32 +148,6 @@ class Linux extends Process
 
         //执行任务
         $this->executeInvoker($item);
-    }
-
-    /**
-     * 通过闹钟信号执行
-     * @param array $item
-     */
-    protected function invokeByDefault($item)
-    {
-        //安装信号管理
-        pcntl_signal(SIGALRM, function () use ($item) {
-            pcntl_alarm($item['time']);
-            $this->execute($item);
-        }, false);
-
-        //发送闹钟信号
-        pcntl_alarm($item['time']);
-
-        //挂起进程(同步调用信号,异步CPU休息)
-        while (true)
-        {
-            //CPU休息
-            Helper::sleep(1);
-
-            //信号处理(同步/异步)
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
-        }
     }
 
     /**
