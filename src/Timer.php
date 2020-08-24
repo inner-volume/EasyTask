@@ -23,4 +23,12 @@ class Timer
         //todo() exec_time();
         self::$collection[$timerId] = $task;
     }
+
+    /**
+     * Clear
+     */
+    public static function clear()
+    {
+        self::$collection = [];
+    }
 }
