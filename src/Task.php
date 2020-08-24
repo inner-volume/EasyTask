@@ -252,15 +252,6 @@ class Task
      */
     public function start()
     {
-        //模式检查
-        if (!Helper::isCli())
-        {
-            throw new Exception('please use cli mode to start');
-        }
-
-        //异常注册
-        if (Env::get('error_register')) Error::register();
-
         //目录构建
         FileHelper::initAllPath();
 
