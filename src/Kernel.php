@@ -21,14 +21,14 @@ class Kernel
     /**
      * @var
      */
-    private $hander = null;
+    private $instance = null;
 
     /**
      * 构造函数
      */
     public function __construct()
     {
-        $this->hander = Helper::isWin() ? new Win():new Linux();
+        $this->instance = Helper::isWin() ? new Win():new Linux();
     }
 
     /**
