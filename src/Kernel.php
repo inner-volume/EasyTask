@@ -4,6 +4,8 @@ namespace EasyTask\Mode;
 use EasyTask\Env;
 use EasyTask\Error;
 use EasyTask\Helper;
+use EasyTask\Process\Linux;
+use EasyTask\Process\Win;
 use \Event as Event;
 use \EventBase as EventBase;
 use \EventConfig as EventConfig;
@@ -16,14 +18,17 @@ use \Throwable as Throwable;
  */
 class Kernel
 {
-
+    /**
+     * @var
+     */
+    private $hander = null;
 
     /**
      * 构造函数
      */
     public function __construct()
     {
-        $this->startTime = time();
+        $this->hander = Helper::isWin() ? new Win():new Linux();
     }
 
     /**
@@ -61,19 +66,10 @@ class Kernel
     }
 
     /**
-     * 管理进程(同步:分发进程+响应状态 异步:响应状态+创建调度进程)
+     * 管理进程
      * @return mixed
      */
     public function manager()
-    {
-
-    }
-
-    /**
-     * 调度进程(异步:分发进程)
-     * @return mixed
-     */
-    public function scheduler()
     {
 
     }
