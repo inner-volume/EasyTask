@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask\Process;
 
+use EasyTask\Lock;
 use EasyTask\Wts;
 use EasyTask\Wpc;
 use EasyTask\Env;
@@ -27,5 +28,10 @@ class Process
         }
 
         //检查Manager进程
+        $lock = new Lock('manage');
+        if ($lock->executeStatus())
+        {
+            throw new Exception('please close the running process first');
+        }
     }
 }
