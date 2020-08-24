@@ -13,7 +13,7 @@ use \Exception as Exception;
 use \Throwable as Throwable;
 
 /**
- * Class Process
+ * Class Kernel
  * @package EasyTask\Process
  */
 class Kernel
