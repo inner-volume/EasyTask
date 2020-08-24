@@ -169,7 +169,7 @@ class TimerHelper
         return $isPush ? true : false;
     }
 
-    public static function removeTaskByQueue()
+    public static function removeTaskByQueue($timerId)
     {
 
     }
