@@ -22,11 +22,11 @@ class TimerHelper
     {
         if (is_int($time))
         {
-            if ($time < 0) throw new Exception('time must be greater than or equal to 0');
+            if ($time < 0) throw new Exception('the time parameter must be a positive number');
         }
         elseif (is_float($time))
         {
-            if (!static::fcsdxcanUseEvent()) throw new Exception('please install php_event.(dll/so) extend for using milliseconds');
+            throw new Exception('the time parameter does not support decimals');
         }
         elseif (is_string($time))
         {
@@ -45,14 +45,35 @@ class TimerHelper
         }
     }
 
-    /**
-     * 添加任务
-     * @param array $task 任务
-     * @return
-     */
-    public static function addTask($task)
+    public static function nextTime($time)
     {
 
+    }
+
+    /**
+     * 添加任务
+     * @param $class
+     * @param $func
+     * @param $alas
+     * @param int $time
+     * @param bool $persistent
+     * @throws Exception
+     */
+    public static function addTask($class, $func, $alas, $time = 1, $persistent = true)
+    {
+        //检查时间
+        self::checkTime($time);
+
+        //创建任务Id
+        $tid = uniqid();
+        $task = [
+            'id' => $tid,
+            'func' => $func,
+            'alas' => $alas,
+            'time' => $time,
+            'class' => $class,
+            'persistent' => $persistent
+        ];
     }
 
     /**

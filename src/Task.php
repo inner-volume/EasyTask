@@ -200,7 +200,6 @@ class Task
      */
     public function addTask($class, $func, $alas, $time = 1, $persistent = true)
     {
-        TimerHelper::checkTime($time);
         if (!class_exists($class))
         {
             throw new Exception("class {$class} is not exist");
