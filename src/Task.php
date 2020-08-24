@@ -247,17 +247,8 @@ class Task
     }
 
     /**
-     * 获取进程管理实例
-     * @return  Win | Linux
-     */
-    private function getProcess()
-    {
-        return Env::get('currentOs') == 1 ? (new Win()) : new Linux();
-    }
-
-    /**
      * 开始运行
-     * @throws
+     * @throws Exception
      */
     public function start()
     {
