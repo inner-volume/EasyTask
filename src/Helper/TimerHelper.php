@@ -108,6 +108,7 @@ class TimerHelper
         {
             self::addTaskByQueue($task);
         }
+        return $tid;
     }
 
     /**
