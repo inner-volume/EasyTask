@@ -113,7 +113,6 @@ class TimerHelper
     /**
      * 通过队列添加任务
      * @param array $task 任务
-     * @return int
      * @throws Exception
      */
     public static function addTaskByQueue($task)
