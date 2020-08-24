@@ -44,21 +44,22 @@ class TimerHelper
     }
 
     /**
-     * 获取下一轮执行时间
+     * 获取执行时间
      * @param mixed $time 时间
-     * @param mixed $execTime 执行时间
+     * @param mixed $nextTime 原执行时间
      * @return int
      */
-    public static function getNextExecTime($time, $execTime = 0)
+    public static function getNextTime($time, $nextTime = 0)
     {
         if (is_int($time))
         {
-            return $execTime ? $execTime + $time : time() + $time;
+            return $nextTime ? $nextTime + $time : time() + $time;
         }
         else
         {
+            $nextTime = $nextTime ? date('Y-m-d H:i:s', $nextTime) : 'now';
             $cronExpression = CronExpression::factory($time);
-            $nextExecDate = $cronExpression->getNextRunDate('now')->format('Y-m-d H:i:s');
+            $nextExecDate = $cronExpression->getNextRunDate($nextTime)->format('Y-m-d H:i:s');
             return $nextExecDate ? strtotime($nextExecDate) : 0;
         }
     }
@@ -95,6 +96,7 @@ class TimerHelper
             'alas' => $alas,
             'time' => $time,
             'class' => $class,
+            'next_time' => self::getNextTime($time),
             'persistent' => $persistent
         ];
     }
