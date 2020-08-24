@@ -39,12 +39,12 @@ class Timer
     }
 
     /**
-     *
+     * remove
      * @param string $timerId
      */
     public static function remove($timerId)
     {
-
+        unset(self::$collection[$timerId]);
     }
 
     /**
