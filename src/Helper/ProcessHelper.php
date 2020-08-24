@@ -2,6 +2,9 @@
 namespace EasyTask\Helper;
 
 use EasyTask\Exception\ErrorException;
+use EasyTask\Helper;
+use EasyTask\Process\Linux;
+use EasyTask\Process\Win;
 use Exception;
 
 /**
@@ -21,19 +24,12 @@ class ProcessHelper
     }
 
     /**
-     * 格式化异常信息
-     * @param ErrorException|Exception
-     * @param string $type
-     * @return string
+     * 获取进程实例
+     * @return Win|Linux
      */
-    public static function formatException($exception, $type = 'exception')
+    public static function getInstance()
     {
-        //参数
-        $pid = getmypid();
-        $date = date('Y/m/d H:i:s', time());
-
-        //组装
-        return $date . " [$type] : errStr:" . $exception->getMessage() . ',errFile:' . $exception->getFile() . ',errLine:' . $exception->getLine() . " (pid:$pid)" . PHP_EOL;
+        return Helper::isWin() ? new Win() : new Linux();
     }
 
     /**

@@ -19,10 +19,18 @@ use \Throwable as Throwable;
 class Kernel
 {
     /**
-     * 任务列表
-     * @var array
+     * 进程实例
+     * @var Win|Linux
      */
-    private $tasks = [];
+    private $instance;
+
+    /**
+     * Kernel constructor.
+     */
+    public function __construct()
+    {
+        $this->instance = Helper::isWin() ? new Win() : new Linux();
+    }
 
     /**
      * 开始运行
@@ -38,6 +46,8 @@ class Kernel
 
         //异常注册
         if (Env::get('error_register')) Error::register();
+
+
     }
 
     /**
