@@ -131,7 +131,7 @@ class TimerHelper
         ]));
         if (!$isPush)
         {
-            throw new Exception('failed to push task to queue');
+            throw new Exception('failed to push task command to queue');
         }
     }
 
@@ -176,13 +176,13 @@ class TimerHelper
         ]));
         if (!$isPush)
         {
-            throw new Exception('failed to push task to queue');
+            throw new Exception('failed to push task command to queue');
         }
     }
 
     /**
      * 清空任务
-     * @param false $exit
+     * @param bool $exit
      * @return bool
      * @throws Exception
      */
@@ -221,7 +221,7 @@ class TimerHelper
         ]));
         if (!$isPush)
         {
-            throw new Exception('failed to push task to queue');
+            throw new Exception('failed to push task command to queue');
         }
     }
 }
