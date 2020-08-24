@@ -143,30 +143,16 @@ class TimerHelper
      */
     public static function removeTask($timerId)
     {
-        //构建队列信息
-        $timerId = uniqid();
-        $data = [
-            'act' => 'remove',
-            'info' => [
-                'id' => $timerId
-            ]
-        ];
-
         if (Helper::isCli())
         {
             Timer::remove($timerId);
         }
         else
         {
-
+            self::removeTaskByQueue($timerId);
         }
 
-        //定时器添加到队列
-        $queue = new Cache();
-        $queueName = 'easy_task_list';
-        $isPush = $queue->lPush($queueName, json_encode($data));
-
-        return $isPush ? true : false;
+        return true;
     }
 
     /**
