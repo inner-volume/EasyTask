@@ -19,16 +19,17 @@ use \Throwable as Throwable;
 class Kernel
 {
     /**
-     * @var
+     * 任务列表
+     * @var array
      */
-    private $instance = null;
+    private $tasks = [];
 
     /**
      * 构造函数
      */
     public function __construct()
     {
-        $this->instance = Helper::isWin() ? new Win():new Linux();
+
     }
 
     /**
