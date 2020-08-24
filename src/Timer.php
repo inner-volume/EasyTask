@@ -8,7 +8,7 @@ namespace EasyTask;
 class Timer
 {
     /**
-     * Collection[$timerId=>$task]
+     * Collection
      * @var array
      */
     private static $collection;
@@ -20,7 +20,6 @@ class Timer
      */
     public static function set($timerId, $task)
     {
-        //todo() exec_time();
         self::$collection[$timerId] = $task;
     }
 
@@ -28,6 +27,22 @@ class Timer
      * Get
      */
     public static function get()
+    {
+        $times = [];
+        $tasks = self::$collection;
+        foreach ($tasks as $key => $value)
+        {
+            $times[$key] = $value['next_time'];
+        }
+        array_multisort($times, SORT_ASC, $tasks);
+        return empty($tasks['0']) ? [] : $tasks['0'];
+    }
+
+    /**
+     *
+     * @param string $timerId
+     */
+    public static function remove($timerId)
     {
 
     }
