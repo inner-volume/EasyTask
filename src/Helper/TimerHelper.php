@@ -2,6 +2,7 @@
 namespace EasyTask\Helper;
 
 use EasyTask\Cache;
+use EasyTask\Helper;
 use Exception;
 
 /**
@@ -46,12 +47,19 @@ class TimerHelper
      * 获取下一轮执行时间
      * @param mixed $time 时间
      * @param mixed $execTime 执行时间
+     * @return int
      */
     public static function getNextExecTime($time, $execTime = 0)
     {
         if (is_int($time))
         {
             return $execTime ? $execTime + $time : time() + $time;
+        }
+        else
+        {
+            $cronExpression = CronExpression::factory($time);
+            $nextExecDate = $cronExpression->getNextRunDate('now')->format('Y-m-d H:i:s');
+            return $nextExecDate ? strtotime($nextExecDate) : 0;
         }
     }
 
