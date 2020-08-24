@@ -45,13 +45,18 @@ class TimerHelper
         }
     }
 
-    public static function addTask()
+    /**
+     * 添加任务
+     * @param array $task 任务
+     * @return
+     */
+    public static function addTask($task)
     {
 
     }
 
     /**
-     * 添加定时器到队列
+     * 通过队列添加任务
      * @param array $task 任务
      * @return int
      * @throws Exception
