@@ -57,6 +57,9 @@ class TimerHelper
      */
     public static function addTask($class, $func, $alas, $time = 1, $persistent = true)
     {
+        //目录构建
+        FileHelper::initAllPath();
+
         //检查时间
         TimerHelper::checkTime($time);
 
