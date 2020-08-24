@@ -32,18 +32,6 @@ class Win extends Process
     protected $wpcContainer;
 
     /**
-     * 开始运行的检查
-     * @throws Exception
-     */
-    public function checkForRun()
-    {
-        if (!Env::get('phpPath'))
-        {
-            throw new Exception('please use setPhpPath api to set phpPath');
-        }
-    }
-
-    /**
      * 跟进进程名称执行任务
      * @param string $name
      * @throws Exception|Throwable
