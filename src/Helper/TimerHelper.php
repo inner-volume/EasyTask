@@ -181,30 +181,47 @@ class TimerHelper
     }
 
     /**
-     * 通知队列清空任务
+     * 清空任务
      * @param false $exit
      * @return bool
      * @throws Exception
      */
     public static function clearTask($exit = false)
     {
-        if(Helper::isCli())
+        if (Helper::isCli())
         {
             Timer::clear();
         }
-        //构建队列信息
-        $data = [
+        else
+        {
+            self::clearTaskByQueue($exit);
+        }
+
+        return true;
+    }
+
+    /**
+     * 通知队列清空任务
+     * @param bool $exit
+     * @throws Exception
+     */
+    public static function clearTaskByQueue($exit = false)
+    {
+        //目录构建
+        FileHelper::initAllPath();
+
+        //添加到队列
+        $queue = new Cache();
+        $queueName = 'easy_task_list';
+        $isPush = $queue->lPush($queueName, json_encode([
             'act' => 'clear',
             'info' => [
                 'exit' => $exit
             ]
-        ];
-
-        //定时器添加到队列
-        $queue = new Cache();
-        $queueName = 'easy_task_list';
-        $isPush = $queue->lPush($queueName, json_encode($data));
-
-        return $isPush ? true : false;
+        ]));
+        if (!$isPush)
+        {
+            throw new Exception('failed to push task to queue');
+        }
     }
 }
