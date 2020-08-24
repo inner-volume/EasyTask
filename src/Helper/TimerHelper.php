@@ -51,12 +51,11 @@ class TimerHelper
      * @param string $func 方法名称
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
      * @return int
      * @throws Exception
      */
-    public static function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
+    public static function addTask($class, $func, $alas, $time = 1, $persistent = true)
     {
         //检查时间
         TimerHelper::checkTime($time);
@@ -70,7 +69,6 @@ class TimerHelper
                 'func' => $func,
                 'alas' => $alas,
                 'time' => $time,
-                'used' => $used,
                 'class' => $class,
                 'persistent' => $persistent
             ]

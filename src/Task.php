@@ -194,12 +194,11 @@ class Task
      * @param string $func 方法名称
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
      * @param bool $persistent 持续执行
      * @return int
      * @throws Exception
      */
-    public function addTask($class, $func, $alas, $time = 1, $used = 1, $persistent = true)
+    public function addTask($class, $func, $alas, $time = 1, $persistent = true)
     {
         if (!class_exists($class))
         {
@@ -218,7 +217,7 @@ class Task
                 throw new Exception("class {$class}'s func {$func} must public");
             }
             FileHelper::initAllPath();
-            return TimerHelper::addTask($class, $func, $alas, $time, $used, $persistent);
+            return TimerHelper::addTask($class, $func, $alas, $time, $persistent);
         }
         catch (ReflectionException $exception)
         {
