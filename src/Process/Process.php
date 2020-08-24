@@ -15,45 +15,9 @@ use \Throwable as Throwable;
  * Class Process
  * @package EasyTask\Process
  */
-abstract class Process
+class Process
 {
-    /**
-     * 进程启动时间
-     * @var int
-     */
-    protected $startTime;
 
-    /**
-     * 任务列表
-     * @var array
-     */
-    protected $taskList;
-
-    /**
-     * 构造函数
-     */
-    public function __construct()
-    {
-        $this->startTime = time();
-    }
-
-    /**
-     * 开始运行
-     */
-    abstract public function start();
-
-    /**
-     * 运行状态
-     */
-    public function status()
-    {
-        //发送命令
-        $this->commander->send([
-            'type' => 'status',
-            'msgType' => 2
-        ]);
-        $this->masterWaitExit();
-    }
 
     /**
      * 停止运行
@@ -61,31 +25,8 @@ abstract class Process
      */
     public function stop($force = false)
     {
-        //发送命令
-        $this->commander->send([
-            'type' => 'stop',
-            'force' => $force,
-            'msgType' => 2
-        ]);
+
     }
-
-    /**
-     * 主进程
-     * @return mixed
-     */
-    abstract function master();
-
-    /**
-     * 管理进程(同步:分发进程+响应状态 异步:响应状态+创建调度进程)
-     * @return mixed
-     */
-    abstract function manager();
-
-    /**
-     * 调度进程(异步:分发进程)
-     * @return mixed
-     */
-    abstract function scheduler();
 
     /**
      * 初始化任务数量
