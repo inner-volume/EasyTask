@@ -30,6 +30,11 @@ class Socket
     public $port;
 
     /**
+     * @var null
+     */
+    private $socket = null;
+
+    /**
      * onMessageHand
      * @var Closure
      */
