@@ -22,4 +22,10 @@ class Socket
      * @var string
      */
     protected $host = '127.0.0.1';
+
+    /**
+     * port
+     * @var string
+     */
+    protected $port = '8000';
 }
