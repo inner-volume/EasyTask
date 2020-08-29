@@ -12,24 +12,6 @@ use Exception;
 class Socket
 {
     /**
-     * protocol
-     * @var string
-     */
-    private $protocol;
-
-    /**
-     * host
-     * @var string
-     */
-    public $host;
-
-    /**
-     * port
-     * @var int
-     */
-    public $port;
-
-    /**
      * @var null
      */
     private $socket = null;
@@ -47,6 +29,10 @@ class Socket
      */
     public function start($protocol = 'tcp', $host = '127.0.0.1', $port = 8000)
     {
-
+        $this->socket = stream_socket_server("{$protocol}://{$host}:{$port}", $errno, $errStr, STREAM_SERVER_BIND);
+        if (!$this->socket)
+        {
+            throw new Exception("failed to create socket,errNo:{$errno},errStr:{$errStr}");
+        }
     }
 }
