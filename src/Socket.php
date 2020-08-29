@@ -15,17 +15,33 @@ class Socket
      * protocol
      * @var string
      */
-    protected $protocol = 'tcp';
+    private $protocol;
 
     /**
      * host
      * @var string
      */
-    protected $host = '127.0.0.1';
+    public $host;
 
     /**
      * port
-     * @var string
+     * @var int
      */
-    protected $port = '8000';
+    public $port;
+
+    /**
+     * onMessageHand
+     * @var Closure
+     */
+    public $onMessage = null;
+
+    /**
+     * @param string $protocol
+     * @param string $host
+     * @param int $port
+     */
+    public function start($protocol = 'tcp', $host = '127.0.0.1', $port = 8000)
+    {
+
+    }
 }
