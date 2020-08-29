@@ -26,6 +26,7 @@ class Socket
      * @param string $protocol
      * @param string $host
      * @param int $port
+     * @throws Exception
      */
     public function start($protocol = 'tcp', $host = '127.0.0.1', $port = 8000)
     {
