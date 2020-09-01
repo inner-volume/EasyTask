@@ -4,9 +4,6 @@ namespace EasyTask;
 use \Closure as Closure;
 use EasyTask\Helper\FileHelper;
 use EasyTask\Helper\TimerHelper;
-use EasyTask\Mode\Kernel;
-use EasyTask\Process\Linux;
-use EasyTask\Process\Win;
 use Exception;
 use \ReflectionClass as ReflectionClass;
 use \ReflectionMethod as ReflectionMethod;
@@ -86,7 +83,7 @@ class Task
     }
 
     /**
-     * 设置PHP执行路径(windows)
+     * 设置PHP执行路径
      * @param string $path
      * @return $this
      * @throws Exception
@@ -110,18 +107,6 @@ class Task
     public function setTimeZone($timeIdent)
     {
         date_default_timezone_set($timeIdent);
-        return $this;
-    }
-
-    /**
-     * 设置队列驱动
-     * @param string $driver
-     * @param array $options
-     * @return $this
-     */
-    public function setQueueConfig($driver = 'file', $options = ['prefix' => 'Task'])
-    {
-        Env::set('queue_config', ['driver' => $driver, 'options' => $options]);
         return $this;
     }
 
