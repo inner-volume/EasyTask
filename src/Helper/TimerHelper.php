@@ -93,7 +93,6 @@ class TimerHelper
         //创建任务Id
         $tid = uniqid();
         $task = [
-            'id' => $tid,
             'func' => $func,
             'alas' => $alas,
             'time' => $time,

@@ -1,6 +1,8 @@
 <?php
 namespace EasyTask;
 
+use MongoDB\BSON\Int64;
+
 /**
  * Class Timer
  * @package EasyTask
@@ -14,13 +16,34 @@ class Timer
     private static $collection;
 
     /**
-     * Set
-     * @param string $timerId
+     * Add
      * @param array $task
+     * @param bool $bySocket
+     * @return int
      */
-    public static function set($timerId, $task)
+    public static function add($task, $bySocket = false)
     {
-        self::$collection[$timerId] = $task;
+        if (!$bySocket)
+        {
+            $timerId = self::count() + 1;
+            self::$collection[$timerId] = $task;
+            return $timerId;
+        }
+        else
+        {
+            $timerId = self::count() + 1;
+            self::$collection[$timerId] = $task;
+            return $timerId;
+        }
+    }
+
+    /**
+     * Count
+     * @return int
+     */
+    public static function count()
+    {
+        return count(self::$collection);
     }
 
     /**

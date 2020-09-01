@@ -154,7 +154,7 @@ class Task
     }
 
     /**
-     * 异常通知
+     * 设置异常回调
      * @param string|Closure $notify
      * @return $this
      * @throws Exception
@@ -180,10 +180,11 @@ class Task
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
      * @param bool $persistent 持续执行
+     * @param bool $bySocket 是否通过Socket投递任务
      * @return int
      * @throws Exception
      */
-    public function addTask($class, $func, $alas, $time = 1, $persistent = true)
+    public function addClass($class, $func, $alas, $time = 1, $persistent = true, $bySocket = false)
     {
         if (!class_exists($class))
         {
@@ -201,7 +202,14 @@ class Task
             {
                 throw new Exception("class {$class}'s func {$func} must public");
             }
-            return TimerHelper::addTask($class, $func, $alas, $time, $persistent);
+            $task = [
+                'type' => 1,
+                'func' => $func,
+                'alas' => $alas,
+                'time' => $time,
+                'persistent' => $persistent
+            ];
+            Timer::add($task, $bySocket);
         }
         catch (ReflectionException $exception)
         {
