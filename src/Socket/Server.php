@@ -19,7 +19,13 @@ class Server
      * 消息处理函数
      * @var null
      */
-    public $onMessge = null;
+    public $onMessage = null;
+
+    /**
+     * 轮询处理函数
+     * @var null
+     */
+    public $inTimeLoop = null;
 
     /**
      * 构造函数
@@ -33,13 +39,10 @@ class Server
     }
 
     /**
-     * 监听信息
-     * @param array $data
-     * @param int $timeOut
-     * @return array
+     * 监听服务
      * @throws \Exception
      */
-    public function listen($data = [], $timeOut = 30)
+    public function listen()
     {
         //服务地址
         $address = "tcp://{$this->host}}:{$this->host}";
@@ -69,9 +72,12 @@ class Server
                 }
                 $client_msg = json_decode(base64_decode($client_msg), true);
 
-                //传递给处理函数
-                call_user_func($this->onMessge, $client_msg);
+                //消息处理函数
+                call_user_func($this->onMessage, $client_msg);
             }
+
+            //轮询处理函数
+            call_user_func($this->inTimeLoop);
         }
     }
 }
