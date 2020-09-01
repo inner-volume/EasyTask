@@ -12,7 +12,7 @@ use \Throwable as Throwable;
  * Class Process
  * @package EasyTask\Process
  */
-abstract class Process
+class Process
 {
     /**
      * 任务列表
@@ -25,20 +25,23 @@ abstract class Process
      */
     public function __construct()
     {
-        //$this->tasks[] = Timer::get();
+
     }
 
     /**
      * 开始运行
      */
-    abstract public function start();
+    public function start()
+    {
+        //所有Start都从这里来
+    }
 
     /**
      * 运行状态
      */
     public function status()
     {
-        $this->masterWaitExit();
+
     }
 
     /**

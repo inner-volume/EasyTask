@@ -4,6 +4,7 @@ namespace EasyTask;
 use \Closure as Closure;
 use EasyTask\Helper\FileHelper;
 use EasyTask\Helper\TimerHelper;
+use EasyTask\Process\Process;
 use Exception;
 use \ReflectionClass as ReflectionClass;
 use \ReflectionMethod as ReflectionMethod;
@@ -249,7 +250,7 @@ class Task
         FileHelper::initAllPath();
 
         //启动任务
-        (new Kernel())->start();
+        (new Process())->start();
     }
 
     /**
@@ -258,7 +259,7 @@ class Task
      */
     public function status()
     {
-        (new Kernel())->status();
+        (new Process())->status();
     }
 
     /**
@@ -268,6 +269,6 @@ class Task
      */
     public function stop($force = false)
     {
-        (new Kernel())->stop($force);
+        (new Process())->stop($force);
     }
 }
