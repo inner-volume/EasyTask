@@ -1,8 +1,6 @@
 <?php
 namespace EasyTask;
 
-use MongoDB\BSON\Int64;
-
 /**
  * Class Timer
  * @package EasyTask
