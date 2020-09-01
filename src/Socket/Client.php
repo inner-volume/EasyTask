@@ -39,10 +39,10 @@ class Client
         $address = "tcp://{$this->host}}:{$this->host}";
 
         //创建连接
-        $socket = stream_socket_client($address, $errno, $errstr, $timeOut);
+        $socket = stream_socket_client($address, $errno, $errStr, $timeOut);
         if (!$socket)
         {
-            throw new \Exception("connection {$address} failure,errno:{$errno},errstr:{$errstr}");
+            throw new \Exception("connection {$address} failure,errno:{$errno},errStr:{$errStr}");
         }
 
         //发送数据(换行符WIN|LINUX待验证)

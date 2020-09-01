@@ -48,20 +48,20 @@ class Server
         $address = "tcp://{$this->host}}:{$this->host}";
 
         //创建连接
-        $socket = stream_socket_server($address, $errno, $errstr);
+        $socket = stream_socket_server($address, $errno, $errStr);
         if (!$socket)
         {
-            throw new \Exception("create server {$address} failure,errno:{$errno},errstr:{$errstr}");
+            throw new \Exception("create server {$address} failure,errno:{$errno},errStr:{$errStr}");
         }
 
         //守护运行
         while (true)
         {
             //监听连接
-            \set_error_handler(function () {
+            set_error_handler(function () {
             });
             $client = stream_socket_accept($socket, 0, $peerName);
-            \restore_error_handler();
+            restore_error_handler();
             if ($client)
             {
                 //读取client发送的信息
