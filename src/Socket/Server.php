@@ -1,6 +1,8 @@
 <?php
 namespace EasyTask\Socket;
 
+use \Closure as Closure;
+
 class Server
 {
     /**
@@ -17,13 +19,13 @@ class Server
 
     /**
      * 消息处理函数
-     * @var null
+     * @var Closure
      */
     public $onMessage = null;
 
     /**
      * 轮询处理函数
-     * @var null
+     * @var Closure
      */
     public $inTimeLoop = null;
 
