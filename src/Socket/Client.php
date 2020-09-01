@@ -45,7 +45,7 @@ class Client
             throw new \Exception("connection {$address} failure,errno:{$errno},errstr:{$errstr}");
         }
 
-        //发送数据
+        //发送数据(换行符WIN|LINUX待验证)
         $data = base64_encode(json_encode($data)) . PHP_EOL;
         if (!fwrite($socket, $data))
         {
