@@ -1,7 +1,6 @@
 <?php
 namespace EasyTask;
 
-
 use Exception;
 
 /**
