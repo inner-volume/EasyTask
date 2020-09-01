@@ -7,13 +7,12 @@ if (!$socket)
     throw new Exception("创建Tcp服务失败,errno:{$errno},errStr:{$errStr}");
 }
 
-//设置非阻塞
+//设置非阻塞  select poll epoll
 stream_set_blocking($socket, false);
 while (true)
 {
-    \set_error_handler(function () {
-    });
-    $conn = stream_socket_accept($socket, -1, $peerName);
+    \set_error_handler(function () {});
+    $conn = stream_socket_accept($socket, 0, $peerName);
     \restore_error_handler();
     if ($conn)
     {

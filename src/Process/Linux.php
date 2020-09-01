@@ -172,7 +172,7 @@ class Linux extends Process
         //Kill信号
         pcntl_signal(SIGTERM, function () use ($text) {
             Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
-        });
+    });
 
         //挂起进程
         while (true)
