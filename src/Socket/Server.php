@@ -2,6 +2,7 @@
 namespace EasyTask\Socket;
 
 use \Closure as Closure;
+use Exception;
 
 class Server
 {
@@ -42,7 +43,7 @@ class Server
 
     /**
      * 监听服务
-     * @throws \Exception
+     * @throws Exception
      */
     public function listen()
     {
@@ -53,7 +54,7 @@ class Server
         $socket = stream_socket_server($address, $errno, $errStr);
         if (!$socket)
         {
-            throw new \Exception("create server {$address} failure,errno:{$errno},errStr:{$errStr}");
+            throw new Exception("create server {$address} failure,errno:{$errno},errStr:{$errStr}");
         }
 
         //守护运行
@@ -72,7 +73,18 @@ class Server
                 {
                     $client_msg .= fgets($client, 128);
                 }
-                $client_msg = json_decode(base64_decode($client_msg), true);
+
+                //解析信息内容
+                $client_msg = base64_decode($client_msg);
+                if (!$client_msg)
+                {
+                    throw new Exception('client message base64 decryption failed');
+                }
+                $client_msg = json_decode($client_msg, true);
+                if (!$client_msg)
+                {
+                    throw new Exception('client message json decryption failed');
+                }
 
                 //消息处理函数
                 call_user_func($this->onMessage, $client_msg);

@@ -1,6 +1,8 @@
 <?php
 namespace EasyTask\Socket;
 
+use Exception;
+
 class Client
 {
     /**
@@ -31,7 +33,7 @@ class Client
      * @param array $data
      * @param int $timeOut
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function send($data = [], $timeOut = 30)
     {
@@ -42,14 +44,23 @@ class Client
         $socket = stream_socket_client($address, $errno, $errStr, $timeOut);
         if (!$socket)
         {
-            throw new \Exception("connection {$address} failure,errno:{$errno},errStr:{$errStr}");
+            throw new Exception("connection {$address} failure,errno:{$errno},errStr:{$errStr}");
         }
 
         //发送数据(换行符WIN|LINUX待验证)
-        $data = base64_encode(json_encode($data)) . PHP_EOL;
-        if (!fwrite($socket, $data))
+        $data = json_encode($data);
+        if (!$data)
         {
-            throw new \Exception("write to {$address} failure");
+            throw new Exception('message json encode failed');
+        }
+        $data = base64_encode($data);
+        if (!$data)
+        {
+            throw new Exception('message base64 encode failed');
+        }
+        if (!fwrite($socket, $data . PHP_EOL))
+        {
+            throw new Exception("write to {$address} failure");
         }
 
         //获取响应数据
