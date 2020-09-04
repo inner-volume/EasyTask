@@ -218,7 +218,7 @@ class Task
      * @param mixed $time 定时器间隔
      * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
-     * @return $this
+     * @return int|false
      * @throws
      */
     public function addClass($class, $func, $alas, $time = 1, $persistent = true, $push = false)
@@ -237,15 +237,15 @@ class Task
             $method = new ReflectionMethod($class, $func);
             if (!$method->isPublic())
             {
-                Helper::showSysError("class {$class}'s func {$func} must public");
+                throw new Exception("class {$class}'s func {$func} must public");
             }
-            Helper::addTask([
+            return Helper::addTask([
                 'type' => $method->isStatic() ? 2 : 3,
                 'func' => $func,
                 'alas' => $alas,
                 'time' => $time,
-                'used' => $used,
-                'class' => $class
+                'class' => $class,
+                'persistent' => $persistent
             ], $push);
         }
         catch (ReflectionException $exception)
@@ -253,7 +253,7 @@ class Task
             Helper::showException($exception);
         }
 
-        return $this;
+        return false;
     }
 
     /**
