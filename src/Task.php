@@ -191,24 +191,24 @@ class Task
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
+     * @param bool $push 是否投递任务
      * @return $this
      * @throws
      */
-    public function addFunc($func, $alas, $time = 1, $used = 1)
+    public function addFunc($func, $alas, $time = 1, $used = 1, $push = false)
     {
         $uniqueId = md5($alas);
         if (!($func instanceof Closure))
         {
             throw new Exception('the func parameter must be a closure function');
         }
-        Helper::checkTaskTime($time);
-        $this->taskList[$uniqueId] = [
+        Helper::addTask([
             'type' => 1,
             'func' => $func,
             'alas' => $alas,
             'time' => $time,
             'used' => $used
-        ];
+        ], $push);
 
         return $this;
     }
