@@ -188,6 +188,7 @@ class Linux extends Process
 
     /**
      * 守护进程
+     * @throws Exception
      */
     protected function manager()
     {
@@ -203,7 +204,7 @@ class Linux extends Process
             Helper::showInfo('start success,press ctrl+c to stop');
         }
 
-        //Kill信号
+        //注册信号
         pcntl_signal(SIGTERM, function () use ($text) {
             Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
         });
@@ -211,68 +212,12 @@ class Linux extends Process
         //服务监听
         $server = new Server('127.0.0.1', '9501');
         $server->onMessage = function ($message) {
-            $json = base64_decode($message);
-            if (!$json)
-            {
-                Helper::writeTypeLog("client data base64 parsing exception:$message");
-            }
-            $data = json_decode($json, true);
-            if ()
-            {
-
-            }
+            $this->managerOnMessage($message);
         };
-        //挂起进程
-        while (true)
-        {
-            //CPU休息
-            Helper::sleep(1);
-
-            //接收命令start/status/stop
-            $this->commander->waitCommandForExecute(2, function ($command) use ($text) {
-                $exitText = "listened exit command, $text is exiting safely";
-                $statusText = "listened status command, $text is reported";
-                $forceExitText = "listened exit command, $text is exiting unsafely";
-                if ($command['type'] == 'start')
-                {
-                    if ($command['time'] > $this->startTime)
-                    {
-                        Helper::writeTypeLog($forceExitText);
-                        posix_kill(0, SIGKILL);
-                    }
-                }
-                if ($command['type'] == 'status')
-                {
-                    $report = $this->processStatus();
-                    $this->commander->send([
-                        'type' => 'status',
-                        'msgType' => 1,
-                        'status' => $report,
-                    ]);
-                    Helper::writeTypeLog($statusText);
-                }
-                if ($command['type'] == 'stop')
-                {
-                    if ($command['force'])
-                    {
-                        Helper::writeTypeLog($forceExitText);
-                        posix_kill(0, SIGKILL);
-                    }
-                    else
-                    {
-                        Helper::writeTypeLog($exitText);
-                        exit();
-                    }
-                }
-
-            }, $this->startTime);
-
-            //信号调度
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
-
-            //检查进程
-            if (Env::get('canAutoRec')) $this->processStatus();
-        }
+        $server->onEventLoop = function () {
+            $this->managerOnEventLoop();
+        };
+        $server->listen();
     }
 
     /**
@@ -281,7 +226,65 @@ class Linux extends Process
      */
     protected function managerOnMessage($message)
     {
+        $json = base64_decode($message);
+        if (!$json)
+        {
+            Helper::writeTypeLog("client data base64 parsing exception:$message");
+        }
+        $data = json_decode($json, true);
+        if (!$data)
+        {
+            Helper::writeTypeLog("client data json parsing exception:$json");
+        }
+        $command = $data;
 
+        $text = '';
+        $exitText = "listened exit command, $text is exiting safely";
+        $statusText = "listened status command, $text is reported";
+        $forceExitText = "listened exit command, $text is exiting unsafely";
+        if ($command['action'] == 'start')
+        {
+            if ($command['time'] > $this->startTime)
+            {
+                Helper::writeTypeLog($forceExitText);
+                posix_kill(0, SIGKILL);
+            }
+        }
+        if ($command['action'] == 'status')
+        {
+            $report = $this->processStatus();
+            $this->commander->send([
+                'type' => 'status',
+                'msgType' => 1,
+                'status' => $report,
+            ]);
+            Helper::writeTypeLog($statusText);
+        }
+        if ($command['action'] == 'stop')
+        {
+            if ($command['force'])
+            {
+                Helper::writeTypeLog($forceExitText);
+                posix_kill(0, SIGKILL);
+            }
+            else
+            {
+                Helper::writeTypeLog($exitText);
+                exit();
+            }
+        }
+    }
+
+    /**
+     * 守护进程-事件循环
+     */
+    protected function managerOnEventLoop()
+    {
+        //信号调度
+        if (Helper::canUseAsyncSignal()) pcntl_signal_dispatch();
+
+        //检查进程
+        if (Env::get('auto_recover')) $this->processStatus();
     }
 
     /**

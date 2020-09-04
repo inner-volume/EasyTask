@@ -25,10 +25,10 @@ class Server
     public $onMessage = null;
 
     /**
-     * 轮询处理函数
+     * 循环处理函数
      * @var Closure
      */
-    public $inTimeLoop = null;
+    public $onEventLoop = null;
 
     /**
      * 构造函数
@@ -90,8 +90,8 @@ class Server
                 call_user_func($this->onMessage, $client_msg);
             }
 
-            //轮询处理函数
-            call_user_func($this->inTimeLoop);
+            //循环处理函数
+            call_user_func($this->onEventLoop);
         }
     }
 }
