@@ -49,4 +49,25 @@ class Lock
         fclose($fp);
         return $call_back;
     }
+
+    /**
+     * 加锁状态
+     */
+    public function isLocked()
+    {
+        $file = $this->file;
+        if (!file_exists($file))
+        {
+            return false;
+        }
+        $fp = fopen($file, 'r');
+        if (flock($fp, LOCK_EX | LOCK_NB))
+        {
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            return false;
+        }
+        fclose($fp);
+        return true;
+    }
 }
