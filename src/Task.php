@@ -259,10 +259,11 @@ class Task
      * @param string $command 指令
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
-     * @return $this
+     * @param bool $persistent 持续执行
+     * @param bool $push 是否投递任务
+     * @return int
      */
-    public function addCommand($command, $alas, $time = 1, $used = 1)
+    public function addCommand($command, $alas, $time = 1, $persistent = true, $push = false)
     {
         $uniqueId = md5($alas);
         if (!Helper::canUseExcCommand())
@@ -273,16 +274,13 @@ class Task
         {
             Helper::showSysError("task $alas already exists");
         }
-        Helper::checkTaskTime($time);
-        $this->taskList[$uniqueId] = [
+        return Helper::addTask([
             'type' => 4,
             'alas' => $alas,
             'time' => $time,
-            'used' => $used,
             'command' => $command,
-        ];
-
-        return $this;
+            'persistent' => $persistent
+        ], $push);
     }
 
     /**
