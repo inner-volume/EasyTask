@@ -38,7 +38,7 @@ class Client
     public function send($data = [], $timeOut = 30)
     {
         //请求地址
-        $address = "tcp://{$this->host}}:{$this->host}";
+        $address = "tcp://{$this->host}:{$this->host}";
 
         //创建连接
         $socket = stream_socket_client($address, $errno, $errStr, $timeOut);

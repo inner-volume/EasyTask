@@ -48,7 +48,7 @@ class Server
     public function listen()
     {
         //服务地址
-        $address = "tcp://{$this->host}}:{$this->host}";
+        $address = "tcp://{$this->host}:{$this->host}";
 
         //创建连接
         $socket = stream_socket_server($address, $errno, $errStr);
