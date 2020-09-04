@@ -4,6 +4,8 @@ namespace EasyTask\Process;
 use EasyTask\Env;
 use EasyTask\Helper;
 use \Closure as Closure;
+use EasyTask\Socket\Server;
+use Exception;
 use \Throwable as Throwable;
 
 /**
@@ -32,12 +34,6 @@ class Linux extends Process
      */
     public function start()
     {
-        //发送命令
-        $this->commander->send([
-            'type' => 'start',
-            'msgType' => 2
-        ]);
-
         //异步处理
         if (Env::get('daemon'))
         {
@@ -47,9 +43,9 @@ class Linux extends Process
                     $sid = posix_setsid();
                     if ($sid < 0)
                     {
-                        Helper::showError('set child processForManager failed,please try again');
+                        throw new Exception('set child processForManager failed,please try again');
                     }
-                    $this->allocate();
+                    $this->daemonWait();
                 },
                 function () {
                     pcntl_wait($status, WNOHANG);
@@ -59,7 +55,7 @@ class Linux extends Process
         }
 
         //同步处理
-        $this->allocate();
+        $this->daemonWait();
     }
 
     /**
@@ -191,11 +187,11 @@ class Linux extends Process
     }
 
     /**
-     * 守护进程常驻
+     * 守护进程
      */
-    protected function daemonWait()
+    protected function manager()
     {
-        //设置进程标题
+        //进程标题
         Helper::cli_set_process_title(Env::get('prefix'));
 
         //输出信息
@@ -212,6 +208,20 @@ class Linux extends Process
             Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
         });
 
+        //服务监听
+        $server = new Server('127.0.0.1', '9501');
+        $server->onMessage = function ($message) {
+            $json = base64_decode($message);
+            if (!$json)
+            {
+                Helper::writeTypeLog("client data base64 parsing exception:$message");
+            }
+            $data = json_decode($json, true);
+            if ()
+            {
+
+            }
+        };
         //挂起进程
         while (true)
         {
@@ -263,6 +273,14 @@ class Linux extends Process
             //检查进程
             if (Env::get('canAutoRec')) $this->processStatus();
         }
+    }
+
+    /**
+     * @param string $message 客户端消息
+     */
+    protected function managerOnMessage($message)
+    {
+
     }
 
     /**
