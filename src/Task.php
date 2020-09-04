@@ -190,14 +190,13 @@ class Task
      * @param Closure $func 匿名函数
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
+     * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
      * @return $this
      * @throws
      */
-    public function addFunc($func, $alas, $time = 1, $used = 1, $push = false)
+    public function addFunc($func, $alas, $time = 1, $persistent = true, $push = false)
     {
-        $uniqueId = md5($alas);
         if (!($func instanceof Closure))
         {
             throw new Exception('the func parameter must be a closure function');
@@ -207,7 +206,7 @@ class Task
             'func' => $func,
             'alas' => $alas,
             'time' => $time,
-            'used' => $used
+            'persistent' => $persistent
         ], $push);
 
         return $this;
