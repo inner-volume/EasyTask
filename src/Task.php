@@ -134,12 +134,12 @@ class Task
 
     /**
      * 设置子进程自动恢复
-     * @param bool $isRec
+     * @param bool $recover
      * @return $this
      */
-    public function setAutoRecover($isRec = false)
+    public function setAutoRecover($recover = false)
     {
-        Env::set('canAutoRec', $isRec);
+        Env::set('auto_recover', $recover);
         return $this;
     }
 
