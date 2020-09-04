@@ -144,13 +144,13 @@ class Task
     }
 
     /**
-     * 设置关闭标准输出的日志
+     * 设置关闭标准输出(关闭输出记录)
      * @param bool $close
      * @return $this
      */
-    public function setCloseStdOutLog($close = false)
+    public function setCloseStdOut($close = false)
     {
-        Env::set('closeStdOutLog', $close);
+        Env::set('close_std_out', $close);
         return $this;
     }
 
