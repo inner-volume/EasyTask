@@ -101,10 +101,14 @@ class Task
      * 设置时区
      * @param string $timeIdent
      * @return $this
+     * @throws Exception
      */
     public function setTimeZone($timeIdent)
     {
-        date_default_timezone_set($timeIdent);
+        if (!date_default_timezone_set($timeIdent))
+        {
+            throw new Exception('invalid timezone format');
+        }
         return $this;
     }
 
