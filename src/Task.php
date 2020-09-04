@@ -262,17 +262,13 @@ class Task
      * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
      * @return int 返回定时器Id
+     * @throws Exception
      */
     public function addCommand($command, $alas, $time = 1, $persistent = true, $push = false)
     {
-        $uniqueId = md5($alas);
         if (!Helper::canUseExcCommand())
         {
-            Helper::showSysError('please open the disabled function of popen and pclose');
-        }
-        if (isset($this->taskList[$uniqueId]))
-        {
-            Helper::showSysError("task $alas already exists");
+            throw new Exception('please open the disabled function of popen and pclose');
         }
         return Helper::addTask([
             'type' => 4,
