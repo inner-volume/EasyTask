@@ -43,7 +43,7 @@ class Task
         Env::set('canEvent', Helper::canUseEvent());
         Env::set('currentOs', $currentOs);
         Env::set('canAsync', Helper::canUseAsyncSignal());
-        Env::set('closeErrorRegister', false);
+        Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
         if ($currentOs == 1)
@@ -155,13 +155,13 @@ class Task
     }
 
     /**
-     * 设置关闭系统异常注册
-     * @param bool $isReg 是否关闭
+     * 设置异常注册
+     * @param bool $isReg
      * @return $this
      */
-    public function setCloseErrorRegister($isReg = false)
+    public function setErrorRegister($isReg = true)
     {
-        Env::set('closeErrorRegister', $isReg);
+        Env::set('error_register', $isReg);
         return $this;
     }
 
