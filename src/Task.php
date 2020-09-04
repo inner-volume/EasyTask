@@ -169,18 +169,19 @@ class Task
      * 异常通知
      * @param string|Closure $notify
      * @return $this
+     * @throws Exception
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (Env::get('closeErrorRegister'))
+        if (!Env::get('error_register'))
         {
-            Helper::showSysError('you must set closeErrorRegister as false before use this api');
+            throw new Exception('set setErrorRegister as true before use this api');
         }
         if (!$notify instanceof Closure && !is_string($notify))
         {
-            Helper::showSysError('notify parameter can only be string or closure');
+            throw new Exception('notify parameter can only be string or closure');
         }
-        Env::set('notifyHand', $notify);
+        Env::set('error_register_notify', $notify);
         return $this;
     }
 
