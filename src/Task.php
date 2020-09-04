@@ -4,6 +4,7 @@ namespace EasyTask;
 use \Closure as Closure;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
+use Exception;
 use \ReflectionClass as ReflectionClass;
 use \ReflectionMethod as ReflectionMethod;
 use \ReflectionException as ReflectionException;
@@ -67,12 +68,13 @@ class Task
      * 设置任务前缀
      * @param string $prefix
      * @return $this
+     * @throws Exception
      */
-    public function setPrefix($prefix = 'Task')
+    public function setPrefix($prefix = 'task')
     {
-        if (Env::get('runTimePath'))
+        if (Env::get('runtime_path'))
         {
-            Helper::showSysError('should use setPrefix before setRunTimePath');
+            throw new Exception('should use setPrefix before setRunTimePath');
         }
         Env::set('prefix', $prefix);
         return $this;
