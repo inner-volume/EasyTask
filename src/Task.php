@@ -27,25 +27,21 @@ class Task
     public function __construct()
     {
         //检查运行环境
-        $currentOs = Helper::isWin() ? 1 : 2;
-        Check::analysis($currentOs);
-        $this->initialise($currentOs);
+        Check::analysis();
+        $this->initialise();
     }
 
     /**
      * 进程初始化
-     * @param int $currentOs
      */
-    private function initialise($currentOs)
+    private function initialise()
     {
         //初始化基础配置
-        Env::set('prefix', 'Task');
-        Env::set('canEvent', Helper::canUseEvent());
-        Env::set('currentOs', $currentOs);
+        Env::set('prefix', 'task');
         Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
-        if ($currentOs == 1)
+        if (Helper::isWin())
         {
             Helper::setPhpPath();
             Helper::setCodePage();
