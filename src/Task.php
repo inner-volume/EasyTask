@@ -218,7 +218,7 @@ class Task
      * @param mixed $time 定时器间隔
      * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
-     * @return int|false
+     * @return int
      * @throws
      */
     public function addClass($class, $func, $alas, $time = 1, $persistent = true, $push = false)
@@ -250,10 +250,8 @@ class Task
         }
         catch (ReflectionException $exception)
         {
-            Helper::showException($exception);
+            throw new Exception($exception->getMessage());
         }
-
-        return false;
     }
 
     /**
