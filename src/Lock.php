@@ -2,8 +2,6 @@
 namespace EasyTask;
 
 use \Closure as Closure;
-use EasyTask\Helper\FileHelper;
-use Exception;
 
 /**
  * Class Lock
@@ -20,12 +18,11 @@ class Lock
     /**
      * 构造函数
      * @param string $name
-     * @throws Exception
      */
     public function __construct($name = 'lock')
     {
         //初始化文件
-        $path = FileHelper::getLokPath();
+        $path = Helper::getLokPath();
         $this->file = $path . md5($name);
         if (!file_exists($this->file))
         {
@@ -51,23 +48,5 @@ class Lock
         }
         fclose($fp);
         return $call_back;
-    }
-
-    /**
-     * 执行状态
-     */
-    public function executeStatus()
-    {
-        $file = $this->file;
-        if (!file_exists($file))
-        {
-            return false;
-        }
-        $fp = fopen($file, "r");
-        if (flock($fp, LOCK_EX | LOCK_NB))
-        {
-            return false;
-        }
-        return true;
     }
 }

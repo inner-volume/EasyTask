@@ -2,10 +2,8 @@
 namespace EasyTask;
 
 use \Closure as Closure;
-use EasyTask\Helper\FileHelper;
-use EasyTask\Helper\TimerHelper;
-use EasyTask\Process\Process;
-use Exception;
+use EasyTask\Process\Linux;
+use EasyTask\Process\Win;
 use \ReflectionClass as ReflectionClass;
 use \ReflectionMethod as ReflectionMethod;
 use \ReflectionException as ReflectionException;
@@ -17,43 +15,41 @@ use \ReflectionException as ReflectionException;
 class Task
 {
     /**
+     * 任务列表
+     * @var array
+     */
+    private $taskList = [];
+
+    /**
      * 构造函数
-     * @throws Exception
      */
     public function __construct()
     {
-        Check::analysis();
-        $this->initialise();
+        //检查运行环境
+        $currentOs = Helper::isWin() ? 1 : 2;
+        Check::analysis($currentOs);
+        $this->initialise($currentOs);
     }
 
     /**
      * 进程初始化
+     * @param int $currentOs
      */
-    private function initialise()
+    private function initialise($currentOs)
     {
         //初始化基础配置
         Env::set('prefix', 'Task');
-        $this->setMode();
-        $this->setQueueConfig();
-        $this->setErrorRegister();
+        Env::set('canEvent', Helper::canUseEvent());
+        Env::set('currentOs', $currentOs);
+        Env::set('canAsync', Helper::canUseAsyncSignal());
+        Env::set('closeErrorRegister', false);
 
         //初始化PHP_BIN|CODE_PAGE
-        if (Helper::isWin())
+        if ($currentOs == 1)
         {
             Helper::setPhpPath();
             Helper::setCodePage();
         }
-    }
-
-    /**
-     * 设置运行模式
-     * @param int $mode 1.同步 2.异步
-     * @return $this
-     */
-    public function setMode($mode = 1)
-    {
-        Env::set('mode', $mode);
-        return $this;
     }
 
     /**
@@ -71,30 +67,28 @@ class Task
      * 设置任务前缀
      * @param string $prefix
      * @return $this
-     * @throws Exception
      */
     public function setPrefix($prefix = 'Task')
     {
-        if (Env::get('runtime_path'))
+        if (Env::get('runTimePath'))
         {
-            throw new Exception('should use setPrefix before setRunTimePath');
+            Helper::showSysError('should use setPrefix before setRunTimePath');
         }
         Env::set('prefix', $prefix);
         return $this;
     }
 
     /**
-     * 设置PHP执行路径
+     * 设置PHP执行路径(windows)
      * @param string $path
      * @return $this
-     * @throws Exception
      */
     public function setPhpPath($path)
     {
         $file = realpath($path);
         if (!file_exists($file))
         {
-            throw new Exception("the path {$path} is not exists");
+            Helper::showSysError("the path {$path} is not exists");
         }
         Helper::setPhpPath($path);
         return $this;
@@ -112,145 +106,231 @@ class Task
     }
 
     /**
-     * 设置关闭标准输出
-     * @param bool $close
-     * @return $this
-     */
-    public function setCloseStdOut($close = false)
-    {
-        Env::set('close_std_out', $close);
-        return $this;
-    }
-
-    /**
      * 设置运行时目录
      * @param string $path
      * @return $this
-     * @throws Exception
      */
     public function setRunTimePath($path)
     {
         if (!is_dir($path))
         {
-            throw new Exception("the path {$path} is not exist");
+            Helper::showSysError("the path {$path} is not exist");
         }
         if (!is_writable($path))
         {
-            throw new Exception("the path {$path} is not writeable");
+            Helper::showSysError("the path {$path} is not writeable");
         }
         Env::set('runTimePath', realpath($path));
-        FileHelper::initAllPath();
         return $this;
     }
 
     /**
-     * 设置异常注册
-     * @param bool $isReg
+     * 设置子进程自动恢复
+     * @param bool $isRec
      * @return $this
      */
-    public function setErrorRegister($isReg = true)
+    public function setAutoRecover($isRec = false)
     {
-        Env::set('error_register', $isReg);
+        Env::set('canAutoRec', $isRec);
         return $this;
     }
 
     /**
-     * 设置异常回调
+     * 设置关闭标准输出的日志
+     * @param bool $close
+     * @return $this
+     */
+    public function setCloseStdOutLog($close = false)
+    {
+        Env::set('closeStdOutLog', $close);
+        return $this;
+    }
+
+    /**
+     * 设置关闭系统异常注册
+     * @param bool $isReg 是否关闭
+     * @return $this
+     */
+    public function setCloseErrorRegister($isReg = false)
+    {
+        Env::set('closeErrorRegister', $isReg);
+        return $this;
+    }
+
+    /**
+     * 异常通知
      * @param string|Closure $notify
      * @return $this
-     * @throws Exception
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (Env::get('error_register'))
+        if (Env::get('closeErrorRegister'))
         {
-            throw new Exception('you must set setErrorRegister as true before use this api');
+            Helper::showSysError('you must set closeErrorRegister as false before use this api');
         }
         if (!$notify instanceof Closure && !is_string($notify))
         {
-            throw new Exception('notify parameter can only be string or closure');
+            Helper::showSysError('notify parameter can only be string or closure');
         }
-        Env::set('error_register_notify', $notify);
+        Env::set('notifyHand', $notify);
         return $this;
     }
 
     /**
-     * 新增任务
+     * 新增匿名函数作为任务
+     * @param Closure $func 匿名函数
+     * @param string $alas 任务别名
+     * @param mixed $time 定时器间隔
+     * @param int $used 定时器占用进程数
+     * @return $this
+     * @throws
+     */
+    public function addFunc($func, $alas, $time = 1, $used = 1)
+    {
+        $uniqueId = md5($alas);
+        if (!($func instanceof Closure))
+        {
+            Helper::showSysError('func must instanceof Closure');
+        }
+        if (isset($this->taskList[$uniqueId]))
+        {
+            Helper::showSysError("task $alas already exists");
+        }
+        Helper::checkTaskTime($time);
+        $this->taskList[$uniqueId] = [
+            'type' => 1,
+            'func' => $func,
+            'alas' => $alas,
+            'time' => $time,
+            'used' => $used
+        ];
+
+        return $this;
+    }
+
+    /**
+     * 新增类作为任务
      * @param string $class 类名称
      * @param string $func 方法名称
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param bool $persistent 持续执行
-     * @param bool $bySocket 是否通过Socket投递任务
-     * @return int
-     * @throws Exception
+     * @param int $used 定时器占用进程数
+     * @return $this
+     * @throws
      */
-    public function addClass($class, $func, $alas, $time = 1, $persistent = true, $bySocket = false)
+    public function addClass($class, $func, $alas, $time = 1, $used = 1)
     {
+        $uniqueId = md5($alas);
         if (!class_exists($class))
         {
-            throw new Exception("class {$class} is not exist");
+            Helper::showSysError("class {$class} is not exist");
+        }
+        if (isset($this->taskList[$uniqueId]))
+        {
+            Helper::showSysError("task $alas already exists");
         }
         try
         {
             $reflect = new ReflectionClass($class);
             if (!$reflect->hasMethod($func))
             {
-                throw new Exception("class {$class}'s func {$func} is not exist");
+                Helper::showSysError("class {$class}'s func {$func} is not exist");
             }
             $method = new ReflectionMethod($class, $func);
             if (!$method->isPublic())
             {
-                throw new Exception("class {$class}'s func {$func} must public");
+                Helper::showSysError("class {$class}'s func {$func} must public");
             }
-            $task = [
-                'type' => 1,
+            Helper::checkTaskTime($time);
+            $this->taskList[$uniqueId] = [
+                'type' => $method->isStatic() ? 2 : 3,
                 'func' => $func,
                 'alas' => $alas,
                 'time' => $time,
-                'persistent' => $persistent
+                'used' => $used,
+                'class' => $class
             ];
-            Timer::add($task, $bySocket);
         }
         catch (ReflectionException $exception)
         {
-            throw new Exception($exception->getMessage());
+            Helper::showException($exception);
         }
+
+        return $this;
     }
 
     /**
-     * 移除任务
-     * @param string $timerId 定时器Id
-     * @return bool
-     * @throws Exception
+     * 新增指令作为任务
+     * @param string $command 指令
+     * @param string $alas 任务别名
+     * @param mixed $time 定时器间隔
+     * @param int $used 定时器占用进程数
+     * @return $this
      */
-    public function removeTask($timerId)
+    public function addCommand($command, $alas, $time = 1, $used = 1)
     {
-        return TimerHelper::removeTask($timerId);
+        $uniqueId = md5($alas);
+        if (!Helper::canUseExcCommand())
+        {
+            Helper::showSysError('please open the disabled function of popen and pclose');
+        }
+        if (isset($this->taskList[$uniqueId]))
+        {
+            Helper::showSysError("task $alas already exists");
+        }
+        Helper::checkTaskTime($time);
+        $this->taskList[$uniqueId] = [
+            'type' => 4,
+            'alas' => $alas,
+            'time' => $time,
+            'used' => $used,
+            'command' => $command,
+        ];
+
+        return $this;
     }
 
     /**
-     * 清空任务
-     * @param bool $exit 清空完成退出
-     * @return bool
-     * @throws Exception
+     * 获取进程管理实例
+     * @return  Win | Linux
      */
-    public function clearTask($exit = false)
+    private function getProcess()
     {
-        return TimerHelper::clearTask($exit);
+        $taskList = $this->taskList;
+        $currentOs = Env::get('currentOs');
+        if ($currentOs == 1)
+        {
+            return (new Win($taskList));
+        }
+        else
+        {
+            return (new Linux($taskList));
+        }
     }
 
     /**
      * 开始运行
-     * @throws Exception
+     * @throws
      */
     public function start()
     {
-        //目录构建
-        FileHelper::initAllPath();
+        if (!$this->taskList)
+        {
+            Helper::showSysError('please add task to run');
+        }
 
-        //启动任务
-        (new Process())->start();
+        //异常注册
+        if (!Env::get('closeErrorRegister'))
+        {
+            Error::register();
+        }
+
+        //目录构建
+        Helper::initAllPath();
+
+        //进程启动
+        $process = $this->getProcess();
+        $process->start();
     }
 
     /**
@@ -259,7 +339,8 @@ class Task
      */
     public function status()
     {
-        (new Process())->status();
+        $process = $this->getProcess();
+        $process->status();
     }
 
     /**
@@ -269,6 +350,7 @@ class Task
      */
     public function stop($force = false)
     {
-        (new Process())->stop($force);
+        $process = $this->getProcess();
+        $process->stop($force);
     }
 }

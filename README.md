@@ -8,7 +8,7 @@
 </p>
 
 ## <h4 style="text-align:left">  项目介绍 </h4>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;EasyTask,PHP常驻内存定时器Composer包，支持同步阻塞/异步非阻塞双模式，支持FPM动态添加/移除/清空定时器，支持Crontab格式定时器，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理Crontab计划任务(如每天凌晨1点-3点同步DB数据,每月1号生成月度统一报表,每晚10点重启nginx服务器等等)；内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;EasyTask,PHP常驻内存定时器Composer包，与Workerman定时器效果完全一致，多个定时器是同时在多个进程中运行的，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理Crontab计划任务(如每天凌晨1点-3点同步DB数据,每月1号生成月度统一报表,每晚10点重启nginx服务器等等)；内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
 </p>
 
 ## <h4>   运行环境 </h4>
@@ -33,14 +33,32 @@ $task = new Task();
 // 设置非常驻内存
 $task->setDaemon(false);
 
-// 设置项目名称(设置的具体意义参见文档,不设置默认为Task)
+// 设置项目名称
 $task->setPrefix('EasyTask');
 
-// 设置记录运行时目录(日志或缓存目录,不设置则自动保存到PHP.ini中设置的临时目录中)
+// 设置记录运行时目录(日志或缓存目录)
 $task->setRunTimePath('./Application/Runtime/');
 
-// 添加定时任务执行类的方法(同时支持静态方法)(开启1个进程,每隔20秒执行一次你设置的类的方法)
-$task->addTask(Sms::class, 'send', 'sendsms', 20, 1);
+// 1.添加闭包函数类型定时任务(开启2个进程,每隔10秒执行1次你写闭包方法中的代码)
+$task->addFunc(function () {
+    $url = 'https://www.gaojiufeng.cn/?id=243';
+    @file_get_contents($url);
+}, 'request', 10, 2);
+
+// 2.添加类的方法类型定时任务(同时支持静态方法)(开启1个进程,每隔20秒执行一次你设置的类的方法)
+$task->addClass(Sms::class, 'send', 'sendsms', 20, 1);
+
+// 3.添加指令类型的定时任务(开启1个进程,每隔10秒执行1次)
+$command = 'php /www/web/orderAutoCancel.php';
+$task->addCommand($command,'orderCancel',10,1);
+
+// 4.添加闭包函数任务,不需要定时器,立即执行(开启1个进程)
+$task->addFunc(function () {
+    while(true)
+    {
+       //todo
+    }
+}, 'request', 0, 1);
 
 // 启动任务
 $task->start();
@@ -52,9 +70,6 @@ $task->start();
 // 初始化
 $task = new Task();
 
-// 设置运行模式:1.同步 2.异步
-$task->setMode(1);
-
 // 设置常驻内存
 $task->setDaemon(true)   
 
@@ -64,7 +79,10 @@ $task->setDaemon(true)
 // 设置系统时区
 ->setTimeZone('Asia/Shanghai')  
 
-// 设置PHP运行路径(Windows环境中默认自动设置,自动设置失败则需要手工设置。)
+// 设置子进程挂掉自动重启
+->setAutoRecover(true)  
+
+// 设置PHP运行路径,一般Window系统才需要设置,当系统无法找到才需要您手动设置
 ->setPhpPath('C:/phpEnv/php/php-7.0/php.exe')
 
 /**
@@ -75,13 +93,13 @@ $task->setDaemon(true)
 /**
  * 设置关闭标准输出的STD文件记录
  */
-->setCloseStdOut(true);
+->setCloseStdOutLog(true);
 
 /**
  * 关闭EasyTask的异常注册
  * EasyTask将不再监听set_error_handler/set_exception_handler/register_shutdown_function事件
  */
-->setErrorRegister(false)
+->setCloseErrorRegister(true)
 
 /**
  * 设置接收运行中的错误或者异常(方式1)
@@ -106,8 +124,16 @@ $task->setDaemon(true)
  */
 ->setErrorRegisterNotify('https://www.gaojiufeng.cn/rev.php')
 
+// 添加任务定时执行闭包函数
+->addFunc(function () {
+    echo 'Success3' . PHP_EOL;
+}, 'fucn', 20, 1)   
+
 // 添加任务定时执行类的方法
 ->addClass(Sms::class, 'send', 'sendsms1', 20, 1)   
+
+// 添加任务定时执行命令
+->addCommand('php /www/wwwroot/learn/curl.php','cmd',6,1)
 
 // 启动任务
 ->start();

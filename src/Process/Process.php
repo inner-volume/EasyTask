@@ -1,10 +1,13 @@
 <?php
 namespace EasyTask\Process;
 
+use EasyTask\Command;
 use EasyTask\Env;
 use EasyTask\Error;
 use EasyTask\Helper;
-use EasyTask\Timer;
+use \Event as Event;
+use \EventBase as EventBase;
+use \EventConfig as EventConfig;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
@@ -12,36 +15,60 @@ use \Throwable as Throwable;
  * Class Process
  * @package EasyTask\Process
  */
-class Process
+abstract class Process
 {
+    /**
+     * 进程启动时间
+     * @var int
+     */
+    protected $startTime;
+
+    /**
+     * 任务总数
+     * @var int
+     */
+    protected $taskCount;
+
     /**
      * 任务列表
      * @var array
      */
-    protected $tasks;
+    protected $taskList;
+
+    /**
+     * 进程命令管理
+     * @var Command
+     */
+    protected $commander;
 
     /**
      * 构造函数
+     * @param array $taskList
      */
-    public function __construct()
+    public function __construct($taskList)
     {
-
+        $this->startTime = time();
+        $this->taskList = $taskList;
+        $this->setTaskCount();
+        $this->commander = new Command();
     }
 
     /**
      * 开始运行
      */
-    public function start()
-    {
-        //所有Start都从这里来
-    }
+    abstract public function start();
 
     /**
      * 运行状态
      */
     public function status()
     {
-
+        //发送命令
+        $this->commander->send([
+            'type' => 'status',
+            'msgType' => 2
+        ]);
+        $this->masterWaitExit();
     }
 
     /**
@@ -50,6 +77,34 @@ class Process
      */
     public function stop($force = false)
     {
+        //发送命令
+        $this->commander->send([
+            'type' => 'stop',
+            'force' => $force,
+            'msgType' => 2
+        ]);
+    }
+
+    /**
+     * 初始化任务数量
+     */
+    protected function setTaskCount()
+    {
+        $count = 0;
+        foreach ($this->taskList as $key => $item)
+        {
+            $count += (int)$item['used'];
+        }
+        $this->taskCount = $count;
+    }
+
+    /**
+     * 检查是否可写标准输出日志
+     * @return bool
+     */
+    protected function canWriteStd()
+    {
+        return Env::get('daemon') && !Env::get('closeStdOutLog');
     }
 
     /**
@@ -59,20 +114,30 @@ class Process
      */
     protected function execute($item)
     {
-        //Daemon
+        //根据任务类型执行
         $daemon = Env::get('daemon');
 
         //Std_Start
-        $canWriteStdOut = Helper\ProcessHelper::canWriteStdOut();
-        if ($canWriteStdOut) ob_start();
+        if ($this->canWriteStd()) ob_start();
         try
         {
-            //静态
-            call_user_func([$item['class'], $item['func']]);
-
-            //非静态
-            $object = new $item['class']();
-            call_user_func([$object, $item['func']]);
+            $type = $item['type'];
+            switch ($type)
+            {
+                case 1:
+                    $func = $item['func'];
+                    $func();
+                    break;
+                case 2:
+                    call_user_func([$item['class'], $item['func']]);
+                    break;
+                case 3:
+                    $object = new $item['class']();
+                    call_user_func([$object, $item['func']]);
+                    break;
+                default:
+                    @pclose(@popen($item['command'], 'r'));
+            }
 
         }
         catch (Exception $exception)
@@ -84,7 +149,7 @@ class Process
             else
             {
                 if (!$daemon) throw $exception;
-                Helper\FileHelper::writeLog(Helper\TextHelper::formatException($exception));
+                Helper::writeLog(Helper::formatException($exception));
             }
         }
         catch (Throwable $exception)
@@ -96,19 +161,19 @@ class Process
             else
             {
                 if (!$daemon) throw $exception;
-                Helper\FileHelper::writeLog(Helper\TextHelper::formatException($exception));
+                Helper::writeLog(Helper::formatException($exception));
             }
         }
 
         //Std_End
-        if ($canWriteStdOut)
+        if ($this->canWriteStd())
         {
             $stdChar = ob_get_contents();
-            if ($stdChar) Helper\FileHelper::saveStdChar($stdChar);
+            if ($stdChar) Helper::saveStdChar($stdChar);
             ob_end_clean();
         }
 
-        //检查Manage进程存活
+        //检查常驻进程存活
         $this->checkDaemonForExit($item);
     }
 
@@ -119,19 +184,54 @@ class Process
      */
     protected function executeInvoker($item)
     {
-        if ($item['time'] === 0 || Env::get('mode') === 2)
+        if ($item['time'] === 0)
         {
-            $this->execute($item);
-            exit();
+            $this->invokerByDirect($item);
         }
         else
         {
-            while (true)
+            Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
+        }
+    }
+
+    /**
+     * 通过Event事件执行
+     * @param array $item
+     */
+    protected function invokeByEvent($item)
+    {
+        //创建Event事件
+        $eventConfig = new EventConfig();
+        $eventBase = new EventBase($eventConfig);
+        $event = new Event($eventBase, -1, Event::TIMEOUT | Event::PERSIST, function () use ($item) {
+            try
             {
-                Helper::sleep($item['time']);
                 $this->execute($item);
             }
-        }
+            catch (Throwable $exception)
+            {
+                $type = 'exception';
+                Error::report($type, $exception);
+                $this->checkDaemonForExit($item);
+            }
+        });
+
+        //添加事件
+        $event->add($item['time']);
+
+        //事件循环
+        $eventBase->loop();
+    }
+
+    /**
+     * 普通执行
+     * @param array $item
+     * @throws Throwable
+     */
+    protected function invokerByDirect($item)
+    {
+        $this->execute($item);
+        exit;
     }
 
     /**
