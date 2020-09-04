@@ -12,12 +12,18 @@ use \Throwable as Throwable;
 class Helper
 {
     /**
-     * @param $task
-     * @param $push
+     * @param array $task 任务
+     * @param bool $push 是否投递任务
+     * @return int
      */
     public static function addTask($task, $push)
     {
         Helper::checkTaskTime($task['time']);
+        if (!$push)
+        {
+            return Timer::add($task);
+        }
+        return 0;
     }
 
     /**

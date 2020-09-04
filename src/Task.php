@@ -192,7 +192,7 @@ class Task
      * @param mixed $time 定时器间隔
      * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
-     * @return $this
+     * @return int 返回定时器Id
      * @throws
      */
     public function addFunc($func, $alas, $time = 1, $persistent = true, $push = false)
@@ -201,15 +201,13 @@ class Task
         {
             throw new Exception('the func parameter must be a closure function');
         }
-        Helper::addTask([
+        return Helper::addTask([
             'type' => 1,
             'func' => $func,
             'alas' => $alas,
             'time' => $time,
             'persistent' => $persistent
         ], $push);
-
-        return $this;
     }
 
     /**

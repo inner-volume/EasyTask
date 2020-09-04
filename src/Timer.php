@@ -16,23 +16,13 @@ class Timer
     /**
      * Add
      * @param array $task
-     * @param bool $bySocket
      * @return int
      */
-    public static function add($task, $bySocket = false)
+    public static function add($task)
     {
-        if (!$bySocket)
-        {
-            $timerId = self::count() + 1;
-            self::$collection[$timerId] = $task;
-            return $timerId;
-        }
-        else
-        {
-            $timerId = self::count() + 1;
-            self::$collection[$timerId] = $task;
-            return $timerId;
-        }
+        $timerId = self::count() + 1;
+        self::$collection[$timerId] = $task;
+        return $timerId;
     }
 
     /**
