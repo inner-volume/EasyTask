@@ -20,15 +20,11 @@ class Linux extends Process
 
     /**
      * 构造函数
-     * @var array $taskList
      */
-    public function __construct($taskList)
+    public function __construct()
     {
-        parent::__construct($taskList);
-        if (Env::get('canAsync'))
-        {
-            Helper::openAsyncSignal();
-        }
+        parent::__construct();
+        if (Helper::canUseAsyncSignal()) Helper::openAsyncSignal();
     }
 
     /**

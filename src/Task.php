@@ -42,7 +42,6 @@ class Task
         Env::set('prefix', 'Task');
         Env::set('canEvent', Helper::canUseEvent());
         Env::set('currentOs', $currentOs);
-        Env::set('canAsync', Helper::canUseAsyncSignal());
         Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
@@ -285,15 +284,14 @@ class Task
      */
     private function getProcess()
     {
-        $taskList = $this->taskList;
         $currentOs = Env::get('currentOs');
         if ($currentOs == 1)
         {
-            return (new Win($taskList));
+            return (new Win());
         }
         else
         {
-            return (new Linux($taskList));
+            return (new Linux());
         }
     }
 

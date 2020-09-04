@@ -40,12 +40,11 @@ class Win extends Process
 
     /**
      * 构造函数
-     * @param array $taskList
      */
-    public function __construct($taskList)
+    public function __construct()
     {
         $this->wts = new Wts();
-        parent::__construct($taskList);
+        parent::__construct();
     }
 
     /**

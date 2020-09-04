@@ -43,12 +43,10 @@ abstract class Process
 
     /**
      * 构造函数
-     * @param array $taskList
      */
-    public function __construct($taskList)
+    public function __construct()
     {
         $this->startTime = time();
-        $this->taskList = $taskList;
         $this->setTaskCount();
         $this->commander = new Command();
     }
