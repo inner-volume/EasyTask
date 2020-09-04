@@ -341,20 +341,21 @@ class Helper
     /**
      * 检查任务时间是否合法
      * @param mixed $time
+     * @throws Exception
      */
     public static function checkTaskTime($time)
     {
         if (is_int($time))
         {
-            if ($time < 0) static::showSysError('time must be greater than or equal to 0');
+            if ($time < 0) throw new Exception('time must be greater than or equal to 0');
         }
         elseif (is_float($time))
         {
-            if (!static::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
+            if (!static::canUseEvent()) throw new Exception('please install php_event.(dll/so) extend for using milliseconds');
         }
         else
         {
-            static::showSysError('time parameter is an unsupported type');
+            throw new Exception('time parameter is an unsupported type');
         }
     }
 
