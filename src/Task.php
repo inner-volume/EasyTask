@@ -280,8 +280,7 @@ class Task
      */
     private function getProcess()
     {
-        $currentOs = Env::get('currentOs');
-        if ($currentOs == 1)
+        if (Helper::isWin())
         {
             return (new Win());
         }
@@ -297,16 +296,8 @@ class Task
      */
     public function start()
     {
-        if (!$this->taskList)
-        {
-            Helper::showSysError('please add task to run');
-        }
-
         //异常注册
-        if (!Env::get('closeErrorRegister'))
-        {
-            Error::register();
-        }
+        if (Env::get('error_register')) Error::register();
 
         //目录构建
         Helper::initAllPath();
