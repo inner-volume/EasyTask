@@ -116,18 +116,19 @@ class Task
      * 设置运行时目录
      * @param string $path
      * @return $this
+     * @throws
      */
     public function setRunTimePath($path)
     {
         if (!is_dir($path))
         {
-            Helper::showSysError("the path {$path} is not exist");
+            throw new Exception("the path {$path} is not exist");
         }
         if (!is_writable($path))
         {
-            Helper::showSysError("the path {$path} is not writeable");
+            throw new Exception("the path {$path} is not writeable");
         }
-        Env::set('runTimePath', realpath($path));
+        Env::set('run_time_path', realpath($path));
         return $this;
     }
 
