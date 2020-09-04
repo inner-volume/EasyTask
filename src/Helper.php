@@ -203,15 +203,6 @@ class Helper
     }
 
     /**
-     * 获取进程队列目录
-     * @return  string
-     */
-    public static function getQuePath()
-    {
-        return Helper::getRunTimePath() . 'Que' . DIRECTORY_SEPARATOR;
-    }
-
-    /**
      * 获取进程锁目录
      * @return  string
      */
@@ -239,7 +230,6 @@ class Helper
             static::getWinPath(),
             static::getLogPath(),
             static::getLokPath(),
-            static::getQuePath(),
             static::getCsgPath(),
             static::getStdPath(),
         ];
