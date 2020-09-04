@@ -12,6 +12,15 @@ use \Throwable as Throwable;
 class Helper
 {
     /**
+     * @param $task
+     * @param $push
+     */
+    public static function addTask($task, $push)
+    {
+        Helper::checkTaskTime($task['time']);
+    }
+
+    /**
      * 睡眠函数
      * @param int $time 时间
      * @param int $type 类型:1秒 2毫秒
