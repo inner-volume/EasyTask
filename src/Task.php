@@ -65,7 +65,7 @@ class Task
     }
 
     /**
-     * 设置任务前缀
+     * 设置项目名称
      * @param string $prefix
      * @return $this
      * @throws Exception
