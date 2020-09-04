@@ -222,6 +222,7 @@ class Helper
 
     /**
      * 初始化所有目录
+     * @throws Exception
      */
     public static function initAllPath()
     {
@@ -239,7 +240,7 @@ class Helper
             {
                 if (!mkdir($path, 0777, true))
                 {
-                    Helper::showSysError("Failed to create $path directory, please check permissions");
+                    throw new Exception("Failed to create $path directory, please check permissions");
                 }
             }
         }
