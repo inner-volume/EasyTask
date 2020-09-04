@@ -276,6 +276,7 @@ class Linux extends Process
     }
 
     /**
+     * 守护进程-客户端消息处理
      * @param string $message 客户端消息
      */
     protected function managerOnMessage($message)
