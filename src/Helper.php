@@ -96,7 +96,7 @@ class Helper
     public static function setPhpPath($path = '')
     {
         if (!$path) $path = PHP_BINARY;
-        Env::set('phpPath', $path);
+        Env::set('php_path', $path);
     }
 
     /**
