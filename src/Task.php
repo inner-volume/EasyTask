@@ -216,28 +216,23 @@ class Task
      * @param string $func 方法名称
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
+     * @param bool $persistent 持续执行
      * @param bool $push 是否投递任务
      * @return $this
      * @throws
      */
-    public function addClass($class, $func, $alas, $time = 1, $used = 1, $push = false)
+    public function addClass($class, $func, $alas, $time = 1, $persistent = true, $push = false)
     {
-        $uniqueId = md5($alas);
         if (!class_exists($class))
         {
-            Helper::showSysError("class {$class} is not exist");
-        }
-        if (isset($this->taskList[$uniqueId]))
-        {
-            Helper::showSysError("task $alas already exists");
+            throw new Exception("class {$class} is not exist");
         }
         try
         {
             $reflect = new ReflectionClass($class);
             if (!$reflect->hasMethod($func))
             {
-                Helper::showSysError("class {$class}'s func {$func} is not exist");
+                throw new Exception("class {$class}'s func {$func} is not exist");
             }
             $method = new ReflectionMethod($class, $func);
             if (!$method->isPublic())
