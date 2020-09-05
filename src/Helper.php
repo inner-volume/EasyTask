@@ -52,6 +52,35 @@ class Helper
     }
 
     /**
+     * 序列化任务
+     * @param array $task
+     * @return string
+     */
+    public static function serializeForTask($task)
+    {
+        if ($task['type'] == 1)
+        {
+            $task['func'] = \Opis\Closure\serialize($task);
+        }
+        return base64_encode(json_encode($task));
+    }
+
+    /**
+     * 反序列化任务
+     * @param string $task
+     * @return array
+     */
+    public static function unserializeForTask($task)
+    {
+        $task = json_decode(base64_decode($task), true);
+        if ($task['type'] == 1)
+        {
+            $task['func'] = \Opis\Closure\unserialize($task);
+        }
+        return $task;
+    }
+
+    /**
      * 设置进程标题
      * @param string $title
      */
