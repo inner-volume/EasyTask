@@ -16,12 +16,6 @@ use \ReflectionException as ReflectionException;
 class Task
 {
     /**
-     * 任务列表
-     * @var array
-     */
-    private $taskList = [];
-
-    /**
      * 构造函数
      */
     public function __construct()
