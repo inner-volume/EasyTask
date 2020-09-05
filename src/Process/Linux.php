@@ -31,6 +31,7 @@ class Linux extends Process
 
     /**
      * 开始运行
+     * @throws Exception
      */
     public function start()
     {
