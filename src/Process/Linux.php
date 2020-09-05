@@ -230,6 +230,7 @@ class Linux extends Process
                 {
                     $status = $this->processStatus();
                     $client_queue->push([
+                        'id' => $cid,
                         'action' => $action,
                         'response' => $status
                     ]);
@@ -252,6 +253,7 @@ class Linux extends Process
                     $timerId = Timer::set($response);
                     $this->allocate($response);
                     $client_queue->push([
+                        'id' => $cid,
                         'action' => $action,
                         'response' => $timerId
                     ]);

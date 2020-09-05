@@ -16,7 +16,8 @@
     "php": ">=5.4",
     "ext-json": "*",
     "ext-curl": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "opis/closure": "^3.5"
   },
   "suggest": {
     "ext-event": "For better performance. "

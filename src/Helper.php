@@ -26,6 +26,17 @@ class Helper
         {
             return Timer::set($task);
         }
+        else
+        {
+            $client_queue = new Queue('master');
+            $server_queue = new Queue('manage');
+            $cid = uniqid();
+            $server_queue->push([
+                'id' => $cid,
+                'action' => 'addTask',
+                'action' => 'addTask',
+            ]);
+        }
         return 0;
     }
 
