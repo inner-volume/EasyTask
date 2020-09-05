@@ -46,7 +46,7 @@ class Queue
 
     /**
      * 向队列投递数据
-     * @param string $item
+     * @param array $item
      * @throws Exception
      */
     public function push($item)
@@ -68,7 +68,7 @@ class Queue
 
     /**
      * 从队列弹出数据
-     * @return string|null
+     * @return array
      * @throws Exception
      */
     public function shift()

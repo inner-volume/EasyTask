@@ -4,6 +4,7 @@ namespace EasyTask\Process;
 use EasyTask\Env;
 use EasyTask\Helper;
 use \Closure as Closure;
+use EasyTask\Queue;
 use EasyTask\Socket\Server;
 use EasyTask\Timer;
 use Exception;
@@ -47,7 +48,7 @@ class Linux extends Process
                     {
                         throw new Exception('set child processForManager failed,please try again');
                     }
-                    $this->daemonWait();
+                    $this->manager();
                 },
                 function () {
                     pcntl_wait($status, WNOHANG);
@@ -57,24 +58,21 @@ class Linux extends Process
         }
 
         //同步处理
-        $this->daemonWait();
+        $this->manager();
     }
 
     /**
-     * 初始化分配进程处理任务
+     * 分配任务
+     * @param array $timer
      * @throws Throwable
      */
-    protected function allocate()
+    protected function allocate($timer = [])
     {
-        $timers = Timer::get();
+        $timers = $timer ? [$timer] : Timer::get();
         foreach ($timers as $timerId => $timer)
         {
-            //提取参数
-            $prefix = Env::get('prefix');
-            $item['alas'] = "{$prefix}_{$timer['alas']}";
-
             //分配进程
-            $this->forkItemExec($timerId, $item);
+            $this->forkTimerToInvoker($timerId, $timer);
         }
     }
 
@@ -102,16 +100,18 @@ class Linux extends Process
 
     /**
      * 创建任务执行的子进程
-     * @param array $item
+     * @param int $timerId
+     * @param array $timer
      * @throws Throwable
      */
-    protected function forkItemExec($item)
+    protected function forkTimerToInvoker($timerId, $timer)
     {
         $this->fork(
-            function () use ($item) {
-                $this->invoker($item);
+            function () use ($timer) {
+                $this->timerInvoker($timer);
             },
-            function ($pid) use ($item) {
+            function ($pid) use ($timerId, $timer) {
+                Timer::change($timerId, 'pid', $pid);
                 //set not block
                 pcntl_wait($status, WNOHANG);
             }
@@ -119,19 +119,19 @@ class Linux extends Process
     }
 
     /**
-     * 执行器
-     * @param array $item
+     * 定时执行器
+     * @param array $timer
      * @throws Throwable
      */
-    protected function invoker($item)
+    protected function timerInvoker($timer)
     {
         //输出信息
         $item['ppid'] = posix_getppid();
-        $text = "this worker {$item['alas']}";
+        $text = "this worker {$timer['alas']}";
         Helper::writeTypeLog("$text is start");
 
         //进程标题
-        Helper::cli_set_process_title($item['alas']);
+        Helper::cli_set_process_title($timer['alas']);
 
         //Kill信号
         pcntl_signal(SIGTERM, function () use ($text) {
@@ -139,7 +139,7 @@ class Linux extends Process
         });
 
         //执行任务
-        $this->executeInvoker($item);
+        $this->executeInvoker($timer);
     }
 
     /**
@@ -182,15 +182,15 @@ class Linux extends Process
 
     /**
      * 守护进程
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     protected function manager()
     {
-        //进程标题
-        Helper::cli_set_process_title(Env::get('prefix'));
-
         //任务分配
         $this->allocate();
+
+        //进程标题
+        Helper::cli_set_process_title(Env::get('prefix'));
 
         //输出信息
         $text = "this manager";
@@ -207,39 +207,36 @@ class Linux extends Process
         });
 
         //挂起进程
+        $exitText = "listened exit command, $text is exiting safely";
+        $statusText = "listened status command, $text is reported";
+        $forceExitText = "listened exit command, $text is exiting unsafely";
+        $client_queue = new Queue('master');
+        $server_queue = new Queue('manage');
         while (true)
         {
-            //CPU休息
-            Helper::sleep(1);
-
-            //提取需要
-
-            //接收命令start/status/stop
-            $this->commander->waitCommandForExecute(2, function ($command) use ($text) {
-                $exitText = "listened exit command, $text is exiting safely";
-                $statusText = "listened status command, $text is reported";
-                $forceExitText = "listened exit command, $text is exiting unsafely";
-                if ($command['type'] == 'start')
+            $command = $server_queue->shift();
+            if ($command)
+            {
+                //提取参数
+                $cid = $command['cid'];
+                $action = $command['action'];
+                $response = $command['response'];
+                if ($action == 'start')
                 {
-                    if ($command['time'] > $this->startTime)
-                    {
-                        Helper::writeTypeLog($forceExitText);
-                        posix_kill(0, SIGKILL);
-                    }
+                    Helper::writeTypeLog($forceExitText);
+                    posix_kill(0, SIGKILL);
                 }
-                if ($command['type'] == 'status')
+                if ($action == 'status')
                 {
-                    $report = $this->processStatus();
-                    $this->commander->send([
-                        'type' => 'status',
-                        'msgType' => 1,
-                        'status' => $report,
+                    $status = $this->processStatus();
+                    $client_queue->push([
+                        'action' => $action,
+                        'response' => $status
                     ]);
-                    Helper::writeTypeLog($statusText);
                 }
-                if ($command['type'] == 'stop')
+                if ($action == 'stop')
                 {
-                    if ($command['force'])
+                    if ($response['force'])
                     {
                         Helper::writeTypeLog($forceExitText);
                         posix_kill(0, SIGKILL);
@@ -250,14 +247,22 @@ class Linux extends Process
                         exit();
                     }
                 }
-
-            }, $this->startTime);
+                if ($action == 'addTask')
+                {
+                    $timerId = Timer::set($response);
+                    $this->allocate($response);
+                    $client_queue->push([
+                        'action' => $action,
+                        'response' => $timerId
+                    ]);
+                }
+            }
 
             //信号调度
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
+            if (!Helper::canUseAsyncSignal()) pcntl_signal_dispatch();
 
-            //检查进程
-            if (Env::get('canAutoRec')) $this->processStatus();
+            //检查进程(考虑间隔检查)
+            if (Env::get('auto_recover')) $this->processStatus();
         }
     }
 

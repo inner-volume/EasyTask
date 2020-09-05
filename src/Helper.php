@@ -19,6 +19,8 @@ class Helper
      */
     public static function addTask($task, $push)
     {
+        $prefix = Env::get('prefix');
+        $task['alas'] = "{$prefix}_{$task['alas']}";
         Helper::checkTaskTime($task['time']);
         if (!$push)
         {
