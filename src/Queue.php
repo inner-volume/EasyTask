@@ -1,6 +1,8 @@
 <?php
 namespace EasyTask;
 
+use Exception;
+
 /**
  * Class Queue
  * @package EasyTask
@@ -45,6 +47,7 @@ class Queue
     /**
      * 向队列投递数据
      * @param string $item
+     * @throws Exception
      */
     public function push($item)
     {
@@ -58,7 +61,7 @@ class Queue
             array_push($queue_data, $item);
             if (!file_put_contents($this->queFile, json_encode($queue_data)))
             {
-                Helper::showError('failed to save data to queue file');
+                throw new Exception('failed to save data to queue file');
             }
         });
     }
@@ -66,6 +69,7 @@ class Queue
     /**
      * 从队列弹出数据
      * @return string|null
+     * @throws Exception
      */
     public function shift()
     {
@@ -79,7 +83,7 @@ class Queue
             $value = array_shift($queue_data);
             if (!file_put_contents($this->queFile, json_encode($queue_data)))
             {
-                Helper::showError('failed to save data to queue file');
+                throw new Exception('failed to save data to queue file');
             }
             return $value;
         });
