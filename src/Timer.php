@@ -14,24 +14,15 @@ class Timer
     private static $collection;
 
     /**
-     * Add
+     * Set
      * @param array $task
      * @return int
      */
-    public static function add($task)
+    public static function set($task)
     {
-        $timerId = self::count() + 1;
+        $timerId = count(self::$collection) + 1;
         self::$collection[$timerId] = $task;
         return $timerId;
-    }
-
-    /**
-     * Count
-     * @return int
-     */
-    public static function count()
-    {
-        return count(self::$collection);
     }
 
     /**
@@ -39,14 +30,21 @@ class Timer
      */
     public static function get()
     {
-        $times = [];
-        $tasks = self::$collection;
-        foreach ($tasks as $key => $value)
+        return self::$collection;
+    }
+
+    /**
+     * Change
+     * @param $timerId
+     * @param $key
+     * @param $value
+     */
+    public static function change($timerId, $key, $value)
+    {
+        if (isset(self::$collection[$timerId]))
         {
-            $times[$key] = $value['next_time'];
+            self::$collection[$timerId][$key] = $value;
         }
-        array_multisort($times, SORT_ASC, $tasks);
-        return empty($tasks['0']) ? [] : $tasks['0'];
     }
 
     /**

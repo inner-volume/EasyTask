@@ -22,7 +22,7 @@ class Helper
         Helper::checkTaskTime($task['time']);
         if (!$push)
         {
-            return Timer::add($task);
+            return Timer::set($task);
         }
         return 0;
     }
