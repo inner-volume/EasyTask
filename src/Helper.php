@@ -15,6 +15,7 @@ class Helper
      * @param array $task 任务
      * @param bool $push 是否投递任务
      * @return int
+     * @throws Exception
      */
     public static function addTask($task, $push)
     {
@@ -200,6 +201,15 @@ class Helper
     public static function getCsgPath()
     {
         return Helper::getRunTimePath() . 'Csg' . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * 获取进程队列目录
+     * @return  string
+     */
+    public static function getQuePath()
+    {
+        return Helper::getRunTimePath() . 'Que' . DIRECTORY_SEPARATOR;
     }
 
     /**
