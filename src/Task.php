@@ -128,6 +128,17 @@ class Task
     }
 
     /**
+     * 设置服务监听端口
+     * @param int $port
+     * @return $this
+     */
+    public function setServerPort($port = 9501)
+    {
+        Env::set('server_port', $port);
+        return $this;
+    }
+
+    /**
      * 设置子进程自动恢复
      * @param bool $recover
      * @return $this
