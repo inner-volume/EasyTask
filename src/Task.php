@@ -38,6 +38,7 @@ class Task
     {
         //初始化基础配置
         Env::set('prefix', 'task');
+        Env::set('server_port', 9501);
         Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
