@@ -11,46 +11,30 @@ use Exception;
 class Client
 {
     /**
-     * 设置服务端名称
-     * @param string $name
-     * @return $this
+     * 服务端端口
+     * @var string
      */
-    public function setServerName($name = 'task')
-    {
-        Env::set('name', $name);
-        return $this;
-    }
+    private $port = null;
 
     /**
-     * 设置服务端目录
-     * @param string $path
-     * @return $this
-     * @throws Exception
+     * 设置服务端端口
+     * @param int $port
      */
-    public function setServerPath($path = '')
+    public function setPort($port = 9501)
     {
-        if (!is_dir($path))
-        {
-            throw new Exception("the path {$path} is not exist");
-        }
-        if (!is_writable($path))
-        {
-            throw new Exception("the path {$path} is not writeable");
-        }
-        Env::set('path', realpath($path));
-        return $this;
+        $this->port = $port;
     }
 
     /**
      * 新增任务
-     * @param Closure $func 匿名函数
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
+     * @param string $name 任务名称
+     * @param Closure $func 任务函数
+     * @param int $time 任务间隔
      * @param bool $persistent 持续执行
-     * @return int 返回定时器Id
+     * @return int 任务Id
      * @throws
      */
-    public function add($func, $alas, $time = 1, $persistent = true)
+    public function addTask($name, $func, $time = 1, $persistent = true)
     {
         if (!($func instanceof Closure))
         {
@@ -65,7 +49,7 @@ class Client
      * @return bool
      * @throws
      */
-    public function remove($taskId)
+    public function removeTask($taskId)
     {
         return 1;
     }
@@ -74,7 +58,7 @@ class Client
      * 清空任务
      * @return bool
      */
-    public function clear()
+    public function clearTask()
     {
         return true;
     }

@@ -402,10 +402,6 @@ class Helper
         {
             if ($time < 0) throw new Exception('time must be greater than or equal to 0');
         }
-        elseif (is_float($time))
-        {
-            if (!static::canUseEvent()) throw new Exception('please install php_event.(dll/so) extend for using milliseconds');
-        }
         else
         {
             throw new Exception('time parameter is an unsupported type');

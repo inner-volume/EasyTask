@@ -111,23 +111,23 @@ class Server
 
     /**
      * 新增任务
-     * @param Closure $func 匿名函数
      * @param string $name 任务名称
+     * @param Closure $func 任务函数
      * @param int $time 任务间隔
      * @param bool $persistent 持续执行
-     * @return int 返回任务Id
+     * @return int 任务Id
      * @throws
      */
-    public function addTask($func, $name, $time = 1, $persistent = true)
+    public function addTask($name, $func, $time = 1, $persistent = true)
     {
+        Helper::checkTaskTime($time);
         if (!($func instanceof Closure))
         {
             throw new Exception('the func parameter must be a closure function');
         }
         return Task::add([
-            'type' => 1,
-            'func' => $func,
             'name' => $name,
+            'func' => $func,
             'time' => $time,
             'persistent' => $persistent
         ]);
