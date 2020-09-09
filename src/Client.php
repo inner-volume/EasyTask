@@ -12,14 +12,19 @@ class Client
 {
     /**
      * Client constructor.
-     * @param string $server_name
-     * @param string $server_path
+     * @param string $server_name 服务端名称
+     * @param string $server_path 服务端运行目录(如果服务端未设置可不传,服务端设置了必选传)
+     * @throws Exception
      */
     public function __construct($server_name = 'task', $server_path = '')
     {
         Env::set('name', $server_name);
-        Env::set('run_path', $server_path ? $server_path : sys_get_temp_dir());
-        $server_path = Helper::getRunTimePath();
+        Env::set('run_path', $server_path);
+        $server_run_path = Helper::getRunPath();
+        if (!is_dir($server_path))
+        {
+            throw new Exception('sever_run_path is not exists');
+        }
     }
 
     /**
