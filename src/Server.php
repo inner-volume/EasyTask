@@ -10,17 +10,11 @@ use \ReflectionMethod as ReflectionMethod;
 use \ReflectionException as ReflectionException;
 
 /**
- * Class Task
+ * Class Server
  * @package EasyTask
  */
 class Server
 {
-    /**
-     * 任务列表
-     * @var array
-     */
-    private $taskList = [];
-
     /**
      * 构造函数
      */
@@ -49,7 +43,7 @@ class Server
     }
 
     /**
-     * 设置是否守护进程
+     * 设置是否后台运行
      * @param bool $daemon
      * @return $this
      */
@@ -76,7 +70,7 @@ class Server
     }
 
     /**
-     * 设置PHP执行路径|Windows
+     * 设置PHP执行路径
      * @param string $path
      * @return $this
      * @throws Exception
@@ -124,17 +118,6 @@ class Server
             throw new Exception("the path {$path} is not writeable");
         }
         Env::set('run_time_path', realpath($path));
-        return $this;
-    }
-
-    /**
-     * 设置子进程自动恢复
-     * @param bool $recover
-     * @return $this
-     */
-    public function setAutoRecover($recover = false)
-    {
-        Env::set('auto_recover', $recover);
         return $this;
     }
 
@@ -190,7 +173,7 @@ class Server
      * @return int 返回定时器Id
      * @throws
      */
-    public function addFunc($func, $alas, $time = 1, $persistent = true, $push = false)
+    public function addTask($func, $alas, $time = 1, $persistent = true, $push = false)
     {
         if (!($func instanceof Closure))
         {
@@ -201,75 +184,6 @@ class Server
             'func' => $func,
             'alas' => $alas,
             'time' => $time,
-            'persistent' => $persistent
-        ], $push);
-    }
-
-    /**
-     * 新增类作为任务
-     * @param string $class 类名称
-     * @param string $func 方法名称
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param bool $persistent 持续执行
-     * @param bool $push 是否投递任务
-     * @return int 返回定时器Id
-     * @throws
-     */
-    public function addClass($class, $func, $alas, $time = 1, $persistent = true, $push = false)
-    {
-        if (!class_exists($class))
-        {
-            throw new Exception("class {$class} is not exist");
-        }
-        try
-        {
-            $reflect = new ReflectionClass($class);
-            if (!$reflect->hasMethod($func))
-            {
-                throw new Exception("class {$class}'s func {$func} is not exist");
-            }
-            $method = new ReflectionMethod($class, $func);
-            if (!$method->isPublic())
-            {
-                throw new Exception("class {$class}'s func {$func} must public");
-            }
-            return Helper::addTask([
-                'type' => $method->isStatic() ? 2 : 3,
-                'func' => $func,
-                'alas' => $alas,
-                'time' => $time,
-                'class' => $class,
-                'persistent' => $persistent
-            ], $push);
-        }
-        catch (ReflectionException $exception)
-        {
-            throw new Exception($exception->getMessage());
-        }
-    }
-
-    /**
-     * 新增指令作为任务
-     * @param string $command 指令
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param bool $persistent 持续执行
-     * @param bool $push 是否投递任务
-     * @return int 返回定时器Id
-     * @throws Exception
-     */
-    public function addCommand($command, $alas, $time = 1, $persistent = true, $push = false)
-    {
-        if (!Helper::canUseExcCommand())
-        {
-            throw new Exception('please open the disabled function of popen and pclose');
-        }
-        return Helper::addTask([
-            'type' => 4,
-            'alas' => $alas,
-            'time' => $time,
-            'command' => $command,
             'persistent' => $persistent
         ], $push);
     }
