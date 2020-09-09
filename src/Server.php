@@ -43,6 +43,22 @@ class Server
     }
 
     /**
+     * 设置项目名称
+     * @param string $name
+     * @return $this
+     * @throws Exception
+     */
+    public function setName($name = 'task')
+    {
+        if (Env::get('runtime_path'))
+        {
+            throw new Exception('should use setPrefix before setRunTimePath');
+        }
+        Env::set('name', $name);
+        return $this;
+    }
+
+    /**
      * 设置是否后台运行
      * @param bool $daemon
      * @return $this
@@ -50,22 +66,6 @@ class Server
     public function setDaemon($daemon = false)
     {
         Env::set('daemon', $daemon);
-        return $this;
-    }
-
-    /**
-     * 设置任务前缀|项目名称
-     * @param string $prefix
-     * @return $this
-     * @throws Exception
-     */
-    public function setPrefix($prefix = 'task')
-    {
-        if (Env::get('runtime_path'))
-        {
-            throw new Exception('should use setPrefix before setRunTimePath');
-        }
-        Env::set('prefix', $prefix);
         return $this;
     }
 
@@ -107,7 +107,7 @@ class Server
      * @return $this
      * @throws
      */
-    public function setRunTimePath($path)
+    public function setRunPath($path)
     {
         if (!is_dir($path))
         {
@@ -117,7 +117,7 @@ class Server
         {
             throw new Exception("the path {$path} is not writeable");
         }
-        Env::set('run_time_path', realpath($path));
+        Env::set('run_path', realpath($path));
         return $this;
     }
 

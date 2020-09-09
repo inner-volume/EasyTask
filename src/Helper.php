@@ -205,13 +205,14 @@ class Helper
     /**
      * 获取运行时目录
      * @return  string
+     * @throws Exception
      */
-    public static function getRunTimePath()
+    public static function getRunPath()
     {
-        $path = Env::get('runTimePath') ? Env::get('runTimePath') : sys_get_temp_dir();
+        $path = Env::get('run_path') ? Env::get('run_path') : sys_get_temp_dir();
         if (!is_dir($path))
         {
-            static::showSysError('please set runTimePath');
+            throw new \Exception('please set runPath');
         }
         $path = $path . DIRECTORY_SEPARATOR . Env::get('prefix') . DIRECTORY_SEPARATOR;
         $path = str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $path);

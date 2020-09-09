@@ -11,11 +11,15 @@ use Exception;
 class Client
 {
     /**
-     * 构造函数
+     * Client constructor.
+     * @param string $server_name
+     * @param string $server_path
      */
-    public function __construct($prefix = 'task')
+    public function __construct($server_name = 'task', $server_path = '')
     {
-
+        Env::set('name', $server_name);
+        Env::set('run_path', $server_path ? $server_path : sys_get_temp_dir());
+        $server_path = Helper::getRunTimePath();
     }
 
     /**
