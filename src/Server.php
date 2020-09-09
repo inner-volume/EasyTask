@@ -5,9 +5,6 @@ use \Closure as Closure;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
 use Exception;
-use \ReflectionClass as ReflectionClass;
-use \ReflectionMethod as ReflectionMethod;
-use \ReflectionException as ReflectionException;
 
 /**
  * Class Server
@@ -31,7 +28,7 @@ class Server
     private function initialise()
     {
         //初始化基础配置
-        Env::set('prefix', 'task');
+        Env::set('name', 'task');
         Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
@@ -43,71 +40,35 @@ class Server
     }
 
     /**
-     * 设置项目名称
+     * 设置服务名称
      * @param string $name
-     * @return $this
+     * @return Server
      * @throws Exception
      */
     public function setName($name = 'task')
     {
-        if (Env::get('runtime_path'))
-        {
-            throw new Exception('should use setPrefix before setRunTimePath');
-        }
         Env::set('name', $name);
         return $this;
     }
 
     /**
-     * 设置是否后台运行
-     * @param bool $daemon
-     * @return $this
+     * 设置服务端口
+     * @param int $port
+     * @return Server
      */
-    public function setDaemon($daemon = false)
+    public function setPort($port = 9501)
     {
-        Env::set('daemon', $daemon);
+        Env::set('port', $port);
         return $this;
     }
 
     /**
-     * 设置PHP执行路径
+     * 设置服务目录
      * @param string $path
-     * @return $this
-     * @throws Exception
-     */
-    public function setPhpPath($path)
-    {
-        $file = realpath($path);
-        if (!file_exists($file))
-        {
-            throw new Exception("the path {$path} is not exists");
-        }
-        Helper::setPhpPath($path);
-        return $this;
-    }
-
-    /**
-     * 设置时区
-     * @param string $timeIdent
-     * @return $this
-     * @throws Exception
-     */
-    public function setTimeZone($timeIdent)
-    {
-        if (!date_default_timezone_set($timeIdent))
-        {
-            throw new Exception('invalid timezone format');
-        }
-        return $this;
-    }
-
-    /**
-     * 设置运行时目录
-     * @param string $path
-     * @return $this
+     * @return Server
      * @throws
      */
-    public function setRunPath($path)
+    public function setPath($path)
     {
         if (!is_dir($path))
         {
@@ -117,29 +78,18 @@ class Server
         {
             throw new Exception("the path {$path} is not writeable");
         }
-        Env::set('run_path', realpath($path));
+        Env::set('path', realpath($path));
         return $this;
     }
 
     /**
-     * 设置关闭标准输出(关闭输出记录)
-     * @param bool $close
-     * @return $this
+     * 设置是否后台运行
+     * @param bool $daemon
+     * @return Server
      */
-    public function setCloseStdOut($close = false)
+    public function setDaemon($daemon = false)
     {
-        Env::set('close_std_out', $close);
-        return $this;
-    }
-
-    /**
-     * 设置异常注册
-     * @param bool $isReg
-     * @return $this
-     */
-    public function setErrorRegister($isReg = true)
-    {
-        Env::set('error_register', $isReg);
+        Env::set('daemon', $daemon);
         return $this;
     }
 
@@ -151,10 +101,6 @@ class Server
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (!Env::get('error_register'))
-        {
-            throw new Exception('set setErrorRegister as true before use this api');
-        }
         if (!$notify instanceof Closure && !is_string($notify))
         {
             throw new Exception('notify parameter can only be string or closure');
@@ -164,28 +110,27 @@ class Server
     }
 
     /**
-     * 新增匿名函数作为任务
+     * 新增任务
      * @param Closure $func 匿名函数
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
+     * @param string $name 任务名称
+     * @param int $time 任务间隔
      * @param bool $persistent 持续执行
-     * @param bool $push 是否投递任务
-     * @return int 返回定时器Id
+     * @return int 返回任务Id
      * @throws
      */
-    public function addTask($func, $alas, $time = 1, $persistent = true, $push = false)
+    public function addTask($func, $name, $time = 1, $persistent = true)
     {
         if (!($func instanceof Closure))
         {
             throw new Exception('the func parameter must be a closure function');
         }
-        return Helper::addTask([
+        return Task::add([
             'type' => 1,
             'func' => $func,
-            'alas' => $alas,
+            'name' => $name,
             'time' => $time,
             'persistent' => $persistent
-        ], $push);
+        ]);
     }
 
     /**

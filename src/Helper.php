@@ -24,7 +24,7 @@ class Helper
         Helper::checkTaskTime($task['time']);
         if (!$push)
         {
-            return Timer::set($task);
+            return Task::set($task);
         }
         else
         {

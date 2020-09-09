@@ -11,29 +11,34 @@ use Exception;
 class Client
 {
     /**
-     * Client constructor.
-     * @param string $server_name 服务端名称
-     * @param string $server_path 服务端运行目录(如果服务端未设置可不传,服务端设置了必选传)
-     * @throws Exception
+     * 设置服务端名称
+     * @param string $name
+     * @return $this
      */
-    public function __construct($server_name = 'task', $server_path = '')
+    public function setServerName($name = 'task')
     {
-        Env::set('name', $server_name);
-        Env::set('run_path', $server_path);
-        $server_run_path = Helper::getRunPath();
-        if (!is_dir($server_path))
-        {
-            throw new Exception('sever_run_path is not exists');
-        }
+        Env::set('name', $name);
+        return $this;
     }
 
     /**
-     * 查看任务
-     * @param array
+     * 设置服务端目录
+     * @param string $path
+     * @return $this
+     * @throws Exception
      */
-    public function get()
+    public function setServerPath($path = '')
     {
-
+        if (!is_dir($path))
+        {
+            throw new Exception("the path {$path} is not exist");
+        }
+        if (!is_writable($path))
+        {
+            throw new Exception("the path {$path} is not writeable");
+        }
+        Env::set('path', realpath($path));
+        return $this;
     }
 
     /**

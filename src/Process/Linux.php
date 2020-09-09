@@ -6,7 +6,7 @@ use EasyTask\Helper;
 use \Closure as Closure;
 use EasyTask\Queue;
 use EasyTask\Socket\Server;
-use EasyTask\Timer;
+use EasyTask\Task;
 use Exception;
 use \Throwable as Throwable;
 
@@ -68,7 +68,7 @@ class Linux extends Process
      */
     protected function allocate($timer = [])
     {
-        $timers = $timer ? [$timer] : Timer::get();
+        $timers = $timer ? [$timer] : Task::get();
         foreach ($timers as $timerId => $timer)
         {
             //分配进程
@@ -111,7 +111,7 @@ class Linux extends Process
                 $this->timerInvoker($timer);
             },
             function ($pid) use ($timerId, $timer) {
-                Timer::change($timerId, 'pid', $pid);
+                Task::change($timerId, 'pid', $pid);
                 //set not block
                 pcntl_wait($status, WNOHANG);
             }
@@ -250,7 +250,7 @@ class Linux extends Process
                 }
                 if ($action == 'addTask')
                 {
-                    $timerId = Timer::set($response);
+                    $timerId = Task::set($response);
                     $this->allocate($response);
                     $client_queue->push([
                         'id' => $cid,
