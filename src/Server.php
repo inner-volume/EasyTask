@@ -3,6 +3,7 @@ namespace EasyTask;
 
 use \Closure as Closure;
 use EasyTask\Process\Linux;
+use EasyTask\Process\Master;
 use EasyTask\Process\Win;
 use Exception;
 
@@ -103,14 +104,13 @@ class Server
     public function start()
     {
         //异常注册
-        if (Env::get('error_register')) Error::register();
+        if (!Env::get('error_register')) Error::register();
 
         //目录构建
         Helper::initAllPath();
 
         //进程启动
-        $process = $this->getProcess();
-        $process->start();
+        (new Master())->start();
     }
 
     /**
@@ -119,8 +119,7 @@ class Server
      */
     public function status()
     {
-        $process = $this->getProcess();
-        $process->status();
+        (new Master())->status();
     }
 
     /**
@@ -128,9 +127,8 @@ class Server
      * @param bool $force 是否强制
      * @throws
      */
-    public function stop($force = false)
+    public function stop($force = true)
     {
-        $process = $this->getProcess();
-        $process->stop($force);
+        (new Master())->stop($force);
     }
 }
