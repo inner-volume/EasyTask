@@ -51,21 +51,6 @@ class Server
     }
 
     /**
-     * 异常通知
-     * @param string|Closure $notify
-     * @return $this
-     * @throws Exception
-     */
-    public function setErrorRegisterNotify($notify)
-    {
-        if (!$notify instanceof Closure && !is_string($notify)){
-            throw new Exception('notify parameter can only be string or closure');
-        }
-        Env::set('error_register_notify', $notify);
-        return $this;
-    }
-
-    /**
      * 新增任务
      * @param Closure $func 任务函数
      * @param int $time 任务间隔
@@ -80,6 +65,21 @@ class Server
             throw new Exception('the func parameter must be a closure function');
         }
         return Task::add(['func' => $func, 'time' => $time, 'persistent' => $persistent]);
+    }
+
+    /**
+     * 异常通知
+     * @param string|Closure $notify
+     * @return $this
+     * @throws Exception
+     */
+    public function setErrorRegisterNotify($notify)
+    {
+        if (!$notify instanceof Closure && !is_string($notify)){
+            throw new Exception('notify parameter can only be string or closure');
+        }
+        Env::set('error_register_notify', $notify);
+        return $this;
     }
 
     /**
