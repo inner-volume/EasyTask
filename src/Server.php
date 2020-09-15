@@ -21,9 +21,7 @@ class Server
         Check::analysis();
 
         //初始化基础配置
-        Env::set('error_register', true);
-
-        //初始化PHP_BIN|CODE_PAGE
+        Env::set('name', 'easy-task');
         if (Helper::isWin()){
             Helper::setPhpPath();
             Helper::setCodePage();
@@ -38,24 +36,6 @@ class Server
     public function setPort($port = 9501)
     {
         Env::set('port', $port);
-        return $this;
-    }
-
-    /**
-     * 设置服务目录
-     * @param string $path
-     * @return Server
-     * @throws
-     */
-    public function setPath($path)
-    {
-        if (!is_dir($path)){
-            throw new Exception("the path {$path} is not exist");
-        }
-        if (!is_writable($path)){
-            throw new Exception("the path {$path} is not writeable");
-        }
-        Env::set('path', realpath($path));
         return $this;
     }
 
