@@ -6,7 +6,6 @@ use EasyTask\Wpc;
 use EasyTask\Env;
 use EasyTask\Helper;
 use \Exception as Exception;
-use \Throwable as Throwable;
 
 /**
  * Class Win
@@ -49,67 +48,30 @@ class Win extends Process
 
     /**
      * 开始运行
+     * @throws Exception
      */
     public function start()
     {
         //构建基础
         $this->make();
 
-        //启动检查
-        $this->checkForRun();
-
         //进程分配
         $func = function ($name) {
             $this->executeByProcessName($name);
         };
-        if (!$this->wts->allocateProcess($func))
-        {
+        if (!$this->wts->allocateProcess($func)){
             Helper::showError('unexpected error, process has been allocated');
         }
     }
 
     /**
-     * 启动检查
-     */
-    protected function checkForRun()
-    {
-        if (!Env::get('phpPath'))
-        {
-            Helper::showError('please use setPhpPath api to set phpPath');
-        }
-        if (!$this->chkCanStart())
-        {
-            Helper::showError('please close the running process first');
-        }
-    }
-
-    /**
-     * 检查进程
-     * @return bool
-     */
-    protected function chkCanStart()
-    {
-        $workerList = $this->workerList;
-        foreach ($workerList as $name => $item)
-        {
-            $status = $this->wts->getProcessStatus($name);
-            if (!$status)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * 跟进进程名称执行任务
      * @param string $name
-     * @throws Exception|Throwable
+     * @throws Exception
      */
     protected function executeByProcessName($name)
     {
-        switch ($name)
-        {
+        switch ($name) {
             case 'master':
                 $this->master();
                 break;
@@ -127,27 +89,11 @@ class Win extends Process
     protected function make()
     {
         $list = [];
-        if (!$this->wts->getProcessStatus('manager'))
-        {
+        if (!$this->wts->getProcessStatus('manager')){
             $list = ['master', 'manager'];
         }
-        foreach ($list as $name)
-        {
+        foreach ($list as $name) {
             $this->wts->joinProcess($name);
-        }
-        foreach ($this->taskList as $key => $item)
-        {
-            //提取参数
-            $alas = $item['alas'];
-            $used = $item['used'];
-
-            //根据Worker数构建
-            for ($i = 0; $i < $used; $i++)
-            {
-                $name = $item['name'] = $alas . '___' . $i;
-                $this->workerList[$name] = $item;
-                $this->wts->joinProcess($name);
-            }
         }
     }
 
@@ -157,16 +103,14 @@ class Win extends Process
      */
     protected function master()
     {
-        //创建常驻进程
+        //创建manager进程
         $this->forkItemExec();
 
         //查询状态
         $i = $this->taskCount + 15;
-        while ($i--)
-        {
+        while ($i--) {
             $status = $this->wts->getProcessStatus('manager');
-            if ($status)
-            {
+            if ($status){
                 $this->status();
                 break;
             }
@@ -194,14 +138,12 @@ class Win extends Process
         //清理进程信息
         $this->wts->cleanProcessInfo();
 
-        foreach ($this->taskList as $key => $item)
-        {
+        foreach ($this->taskList as $key => $item) {
             //提取参数
             $used = $item['used'];
 
             //根据Worker数创建子进程
-            for ($i = 0; $i < $used; $i++)
-            {
+            for ($i = 0; $i < $used; $i++) {
                 $this->joinWpcContainer($this->forkItemExec());
             }
         }
@@ -214,10 +156,8 @@ class Win extends Process
     protected function joinWpcContainer($wpc)
     {
         $this->wpcContainer[] = $wpc;
-        foreach ($this->wpcContainer as $key => $wpc)
-        {
-            if ($wpc->hasExited())
-            {
+        foreach ($this->wpcContainer as $key => $wpc) {
+            if ($wpc->hasExited()){
                 unset($this->wpcContainer[$key]);
             }
         }
@@ -230,8 +170,7 @@ class Win extends Process
     protected function forkItemExec()
     {
         $wpc = null;
-        try
-        {
+        try {
             //提取参数
             $argv = Helper::getCliInput(2);
             $file = array_shift($argv);;
@@ -247,9 +186,7 @@ class Win extends Process
             $wpc->setWorkDir($work);
             $pid = $wpc->start();
             if (!$pid) Helper::showError('create process failed,please try again', true);
-        }
-        catch (Exception $exception)
-        {
+        } catch (Exception $exception) {
             Helper::showError(Helper::convert_char($exception->getMessage()), true);
         }
 
@@ -265,8 +202,7 @@ class Win extends Process
     {
         //提取字典
         $taskDict = $this->workerList;
-        if (!isset($taskDict[$name]))
-        {
+        if (!isset($taskDict[$name])){
             Helper::showError("the task name $name is not exist" . json_encode($taskDict));
         }
 
@@ -283,13 +219,7 @@ class Win extends Process
 
         //保存进程信息
         $item['pid'] = $pid;
-        $this->wts->saveProcessInfo([
-            'pid' => $pid,
-            'name' => $item['name'],
-            'alas' => $item['alas'],
-            'started' => date('Y-m-d H:i:s', $this->startTime),
-            'time' => $item['time']
-        ]);
+        $this->wts->saveProcessInfo(['pid' => $pid, 'name' => $item['name'], 'alas' => $item['alas'], 'started' => date('Y-m-d H:i:s', $this->startTime), 'time' => $item['time']]);
 
         //执行任务
         $this->executeInvoker($item);
@@ -302,8 +232,7 @@ class Win extends Process
      */
     protected function invokeByDefault($item)
     {
-        while (true)
-        {
+        while (true) {
             //CPU休息
             Helper::sleep($item['time']);
 
@@ -321,8 +250,7 @@ class Win extends Process
     {
         //检查进程存活
         $status = $this->wts->getProcessStatus('manager');
-        if (!$status)
-        {
+        if (!$status){
             $text = Env::get('prefix') . '_' . $item['alas'];
             Helper::showInfo("listened exit command, this worker $text is exiting safely", true);
         }
@@ -341,22 +269,16 @@ class Win extends Process
         Helper::showInfo("$text is start");;
 
         //挂起进程
-        while (true)
-        {
+        while (true) {
             //CPU休息
             Helper::sleep(1);
 
             //接收命令status/stop
             $this->commander->waitCommandForExecute(2, function ($command) use ($text) {
                 $commandType = $command['type'];
-                switch ($commandType)
-                {
+                switch ($commandType) {
                     case 'status':
-                        $this->commander->send([
-                            'type' => 'status',
-                            'msgType' => 1,
-                            'status' => $this->getReport(),
-                        ]);
+                        $this->commander->send(['type' => 'status', 'msgType' => 1, 'status' => $this->getReport(),]);
                         Helper::showInfo("listened status command, $text is reported");
                         break;
                     case 'stop':
@@ -367,11 +289,9 @@ class Win extends Process
             }, $this->startTime);
 
             //检查进程
-            if (Env::get('canAutoRec'))
-            {
+            if (Env::get('canAutoRec')){
                 $this->getReport(true);
-                if ($this->autoRecEvent)
-                {
+                if ($this->autoRecEvent){
                     $this->autoRecEvent = false;
                 }
             }
@@ -387,13 +307,10 @@ class Win extends Process
     protected function getReport($output = false)
     {
         $report = $this->workerStatus($this->taskCount);
-        foreach ($report as $key => $item)
-        {
-            if ($item['status'] == 'stop' && Env::get('canAutoRec'))
-            {
+        foreach ($report as $key => $item) {
+            if ($item['status'] == 'stop' && Env::get('canAutoRec')){
                 $this->joinWpcContainer($this->forkItemExec());
-                if ($output)
-                {
+                if ($output){
                     $this->autoRecEvent = true;
                     Helper::showInfo("the worker {$item['name']}(pid:{$item['pid']}) is stop,try to fork a new one");
                 }
@@ -413,8 +330,7 @@ class Win extends Process
         //构建报告
         $report = $infoData = [];
         $tryTotal = 10;
-        while ($tryTotal--)
-        {
+        while ($tryTotal--) {
             Helper::sleep(1);
             $infoData = $this->wts->getProcessInfo();
             if ($count == count($infoData)) break;
@@ -423,16 +339,8 @@ class Win extends Process
         //组装数据
         $pid = getmypid();
         $prefix = Env::get('prefix');
-        foreach ($infoData as $name => $item)
-        {
-            $report[] = [
-                'pid' => $item['pid'],
-                'name' => "{$prefix}_{$item['alas']}",
-                'started' => $item['started'],
-                'time' => $item['time'],
-                'status' => $this->wts->getProcessStatus($name) ? 'active' : 'stop',
-                'ppid' => $pid,
-            ];
+        foreach ($infoData as $name => $item) {
+            $report[] = ['pid' => $item['pid'], 'name' => "{$prefix}_{$item['alas']}", 'started' => $item['started'], 'time' => $item['time'], 'status' => $this->wts->getProcessStatus($name) ? 'active' : 'stop', 'ppid' => $pid,];
         }
 
         return $report;
@@ -443,14 +351,10 @@ class Win extends Process
      */
     protected function stopWorkerByForce()
     {
-        foreach ($this->wpcContainer as $wpc)
-        {
-            try
-            {
+        foreach ($this->wpcContainer as $wpc) {
+            try {
                 $wpc->stop(2);
-            }
-            catch (Exception $exception)
-            {
+            } catch (Exception $exception) {
                 Helper::showError(Helper::convert_char($exception->getMessage()), false);
             }
         }

@@ -2,7 +2,7 @@
 namespace EasyTask;
 
 use \Closure as Closure;
-use EasyTask\Process\Master;
+use EasyTask\Process\Loader;
 use Exception;
 
 /**
@@ -21,6 +21,7 @@ class Server
 
         //初始化基础配置
         Env::set('name', 'easy-task');
+        Env::set('work_pool', 1);
         if (Helper::isWin()){
             Helper::setPhpPath();
             Helper::setCodePage();
@@ -46,6 +47,17 @@ class Server
     public function setDaemon($daemon = false)
     {
         Env::set('daemon', $daemon);
+        return $this;
+    }
+
+    /**
+     * 设置进程池数量
+     * @param int $pool
+     * @return Server
+     */
+    public function setWorkPool($pool = 1)
+    {
+        Env::set('work_pool', $pool);
         return $this;
     }
 
@@ -94,7 +106,7 @@ class Server
         Helper::initAllPath();
 
         //进程启动
-        (new Master())->start();
+        (Helper::get_process_loader())->start();
     }
 
     /**
@@ -103,7 +115,7 @@ class Server
      */
     public function status()
     {
-        (new Master())->status();
+        (Helper::get_process_loader())->status();
     }
 
     /**
@@ -113,6 +125,6 @@ class Server
      */
     public function stop($force = true)
     {
-        (new Master())->stop($force);
+        (Helper::get_process_loader())->stop($force);
     }
 }

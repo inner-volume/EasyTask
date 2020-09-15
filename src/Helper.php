@@ -2,6 +2,8 @@
 namespace EasyTask;
 
 use EasyTask\Exception\ErrorException;
+use EasyTask\Process\Linux;
+use EasyTask\Process\Win;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
@@ -22,20 +24,14 @@ class Helper
         $prefix = Env::get('prefix');
         $task['alas'] = "{$prefix}_{$task['alas']}";
         Helper::checkTaskTime($task['time']);
-        if (!$push)
-        {
+        if (!$push){
             return Task::set($task);
         }
-        else
-        {
+        else{
             $client_queue = new Queue('master');
             $server_queue = new Queue('manage');
             $cid = uniqid();
-            $server_queue->push([
-                'id' => $cid,
-                'action' => 'addTask',
-                'action' => 'addTask',
-            ]);
+            $server_queue->push(['id' => $cid, 'action' => 'addTask', 'action' => 'addTask',]);
         }
         return 0;
     }
@@ -58,8 +54,7 @@ class Helper
      */
     public static function serializeForTask($task)
     {
-        if ($task['type'] == 1)
-        {
+        if ($task['type'] == 1){
             $task['func'] = \Opis\Closure\serialize($task);
         }
         return base64_encode(json_encode($task));
@@ -73,8 +68,7 @@ class Helper
     public static function unserializeForTask($task)
     {
         $task = json_decode(base64_decode($task), true);
-        if ($task['type'] == 1)
-        {
+        if ($task['type'] == 1){
             $task['func'] = \Opis\Closure\unserialize($task);
         }
         return $task;
@@ -88,11 +82,19 @@ class Helper
     {
         set_error_handler(function () {
         });
-        if (function_exists('cli_set_process_title'))
-        {
+        if (function_exists('cli_set_process_title')){
             cli_set_process_title($title);
         }
         restore_error_handler();
+    }
+
+    /**
+     * 获取进程加载器
+     * @return Linux|Win
+     */
+    public static function get_process_loader()
+    {
+        return self::isWin() ? (new Win()) : (new Linux());
     }
 
     /**
@@ -111,8 +113,7 @@ class Helper
     {
         $ds = DIRECTORY_SEPARATOR;
         $codePageBinary = "C:{$ds}Windows{$ds}System32{$ds}chcp.com";
-        if (file_exists($codePageBinary) && static::canUseExcCommand())
-        {
+        if (file_exists($codePageBinary) && static::canUseExcCommand()){
             @pclose(@popen("{$codePageBinary} {$code}", 'r'));
         }
     }
@@ -131,17 +132,14 @@ class Helper
         array_unshift($argv, Env::get('phpPath'));
 
         //自动校正
-        foreach ($argv as $key => $value)
-        {
-            if (file_exists($value))
-            {
+        foreach ($argv as $key => $value) {
+            if (file_exists($value)){
                 $argv[$key] = realpath($value);
             }
         }
 
         //返回
-        if ($type == 1)
-        {
+        if ($type == 1){
             return join(' ', $argv);
         }
         return $argv;
@@ -210,8 +208,7 @@ class Helper
     public static function getRunPath()
     {
         $path = Env::get('run_path') ? Env::get('run_path') : sys_get_temp_dir();
-        if (!is_dir($path))
-        {
+        if (!is_dir($path)){
             throw new \Exception('please set runPath');
         }
         $path = $path . DIRECTORY_SEPARATOR . Env::get('prefix') . DIRECTORY_SEPARATOR;
@@ -279,20 +276,10 @@ class Helper
      */
     public static function initAllPath()
     {
-        $paths = [
-            static::getRunTimePath(),
-            static::getWinPath(),
-            static::getLogPath(),
-            static::getLokPath(),
-            static::getCsgPath(),
-            static::getStdPath(),
-        ];
-        foreach ($paths as $path)
-        {
-            if (!is_dir($path))
-            {
-                if (!mkdir($path, 0777, true))
-                {
+        $paths = [static::getRunTimePath(), static::getWinPath(), static::getLogPath(), static::getLokPath(), static::getCsgPath(), static::getStdPath(),];
+        foreach ($paths as $path) {
+            if (!is_dir($path)){
+                if (!mkdir($path, 0777, true)){
                     throw new Exception("Failed to create $path directory, please check permissions");
                 }
             }
@@ -352,8 +339,7 @@ class Helper
     {
         $encode_arr = ['UTF-8', 'ASCII', 'GBK', 'GB2312', 'BIG5', 'JIS', 'eucjp-win', 'sjis-win', 'EUC-JP'];
         $encoded = mb_detect_encoding($char, $encode_arr);
-        if ($encoded)
-        {
+        if ($encoded){
             $char = mb_convert_encoding($char, $coding, $encoded);
         }
         return $char;
@@ -398,12 +384,10 @@ class Helper
      */
     public static function checkTaskTime($time)
     {
-        if (is_int($time))
-        {
+        if (is_int($time)){
             if ($time < 0) throw new Exception('time must be greater than or equal to 0');
         }
-        else
-        {
+        else{
             throw new Exception('time parameter is an unsupported type');
         }
     }
@@ -504,8 +488,7 @@ class Helper
         $header = array_keys($data['0']);
 
         //组装数据
-        foreach ($data as $key => $row)
-        {
+        foreach ($data as $key => $row) {
             $data[$key] = array_values($row);
         }
 
@@ -515,8 +498,7 @@ class Helper
         $table->setStyle('box');
         $table->setRows($data);
         $render = static::convert_char($table->render());
-        if ($exit)
-        {
+        if ($exit){
             exit($render);
         }
         echo($render);
@@ -542,12 +524,10 @@ class Helper
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        if (is_array($header))
-        {
+        if (is_array($header)){
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         }
-        if ($data)
-        {
+        if ($data){
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
@@ -560,8 +540,7 @@ class Helper
         curl_close($curl);
 
         //转成数组
-        if ($return_array)
-        {
+        if ($return_array){
             return json_decode($result, true);
         }
 
