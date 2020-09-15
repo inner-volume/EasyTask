@@ -19,14 +19,7 @@ class Server
     {
         //检查运行环境
         Check::analysis();
-        $this->initialise();
-    }
 
-    /**
-     * 进程初始化
-     */
-    private function initialise()
-    {
         //初始化基础配置
         Env::set('name', 'task');
         Env::set('error_register', true);
