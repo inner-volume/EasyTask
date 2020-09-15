@@ -2,9 +2,7 @@
 namespace EasyTask;
 
 use \Closure as Closure;
-use EasyTask\Process\Linux;
 use EasyTask\Process\Master;
-use EasyTask\Process\Win;
 use Exception;
 
 /**
@@ -81,20 +79,6 @@ class Server
         }
         Env::set('error_register_notify', $notify);
         return $this;
-    }
-
-    /**
-     * 获取进程管理实例
-     * @return  Win | Linux
-     */
-    private function getProcess()
-    {
-        if (Helper::isWin()){
-            return (new Win());
-        }
-        else{
-            return (new Linux());
-        }
     }
 
     /**
