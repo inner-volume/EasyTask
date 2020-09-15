@@ -2,7 +2,6 @@
 namespace EasyTask;
 
 use \Closure as Closure;
-use EasyTask\Process\Loader;
 use Exception;
 
 /**
