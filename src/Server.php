@@ -21,27 +21,13 @@ class Server
         Check::analysis();
 
         //初始化基础配置
-        Env::set('name', 'task');
         Env::set('error_register', true);
 
         //初始化PHP_BIN|CODE_PAGE
-        if (Helper::isWin())
-        {
+        if (Helper::isWin()){
             Helper::setPhpPath();
             Helper::setCodePage();
         }
-    }
-
-    /**
-     * 设置服务名称
-     * @param string $name
-     * @return Server
-     * @throws Exception
-     */
-    public function setName($name = 'task')
-    {
-        Env::set('name', $name);
-        return $this;
     }
 
     /**
@@ -63,12 +49,10 @@ class Server
      */
     public function setPath($path)
     {
-        if (!is_dir($path))
-        {
+        if (!is_dir($path)){
             throw new Exception("the path {$path} is not exist");
         }
-        if (!is_writable($path))
-        {
+        if (!is_writable($path)){
             throw new Exception("the path {$path} is not writeable");
         }
         Env::set('path', realpath($path));
@@ -94,8 +78,7 @@ class Server
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (!$notify instanceof Closure && !is_string($notify))
-        {
+        if (!$notify instanceof Closure && !is_string($notify)){
             throw new Exception('notify parameter can only be string or closure');
         }
         Env::set('error_register_notify', $notify);
@@ -104,26 +87,19 @@ class Server
 
     /**
      * 新增任务
-     * @param string $name 任务名称
      * @param Closure $func 任务函数
      * @param int $time 任务间隔
      * @param bool $persistent 持续执行
      * @return int 任务Id
      * @throws
      */
-    public function addTask($name, $func, $time = 1, $persistent = true)
+    public function addTask($func, $time = 1, $persistent = true)
     {
         Helper::checkTaskTime($time);
-        if (!($func instanceof Closure))
-        {
+        if (!($func instanceof Closure)){
             throw new Exception('the func parameter must be a closure function');
         }
-        return Task::add([
-            'name' => $name,
-            'func' => $func,
-            'time' => $time,
-            'persistent' => $persistent
-        ]);
+        return Task::add(['func' => $func, 'time' => $time, 'persistent' => $persistent]);
     }
 
     /**
@@ -132,12 +108,10 @@ class Server
      */
     private function getProcess()
     {
-        if (Helper::isWin())
-        {
+        if (Helper::isWin()){
             return (new Win());
         }
-        else
-        {
+        else{
             return (new Linux());
         }
     }

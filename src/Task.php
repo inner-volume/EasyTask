@@ -2,7 +2,7 @@
 namespace EasyTask;
 
 /**
- * Class Timer
+ * Class Task
  * @package EasyTask
  */
 class Task
