@@ -20,6 +20,7 @@ class Server
 
         //初始化基础配置
         Env::set('name', 'easy-task');
+        Env::set('auth', '123456');
         Env::set('work_pool', 1);
         if (Helper::isWin()){
             Helper::setPhpPath();
