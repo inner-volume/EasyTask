@@ -8,62 +8,20 @@ namespace EasyTask;
 class Check
 {
     /**
-     * 待检查扩展列表
+     * 检查扩展
      * @var array
      */
-    private static $waitExtends = [
-        //Win
-        '1' => [
-            'json',
-            'curl',
-            'com_dotnet',
-            'mbstring',
-        ],
-        //Linux
-        '2' => [
-            'json',
-            'curl',
-            'pcntl',
-            'posix',
-            'mbstring',
-        ]
-    ];
+    private static $extends = [['json', 'curl', 'mbstring'], //common
+        [], //Win
+        ['pcntl', 'posix']];//Linux
 
     /**
-     * 待检查函数列表
+     * 检查函数
      * @var array
      */
-    private static $waitFunctions = [
-        //Win
-        '1' => [
-            'umask',
-            'sleep',
-            'usleep',
-            'ob_start',
-            'ob_end_clean',
-            'ob_get_contents',
-        ],
-        //Linux
-        '2' => [
-            'umask',
-            'chdir',
-            'sleep',
-            'usleep',
-            'ob_start',
-            'ob_end_clean',
-            'ob_get_contents',
-            'pcntl_fork',
-            'posix_setsid',
-            'posix_getpid',
-            'posix_getppid',
-            'pcntl_wait',
-            'posix_kill',
-            'pcntl_signal',
-            'pcntl_alarm',
-            'pcntl_waitpid',
-            'pcntl_signal_dispatch',
-        ]
-    ];
+    private static $functions = [//Win
+        ['umask', 'sleep', 'usleep', 'ob_start', 'ob_end_clean', 'ob_get_contents'], [], //Linux
+        '2' => ['pcntl_fork', 'posix_setsid', 'posix_getpid', 'posix_getppid', 'pcntl_wait', 'posix_kill', 'pcntl_signal', 'pcntl_alarm', 'pcntl_waitpid', 'pcntl_signal_dispatch']];
 
     /**
      *  解析运行环境
@@ -72,20 +30,16 @@ class Check
     {
         //检查扩展
         $currentOs = Helper::isWin() ? 1 : 2;
-        $waitExtends = static::$waitExtends[$currentOs];
-        foreach ($waitExtends as $extend)
-        {
-            if (!extension_loaded($extend))
-            {
+        $waitExtends = static::$extends[$currentOs];
+        foreach ($waitExtends as $extend) {
+            if (!extension_loaded($extend)){
                 Helper::showSysError("php_{$extend}.(dll/so) is not load,please check php.ini file");
             }
         }
         //检查函数
-        $waitFunctions = static::$waitFunctions[$currentOs];
-        foreach ($waitFunctions as $func)
-        {
-            if (!function_exists($func))
-            {
+        $waitFunctions = static::$functions[$currentOs];
+        foreach ($waitFunctions as $func) {
+            if (!function_exists($func)){
                 Helper::showSysError("function $func may be disabled,please check disable_functions in php.ini");
             }
         }
