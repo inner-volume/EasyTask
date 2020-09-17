@@ -39,6 +39,17 @@ class Server
     }
 
     /**
+     * 设置服务鉴权
+     * @param string $auth
+     * @return Server
+     */
+    public function setAuth($auth = '123456')
+    {
+        Env::set('auth', $auth);
+        return $this;
+    }
+
+    /**
      * 设置是否后台运行
      * @param bool $daemon
      * @return Server
@@ -79,8 +90,8 @@ class Server
 
     /**
      * 异常通知
-     * @param string|Closure $notify
-     * @return $this
+     * @param string|Closure $notify 通知地址|通知闭包函数逻辑
+     * @return Server
      * @throws Exception
      */
     public function setErrorRegisterNotify($notify)
