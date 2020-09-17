@@ -1,6 +1,8 @@
 <?php
 namespace EasyTask;
 
+use Exception;
+
 /**
  * Class Check
  * @package EasyTask
@@ -24,23 +26,26 @@ class Check
         '2' => ['pcntl_fork', 'posix_setsid', 'posix_getpid', 'posix_getppid', 'pcntl_wait', 'posix_kill', 'pcntl_signal', 'pcntl_alarm', 'pcntl_waitpid', 'pcntl_signal_dispatch']];
 
     /**
-     *  解析运行环境
+     *  检查环境
+     * @throws Exception
      */
     public static function analysis()
     {
         //检查扩展
         $currentOs = Helper::isWin() ? 1 : 2;
-        $waitExtends = static::$extends[$currentOs];
-        foreach ($waitExtends as $extend) {
+        $extends = static::$extends[$currentOs];
+        $extends = array_merge($extends, static::$extends['0']);
+        foreach ($extends as $extend) {
             if (!extension_loaded($extend)){
-                Helper::showSysError("php_{$extend}.(dll/so) is not load,please check php.ini file");
+                throw new Exception("php_{$extend}.(dll/so) is not load,please check php.ini file");
             }
         }
         //检查函数
-        $waitFunctions = static::$functions[$currentOs];
-        foreach ($waitFunctions as $func) {
+        $functions = static::$functions[$currentOs];
+        $functions = array_merge($functions, static::$functions['0']);
+        foreach ($functions as $func) {
             if (!function_exists($func)){
-                Helper::showSysError("function $func may be disabled,please check disable_functions in php.ini");
+                throw new Exception("function $func may be disabled,please check disable_functions in php.ini");
             }
         }
     }

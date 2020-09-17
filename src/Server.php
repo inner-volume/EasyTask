@@ -12,6 +12,7 @@ class Server
 {
     /**
      * 构造函数
+     * @throws Exception
      */
     public function __construct()
     {
