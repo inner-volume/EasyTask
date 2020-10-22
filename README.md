@@ -1,4 +1,4 @@
-﻿<p><h4>EasyTask简单易用的PHP常驻内存定时器</h4></p>
+﻿<p><h4>EasyTask简单易用的PHP常驻内存多进程任务管理器</h4></p>
 <p align="">
 <a href="" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer">
 <img src="https://www.gaojiufeng.cn/static/images/stable_version.svg" style="max-width:100%;">
@@ -8,7 +8,7 @@
 </p>
 
 ## <h4 style="text-align:left">  项目介绍 </h4>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;EasyTask,PHP常驻内存定时器Composer包，与Workerman定时器效果完全一致，多个定时器是同时在多个进程中运行的，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理Crontab计划任务(如每天凌晨1点-3点同步DB数据,每月1号生成月度统一报表,每晚10点重启nginx服务器等等)；内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
+<p style="margin-left: 4px;">PHP常驻内存的多进程任务管理器Composer包。以进程管理为出发点，同时也支持为每个进程设置定时执行功能，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理计划任务。内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
 </p>
 
 ## <h4>   运行环境 </h4>
@@ -251,11 +251,12 @@ $task->addFunc(function () {
 (3).Jetbrains(提供正版授权码,支持正版),官方地址:https://www.jetbrains.com/phpstorm/
 ~~~
 
-## <h5>【J】. 使用案例(加群主反馈) </h5>
+## <h5>【J】. 使用案例 </h5>
 ~~~
 (1).深圳市百木微风科技有限公司(异步HTML转WORD)
 (2).深圳市恒信邦科技有限公司(统一管理所有队列服务)
 (3).深圳红鸾网络科技有限公司(汇率更新|新闻采集|短信服务)
+(N).....欢迎反馈提交
 ~~~
 
 ## <h5>【K】. Bug反馈 </h5>
