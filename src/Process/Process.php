@@ -253,7 +253,7 @@ abstract class Process
             //CPU休息
             Helper::sleep(1);
         }
-        Helper::showInfo('this cpu is too busy,please use status command try again');
+        Helper::showInfo('the process may have been closed, please try again');
         exit;
     }
 }
