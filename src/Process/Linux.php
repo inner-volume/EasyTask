@@ -26,10 +26,7 @@ class Linux extends Process
     public function __construct($taskList)
     {
         parent::__construct($taskList);
-        if (Env::get('canAsync'))
-        {
-            Helper::openAsyncSignal();
-        }
+        if (Helper\ProcessHelper::canUseAsyncSignal()) Helper::openAsyncSignal();
     }
 
     /**
