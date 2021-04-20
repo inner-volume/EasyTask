@@ -119,15 +119,6 @@ class Helper
     }
 
     /**
-     * 是否支持异步信号
-     * @return bool
-     */
-    public static function canUseAsyncSignal()
-    {
-        return (function_exists('pcntl_async_signals'));
-    }
-
-    /**
      * 是否可执行命令
      * @return bool
      */
