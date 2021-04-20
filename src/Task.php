@@ -27,9 +27,8 @@ class Task
     public function __construct()
     {
         //检查运行环境
-        $currentOs = Helper::isWin() ? 1 : 2;
         Check::analysis();
-        $this->initialise($currentOs);
+        $this->initialise();
     }
 
     /**
