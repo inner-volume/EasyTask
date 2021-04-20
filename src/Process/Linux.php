@@ -260,7 +260,7 @@ class Linux extends Process
             }, $this->startTime);
 
             //信号调度
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
+            if (!Helper\ProcessHelper::canUseAsyncSignal()) pcntl_signal_dispatch();
 
             //检查进程
             if (Env::get('canAutoRec')) $this->processStatus();
