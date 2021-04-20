@@ -176,7 +176,7 @@ class Linux extends Process
             Helper::sleep(1);
 
             //信号处理(同步/异步)
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
+            if (!Helper\ProcessHelper::canUseAsyncSignal()) pcntl_signal_dispatch();
         }
     }
 
