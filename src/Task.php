@@ -27,7 +27,7 @@ class Task
     {
         //检查运行环境
         $currentOs = Helper::isWin() ? 1 : 2;
-        Check::analysis($currentOs);
+        Check::analysis();
         $this->initialise($currentOs);
     }
 
