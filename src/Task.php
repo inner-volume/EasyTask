@@ -289,21 +289,13 @@ class Task
     }
 
     /**
-     * 获取进程管理实例
+     * getProcess
      * @return  Win | Linux
      */
     private function getProcess()
     {
         $taskList = $this->taskList;
-        $currentOs = Env::get('currentOs');
-        if ($currentOs == 1)
-        {
-            return (new Win($taskList));
-        }
-        else
-        {
-            return (new Linux($taskList));
-        }
+        return UtilHelper::isWin() ? (new Win($taskList)) : (new Linux($taskList));
     }
 
     /**
