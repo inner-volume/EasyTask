@@ -155,7 +155,7 @@ class Helper
         {
             static::showSysError('please set runTimePath');
         }
-        $path = $path . DIRECTORY_SEPARATOR . Env::get('prefix') . DIRECTORY_SEPARATOR;
+        $path = $path . DIRECTORY_SEPARATOR . Env::get(Constant::SERVER_PREFIX_KEY) . DIRECTORY_SEPARATOR;
         $path = str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $path);
         return $path;
     }
