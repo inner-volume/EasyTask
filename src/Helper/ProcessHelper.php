@@ -11,5 +11,14 @@ class ProcessHelper
     {
         return (extension_loaded('event'));
     }
+
+    /**
+     * canUseAsyncSignal
+     * @return bool
+     */
+    public static function canUseAsyncSignal()
+    {
+        return (function_exists('pcntl_async_signals'));
+    }
 }
 
