@@ -1,6 +1,7 @@
 <?php
 namespace EasyTask\Process;
 
+use EasyTask\Constant;
 use EasyTask\Env;
 use EasyTask\Helper;
 use \Closure as Closure;
@@ -74,7 +75,7 @@ class Linux extends Process
         foreach ($this->taskList as $item)
         {
             //提取参数
-            $prefix = Env::get('prefix');
+            $prefix = Env::get(Constant::SERVER_PREFIX_KEY);
             $item['data'] = date('Y-m-d H:i:s');
             $item['alas'] = "{$prefix}_{$item['alas']}";
             $used = $item['used'];
