@@ -37,8 +37,8 @@ class Task
      */
     private function initialise($currentOs)
     {
-        //初始化基础配置
-        Env::set('prefix', 'Task');
+        //initialize the basic configuration
+        $this->setPrefix(Constant::SERVER_PREFIX_VAL);
         Env::set('canEvent', Helper::canUseEvent());
         Env::set('currentOs', $currentOs);
         Env::set('canAsync', Helper::canUseAsyncSignal());
@@ -64,17 +64,17 @@ class Task
     }
 
     /**
-     * 设置任务前缀
+     * setPrefix
      * @param string $prefix
      * @return $this
      */
-    public function setPrefix($prefix = 'Task')
+    public function setPrefix($prefix)
     {
         if (Env::get('runTimePath'))
         {
             Helper::showSysError('should use setPrefix before setRunTimePath');
         }
-        Env::set('prefix', $prefix);
+        Env::set(Constant::SERVER_PREFIX_KEY, $prefix);
         return $this;
     }
 
