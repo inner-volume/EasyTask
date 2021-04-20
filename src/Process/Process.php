@@ -190,7 +190,7 @@ abstract class Process
         }
         else
         {
-            Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
+            Helper\ProcessHelper::canUseEvent() ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
         }
     }
 
