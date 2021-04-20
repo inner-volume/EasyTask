@@ -302,21 +302,16 @@ class Task
      */
     public function start()
     {
-        if (!$this->taskList)
-        {
-            Helper::showSysError('please add task to run');
-        }
+        //task empty tip
+        if (!$this->taskList) Helper::showSysError(Constant::SERVER_TASK_EMPTY_TIP);
 
-        //异常注册
-        if (!Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY))
-        {
-            Error::register();
-        }
+        //exception registration
+        if (!Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY)) Error::register();
 
-        //目录构建
+        //directory construction
         Helper::initAllPath();
 
-        //进程启动
+        //process start
         $process = $this->getProcess();
         $process->start();
     }
