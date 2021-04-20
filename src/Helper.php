@@ -2,6 +2,7 @@
 namespace EasyTask;
 
 use EasyTask\Exception\ErrorException;
+use EasyTask\Helper\ProcessHelper;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
@@ -124,15 +125,6 @@ class Helper
     public static function canUseAsyncSignal()
     {
         return (function_exists('pcntl_async_signals'));
-    }
-
-    /**
-     * 是否支持event事件
-     * @return bool
-     */
-    public static function canUseEvent()
-    {
-        return (extension_loaded('event'));
     }
 
     /**
@@ -344,7 +336,7 @@ class Helper
         }
         elseif (is_float($time))
         {
-            if (!static::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
+            if (!ProcessHelper::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
         }
         else
         {
