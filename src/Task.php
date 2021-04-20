@@ -2,6 +2,7 @@
 namespace EasyTask;
 
 use \Closure as Closure;
+use EasyTask\Helper\UtilHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
 use \ReflectionClass as ReflectionClass;
@@ -33,9 +34,8 @@ class Task
 
     /**
      * 进程初始化
-     * @param int $currentOs
      */
-    private function initialise($currentOs)
+    private function initialise()
     {
         //initialize the basic configuration
         $this->setPrefix(Constant::SERVER_PREFIX_VAL);
@@ -43,7 +43,7 @@ class Task
         Env::set('closeErrorRegister', false);
 
         //初始化PHP_BIN|CODE_PAGE
-        if ($currentOs == 1)
+        if (UtilHelper::isWin())
         {
             Helper::setPhpPath();
             Helper::setCodePage();
