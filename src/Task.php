@@ -144,12 +144,12 @@ class Task
 
     /**
      * 设置关闭系统异常注册
-     * @param bool $isReg 是否关闭
+     * @param bool $close 是否关闭
      * @return $this
      */
-    public function setCloseErrorRegister($isReg = false)
+    public function setCloseErrorRegister($close = false)
     {
-        Env::set('closeErrorRegister', $isReg);
+        Env::set(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY, $close);
         return $this;
     }
 
@@ -160,7 +160,7 @@ class Task
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (Env::get('closeErrorRegister'))
+        if (Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY))
         {
             Helper::showSysError('you must set closeErrorRegister as false before use this api');
         }
@@ -308,7 +308,7 @@ class Task
         }
 
         //异常注册
-        if (!Env::get('closeErrorRegister'))
+        if (!Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY))
         {
             Error::register();
         }
