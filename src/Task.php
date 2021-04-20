@@ -40,7 +40,6 @@ class Task
         //initialize the basic configuration
         $this->setPrefix(Constant::SERVER_PREFIX_VAL);
         Env::set('currentOs', $currentOs);
-        Env::set('canAsync', Helper::canUseAsyncSignal());
         Env::set('closeErrorRegister', false);
 
         //初始化PHP_BIN|CODE_PAGE
