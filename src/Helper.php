@@ -133,7 +133,7 @@ class Helper
      */
     public static function getRunTimePath()
     {
-        $path = Env::get('runTimePath') ? Env::get('runTimePath') : sys_get_temp_dir();
+        $path = Env::get(Constant::SERVER_RUNTIME_PATH) ? Env::get(Constant::SERVER_RUNTIME_PATH) : sys_get_temp_dir();
         if (!is_dir($path))
         {
             static::showSysError('please set runTimePath');
