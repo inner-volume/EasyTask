@@ -83,7 +83,7 @@ class Task
     }
 
     /**
-     * 设置时区
+     * setTimeZone
      * @param string $timeIdent
      * @return $this
      */
