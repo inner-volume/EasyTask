@@ -166,7 +166,7 @@ class Task
 
     /**
      * addFunc
-     * @param Closure $func 匿名函数
+     * @param Closure $func
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
      * @param int $used 定时器占用进程数
