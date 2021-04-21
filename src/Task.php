@@ -67,7 +67,7 @@ class Task
     }
 
     /**
-     * 设置PHP执行路径(windows)
+     * setPhpPath
      * @param string $path
      * @return $this
      */
