@@ -26,4 +26,6 @@ class Constant
      * server_info_constant
      */
     const SERVER_TASK_EMPTY_TIP = 'please add a process task to execute';
+
+    const SERVER_RUNTIME_PATH = 'server_runtime_path';
 }
