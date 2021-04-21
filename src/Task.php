@@ -167,9 +167,9 @@ class Task
     /**
      * addFunc
      * @param Closure $func
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
+     * @param string $alas
+     * @param mixed $time
+     * @param int $used
      * @return $this
      * @throws
      */
