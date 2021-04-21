@@ -28,17 +28,9 @@ class Task
     {
         //检查运行环境
         Check::analysis();
-        $this->initialise();
-    }
-
-    /**
-     * 进程初始化
-     */
-    private function initialise()
-    {
         //initialize the basic configuration
         $this->setPrefix(Constant::SERVER_PREFIX_VAL);
-        Env::set('closeErrorRegister', false);
+        $this->setCloseErrorRegister();
 
         //初始化PHP_BIN|CODE_PAGE
         if (UtilHelper::isWin())
