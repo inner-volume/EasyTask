@@ -33,8 +33,10 @@ class Constant
      */
     const SERVER_RUNTIME_PATH = 'server_runtime_path';
 
-
-
+    /**
+     * server_auto_recover_key
+     */
+    const SERVER_AUTO_RECOVER_KEY = 'server_auto_recover_key';
 
     /**
      * two

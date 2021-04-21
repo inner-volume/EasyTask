@@ -119,7 +119,7 @@ class Task
      */
     public function setAutoRecover($isRec = false)
     {
-        Env::set('canAutoRec', $isRec);
+        Env::set(Constant::SERVER_AUTO_RECOVER_KEY, $isRec);
         return $this;
     }
 
