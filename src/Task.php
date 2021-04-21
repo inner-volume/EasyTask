@@ -319,7 +319,7 @@ class Task
     }
 
     /**
-     * 停止运行
+     * stop
      * @param bool $force 是否强制
      * @throws
      */
