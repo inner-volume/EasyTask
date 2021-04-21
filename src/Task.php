@@ -249,10 +249,10 @@ class Task
 
     /**
      * addCommand
-     * @param string $command 指令
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
+     * @param string $command
+     * @param string $alas
+     * @param mixed $time
+     * @param int $used
      * @return $this
      */
     public function addCommand($command, $alas, $time = 1, $used = 1)
