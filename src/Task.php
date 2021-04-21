@@ -197,7 +197,7 @@ class Task
     }
 
     /**
-     * 新增类作为任务
+     * addClass
      * @param string $class 类名称
      * @param string $func 方法名称
      * @param string $alas 任务别名
