@@ -135,8 +135,8 @@ class Task
     }
 
     /**
-     * 设置关闭系统异常注册
-     * @param bool $close 是否关闭
+     * setCloseErrorRegister
+     * @param bool $close
      * @return $this
      */
     public function setCloseErrorRegister($close = false)
