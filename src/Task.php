@@ -94,7 +94,7 @@ class Task
     }
 
     /**
-     * 设置运行时目录
+     * setRunTimePath
      * @param string $path
      * @return $this
      */
