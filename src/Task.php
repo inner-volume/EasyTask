@@ -165,7 +165,7 @@ class Task
     }
 
     /**
-     * 新增匿名函数作为任务
+     * addFunc
      * @param Closure $func 匿名函数
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
