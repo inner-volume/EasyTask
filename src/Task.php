@@ -146,7 +146,7 @@ class Task
     }
 
     /**
-     * 异常通知
+     * setErrorRegisterNotify
      * @param string|Closure $notify
      * @return $this
      */
