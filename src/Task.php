@@ -198,11 +198,11 @@ class Task
 
     /**
      * addClass
-     * @param string $class 类名称
-     * @param string $func 方法名称
-     * @param string $alas 任务别名
-     * @param mixed $time 定时器间隔
-     * @param int $used 定时器占用进程数
+     * @param string $class
+     * @param string $func
+     * @param string $alas
+     * @param mixed $time
+     * @param int $used
      * @return $this
      * @throws
      */
@@ -248,7 +248,7 @@ class Task
     }
 
     /**
-     * 新增指令作为任务
+     * addCommand
      * @param string $command 指令
      * @param string $alas 任务别名
      * @param mixed $time 定时器间隔
