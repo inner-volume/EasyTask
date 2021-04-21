@@ -124,7 +124,7 @@ class Task
     }
 
     /**
-     * 设置关闭标准输出的日志
+     * setCloseStdOutLog
      * @param bool $close
      * @return $this
      */
