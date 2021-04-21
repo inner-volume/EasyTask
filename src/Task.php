@@ -154,11 +154,11 @@ class Task
     {
         if (Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY))
         {
-            Helper::showSysError('you must set closeErrorRegister as false before use this api');
+            Helper::showSysError(Constant::SERVER_NOTIFY_MUST_OPEN_ERROR_REGISTER_TIP);
         }
         if (!$notify instanceof Closure && !is_string($notify))
         {
-            Helper::showSysError('notify parameter can only be string or closure');
+            Helper::showSysError(Constant::SERVER_NOTIFY_PARAMS_CHECK_TIP);
         }
         Env::set('notifyHand', $notify);
         return $this;

@@ -33,6 +33,9 @@ class Constant
      */
     const SERVER_RUNTIME_PATH = 'server_runtime_path';
 
+
+
+
     /**
      * two
      * server_info_constant
@@ -57,4 +60,14 @@ class Constant
      * server_prefix_runtime_path_empty_tip
      */
     const SERVER_PREFIX_RUNTIME_PATH_EMPTY_TIP = 'the running directory must be set before setting the task prefix';
+
+    /**
+     * server_notify_must_open_error_register_tip
+     */
+    const SERVER_NOTIFY_MUST_OPEN_ERROR_REGISTER_TIP = 'you must enable exception registration before using the exception notification function';
+
+    /**
+     * server_notify_params_check_tip
+     */
+    const SERVER_NOTIFY_PARAMS_CHECK_TIP = 'the parameter must be a string type or a closure type';
 }
