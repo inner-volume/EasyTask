@@ -16,7 +16,7 @@ use \ReflectionException as ReflectionException;
 class Task
 {
     /**
-     * 任务列表
+     * task list
      * @var array
      */
     private $taskList = [];
@@ -26,13 +26,12 @@ class Task
      */
     public function __construct()
     {
-        //检查运行环境
+        //check the operating environment
         Check::analysis();
+
         //initialize the basic configuration
         $this->setPrefix(Constant::SERVER_PREFIX_VAL);
         $this->setCloseErrorRegister();
-
-        //初始化PHP_BIN|CODE_PAGE
         if (UtilHelper::isWin())
         {
             Helper::setPhpPath();
