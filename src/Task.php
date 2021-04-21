@@ -40,7 +40,7 @@ class Task
     }
 
     /**
-     * 设置是否守护进程
+     * setDaemon
      * @param bool $daemon
      * @return $this
      */
