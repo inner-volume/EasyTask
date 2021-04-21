@@ -58,10 +58,9 @@ class Task
      */
     public function setPrefix($prefix)
     {
-        //runTimePath
         if (Env::get(Constant::SERVER_RUNTIME_PATH))
         {
-            Helper::showSysError('should use setPrefix before setRunTimePath');
+            Helper::showSysError(Constant::SERVER_PREFIX_RUNTIME_PATH_EMPTY_TIP);
         }
         Env::set(Constant::SERVER_PREFIX_KEY, $prefix);
         return $this;
@@ -261,7 +260,7 @@ class Task
         $uniqueId = md5($alas);
         if (!ProcessHelper::canUseExcCommand())
         {
-            Helper::showSysError(Constant::SERVER_TASK_PROCESS_OPEN_CLOSE_DISABLED_TIP);
+            Helper::showSysError(Constant::SERVER_PROCESS_OPEN_CLOSE_DISABLED_TIP);
         }
         if (isset($this->taskList[$uniqueId]))
         {
