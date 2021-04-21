@@ -113,7 +113,7 @@ class Task
     }
 
     /**
-     * 设置子进程自动恢复
+     * setAutoRecover
      * @param bool $isRec
      * @return $this
      */
