@@ -309,7 +309,7 @@ class Task
     }
 
     /**
-     * 运行状态
+     * status
      * @throws
      */
     public function status()
