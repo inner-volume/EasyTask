@@ -47,7 +47,7 @@ class Task
      */
     public function setDaemon($daemon = false)
     {
-        Env::set('daemon', $daemon);
+        Env::set(Constant::SERVER_DAEMON_KEY, $daemon);
         return $this;
     }
 

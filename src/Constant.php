@@ -14,6 +14,11 @@ class Constant
     const SERVER_PREFIX_KEY = 'server_prefix_key';
 
     /**
+     * server_daemon_key
+     */
+    const SERVER_DAEMON_KEY = 'server_daemon_key';
+
+    /**
      * server_prefix_val
      */
     const SERVER_PREFIX_VAL = 'easy_task';
