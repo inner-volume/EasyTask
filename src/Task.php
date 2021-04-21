@@ -320,7 +320,7 @@ class Task
 
     /**
      * stop
-     * @param bool $force 是否强制
+     * @param bool $force
      * @throws
      */
     public function stop($force = false)
