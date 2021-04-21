@@ -20,5 +20,14 @@ class ProcessHelper
     {
         return (function_exists('pcntl_async_signals'));
     }
+
+    /**
+     * canUseExcCommand
+     * @return bool
+     */
+    public static function canUseExcCommand()
+    {
+        return function_exists('popen') && function_exists('pclose');
+    }
 }
 

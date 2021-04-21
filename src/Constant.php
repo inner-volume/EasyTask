@@ -37,4 +37,14 @@ class Constant
      * server_task_empty_tip
      */
     const SERVER_TASK_EMPTY_TIP = 'please add a process task to execute';
+
+    /**
+     * server_task_process_open_close_disabled
+     */
+    const SERVER_TASK_PROCESS_OPEN_CLOSE_DISABLED_TIP = 'please enable the disabled functions popen and pclose';
+
+    /**
+     * SERVER_TASK_SAME_NAME
+     */
+    const SERVER_TASK_SAME_NAME_TIP = 'the same task name already exists';
 }

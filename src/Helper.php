@@ -118,14 +118,7 @@ class Helper
         return pcntl_async_signals(true);
     }
 
-    /**
-     * 是否可执行命令
-     * @return bool
-     */
-    public static function canUseExcCommand()
-    {
-        return function_exists('popen') && function_exists('pclose');
-    }
+
 
     /**
      * 获取运行时目录

@@ -2,6 +2,7 @@
 namespace EasyTask;
 
 use \Closure as Closure;
+use EasyTask\Helper\ProcessHelper;
 use EasyTask\Helper\UtilHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
@@ -258,13 +259,13 @@ class Task
     public function addCommand($command, $alas, $time = 1, $used = 1)
     {
         $uniqueId = md5($alas);
-        if (!Helper::canUseExcCommand())
+        if (!ProcessHelper::canUseExcCommand())
         {
-            Helper::showSysError('please open the disabled function of popen and pclose');
+            Helper::showSysError(Constant::SERVER_TASK_PROCESS_OPEN_CLOSE_DISABLED_TIP);
         }
         if (isset($this->taskList[$uniqueId]))
         {
-            Helper::showSysError("task $alas already exists");
+            Helper::showSysError(Constant::SERVER_TASK_SAME_NAME_TIP);
         }
         Helper::checkTaskTime($time);
         $this->taskList[$uniqueId] = [
