@@ -67,11 +67,11 @@ class ThinkSupport
      */
     public function invokeYourCode($code)
     {
-        //恢复Cli_Input.(方便自己扩展)
+        //recover cli Input.
         $_SERVER['argv'] = $this->argv;
         $_SERVER['argc'] = $this->argc;
 
-        //执行
+        //invoke
         $code($this->action, $this->force);
     }
 }
