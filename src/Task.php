@@ -160,7 +160,7 @@ class Task
         {
             Helper::showSysError(Constant::SERVER_NOTIFY_PARAMS_CHECK_TIP);
         }
-        Env::set('notifyHand', $notify);
+        Env::set(Constant::SERVER_NOTIFY_KEY, $notify);
         return $this;
     }
 
