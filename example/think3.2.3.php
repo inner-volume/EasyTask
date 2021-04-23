@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Think3.2.3支持
+ * Think3.2.3 support
  */
 class ThinkSupport
 {
@@ -34,7 +34,7 @@ class ThinkSupport
      */
     public function __construct()
     {
-        //保存Cli_Input
+        //save cli Input
         $this->argv = $_SERVER['argv'];
         $this->argc = $_SERVER['argc'];
 
