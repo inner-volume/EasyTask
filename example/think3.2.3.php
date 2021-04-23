@@ -30,7 +30,7 @@ class ThinkSupport
     private $force;
 
     /**
-     * Support constructor.
+     * support constructor.
      */
     public function __construct()
     {
@@ -43,13 +43,13 @@ class ThinkSupport
         $this->force = isset($_SERVER['argv']['2']) ? $_SERVER['argv']['2'] : '';
         $_SERVER['argv'] = [] && $_SERVER['argc'] = 0;
 
-        //suppress thinkphp errors
+        //suppress think's errors
         if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         if (!isset($_SERVER['REQUEST_URI'])) $_SERVER['REQUEST_URI'] = 'localhost';
     }
 
     /**
-     * 加载Think代码
+     * load think's code
      * @param Closure $think
      * @return ThinkSupport
      */
@@ -62,7 +62,7 @@ class ThinkSupport
     }
 
     /**
-     * 加载你的代码
+     * include your code
      * @param Closure $code
      */
     public function invokeYourCode($code)
