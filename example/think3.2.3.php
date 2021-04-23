@@ -43,7 +43,7 @@ class ThinkSupport
         $this->force = isset($_SERVER['argv']['2']) ? $_SERVER['argv']['2'] : '';
         $_SERVER['argv'] = [] && $_SERVER['argc'] = 0;
 
-        //抑制Tp错误
+        //suppress thinkphp errors
         if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         if (!isset($_SERVER['REQUEST_URI'])) $_SERVER['REQUEST_URI'] = 'localhost';
     }
