@@ -81,16 +81,16 @@ class ThinkSupport
  */
 (new ThinkSupport())
     ->invokeThink(function () {
-        //加载tp的代码
+        //include think's code
         require './index.php';
     })
     ->invokeYourCode(function ($action, $force) {
-        // 加载Composer
+        //include composer
         require './vendor/autoload.php';
 
-        // $action值有start|status|stop
+        //$action start|status|stop
 
-        // 编写你的代码
+        //start coding
     });
 
 /**
