@@ -38,7 +38,7 @@ class ThinkSupport
         $this->argv = $_SERVER['argv'];
         $this->argc = $_SERVER['argc'];
 
-        //保存命令并清空Cli_Input
+        //save the command and empty cli Input
         $this->action = isset($_SERVER['argv']['1']) ? $_SERVER['argv']['1'] : '';
         $this->force = isset($_SERVER['argv']['2']) ? $_SERVER['argv']['2'] : '';
         $_SERVER['argv'] = [] && $_SERVER['argc'] = 0;
