@@ -1,8 +1,11 @@
 {
   "name": "easy-task/easy-task",
-  "description": "easy-task, simple timer, timing task",
+  "description": "easy-task, simple timer, timing task, process manager",
   "keywords": [
-    "easy-task"
+    "easy-task",
+    "simple timer",
+    "timing task",
+    "process manager"
   ],
   "type": "library",
   "license": "MIT",
