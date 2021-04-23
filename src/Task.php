@@ -178,7 +178,7 @@ class Task
         $uniqueId = md5($alas);
         if (!($func instanceof Closure))
         {
-            Helper::showSysError('func must instanceof Closure');
+            Helper::showSysError(Constant::SERVER_CHECK_CLOSURE_TYPE_TIP);
         }
         if (isset($this->taskList[$uniqueId]))
         {

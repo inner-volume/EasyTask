@@ -77,4 +77,9 @@ class Constant
      * server_notify_params_check_tip
      */
     const SERVER_NOTIFY_PARAMS_CHECK_TIP = 'the parameter must be a string type or a closure type';
+
+    /**
+     * SERVER_CHECK_CLOSURE_TYPE_TIP
+     */
+    const SERVER_CHECK_CLOSURE_TYPE_TIP = 'the func parameter must belong to the closure type';
 }
