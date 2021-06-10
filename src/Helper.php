@@ -314,17 +314,18 @@ class Helper
      */
     public static function checkTaskTime($time)
     {
-        if (is_int($time))
-        {
-            if ($time < 0) static::showSysError('time must be greater than or equal to 0');
+        if (!is_numeric($time)) {
+            static::showSysError('the time must be numeric and is currently ' . gettype($time));
+            return;
         }
-        elseif (is_float($time))
-        {
+
+        if ($time < 0) {
+            static::showSysError('time must be greater than or equal to 0');
+            return;
+        }
+
+        if (is_float($time)) {
             if (!ProcessHelper::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
-        }
-        else
-        {
-            static::showSysError('time parameter is an unsupported type');
         }
     }
 
