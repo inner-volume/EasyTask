@@ -62,8 +62,7 @@ class Error
     {
         //存在错误
         $type = 'warring';
-        if (($error = error_get_last()) != null)
-        {
+        if (($error = error_get_last()) != null) {
             //日志记录
             $exception = new ErrorException($error['type'], $error['message'], $error['file'], $error['line']);
             static::report($type, $exception);
@@ -77,7 +76,7 @@ class Error
      */
     public static function report($type, $exception)
     {
-         try {
+        try {
             //标准化日志
             $text = Helper::formatException($exception, $type);
 
@@ -85,15 +84,15 @@ class Error
             Helper::writeLog($text);
 
             //同步模式输出
-            if (!Env::get('daemon')) echo($text);
+            if (!Env::get('daemon')) {
+                echo ($text);
+            }
 
             //回调上报信息
             $notify = Env::get('notifyHand');
-            if ($notify)
-            {
+            if ($notify) {
                 //闭包回调
-                if ($notify instanceof Closure)
-                {
+                if ($notify instanceof Closure) {
                     $notify($exception);
                     return;
                 }
@@ -105,12 +104,11 @@ class Error
                     'errLine' => $exception->getLine(),
                 ];
                 $result = Helper::curl($notify, $request);
-                if (!$result || $result != 'success')
-                {
+                if (!$result || $result != 'success') {
                     Helper::showError("request http api $notify failed", false, 'warring', true);
                 }
             }
-        }catch (\Throwable $e){
+        } catch (\Throwable$e) {
             echo $e->getMessage();
             echo "\r\n";
         }

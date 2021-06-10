@@ -15,7 +15,7 @@ class Env
     private static $collection;
 
     /**
-     * Set
+     * set
      * @param string $key
      * @param mixed $value
      */
@@ -25,7 +25,7 @@ class Env
     }
 
     /**
-     * Get
+     * get
      * @param string $key
      * @return mixed
      */

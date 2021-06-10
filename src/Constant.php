@@ -44,6 +44,14 @@ class Constant
     const SERVER_AUTO_RECOVER_KEY = 'server_auto_recover_key';
 
     /**
+     * basic const
+     */
+    const SERVER_TASK_FUNC_TYPE = 1;
+    const SERVER_TASK_STATIC_CLASS_TYPE = 2;
+    const SERVER_TASK_OBJECT_CLASS_TYPE = 3;
+    const SERVER_TASK_COMMAND_TYPE = 4;
+
+    /**
      * two
      * server_info_constant
      */

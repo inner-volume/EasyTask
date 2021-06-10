@@ -1,14 +1,14 @@
 <?php
 namespace EasyTask;
 
-use \Closure as Closure;
 use EasyTask\Helper\ProcessHelper;
 use EasyTask\Helper\UtilHelper;
 use EasyTask\Process\Linux;
 use EasyTask\Process\Win;
+use \Closure as Closure;
 use \ReflectionClass as ReflectionClass;
-use \ReflectionMethod as ReflectionMethod;
 use \ReflectionException as ReflectionException;
+use \ReflectionMethod as ReflectionMethod;
 
 /**
  * Class Task
@@ -33,8 +33,7 @@ class Task
         //initialize the basic configuration
         $this->setPrefix(Constant::SERVER_PREFIX_VAL);
         $this->setCloseErrorRegister();
-        if (UtilHelper::isWin())
-        {
+        if (UtilHelper::isWin()) {
             Helper::setPhpPath();
             Helper::setCodePage();
         }
@@ -58,8 +57,7 @@ class Task
      */
     public function setPrefix($prefix)
     {
-        if (Env::get(Constant::SERVER_RUNTIME_PATH))
-        {
+        if (Env::get(Constant::SERVER_RUNTIME_PATH)) {
             Helper::showSysError(Constant::SERVER_PREFIX_RUNTIME_PATH_EMPTY_TIP);
         }
         Env::set(Constant::SERVER_PREFIX_KEY, $prefix);
@@ -74,8 +72,7 @@ class Task
     public function setPhpPath($path)
     {
         $file = realpath($path);
-        if (!file_exists($file))
-        {
+        if (!file_exists($file)) {
             Helper::showSysError("the path {$path} is not exists");
         }
         Helper::setPhpPath($path);
@@ -100,12 +97,10 @@ class Task
      */
     public function setRunTimePath($path)
     {
-        if (!is_dir($path))
-        {
+        if (!is_dir($path)) {
             Helper::showSysError("the path {$path} is not exist");
         }
-        if (!is_writable($path))
-        {
+        if (!is_writable($path)) {
             Helper::showSysError("the path {$path} is not writeable");
         }
         Env::set(Constant::SERVER_RUNTIME_PATH, realpath($path));
@@ -152,12 +147,10 @@ class Task
      */
     public function setErrorRegisterNotify($notify)
     {
-        if (Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY))
-        {
+        if (Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY)) {
             Helper::showSysError(Constant::SERVER_NOTIFY_MUST_OPEN_ERROR_REGISTER_TIP);
         }
-        if (!$notify instanceof Closure && !is_string($notify))
-        {
+        if (!$notify instanceof Closure && !is_string($notify)) {
             Helper::showSysError(Constant::SERVER_NOTIFY_PARAMS_CHECK_TIP);
         }
         Env::set(Constant::SERVER_NOTIFY_KEY, $notify);
@@ -176,21 +169,19 @@ class Task
     public function addFunc($func, $alas, $time = 1, $used = 1)
     {
         $uniqueId = md5($alas);
-        if (!($func instanceof Closure))
-        {
+        if (!($func instanceof Closure)) {
             Helper::showSysError(Constant::SERVER_CHECK_CLOSURE_TYPE_TIP);
         }
-        if (isset($this->taskList[$uniqueId]))
-        {
+        if (isset($this->taskList[$uniqueId])) {
             Helper::showSysError("task $alas already exists");
         }
         Helper::checkTaskTime($time);
         $this->taskList[$uniqueId] = [
-            'type' => 1,
+            'type' => Constant::SERVER_TASK_FUNC_TYPE,
             'func' => $func,
             'alas' => $alas,
             'time' => $time,
-            'used' => $used
+            'used' => $used,
         ];
 
         return $this;
@@ -209,38 +200,32 @@ class Task
     public function addClass($class, $func, $alas, $time = 1, $used = 1)
     {
         $uniqueId = md5($alas);
-        if (!class_exists($class))
-        {
+        if (!class_exists($class)) {
             Helper::showSysError("class {$class} is not exist");
         }
-        if (isset($this->taskList[$uniqueId]))
-        {
+        if (isset($this->taskList[$uniqueId])) {
             Helper::showSysError("task $alas already exists");
         }
         try
         {
             $reflect = new ReflectionClass($class);
-            if (!$reflect->hasMethod($func))
-            {
+            if (!$reflect->hasMethod($func)) {
                 Helper::showSysError("class {$class}'s func {$func} is not exist");
             }
             $method = new ReflectionMethod($class, $func);
-            if (!$method->isPublic())
-            {
+            if (!$method->isPublic()) {
                 Helper::showSysError("class {$class}'s func {$func} must public");
             }
             Helper::checkTaskTime($time);
             $this->taskList[$uniqueId] = [
-                'type' => $method->isStatic() ? 2 : 3,
+                'type' => $method->isStatic() ? Constant::SERVER_TASK_STATIC_CLASS_TYPE : Constant::SERVER_TASK_OBJECT_CLASS_TYPE,
                 'func' => $func,
                 'alas' => $alas,
                 'time' => $time,
                 'used' => $used,
-                'class' => $class
+                'class' => $class,
             ];
-        }
-        catch (ReflectionException $exception)
-        {
+        } catch (ReflectionException $exception) {
             Helper::showException($exception);
         }
 
@@ -258,17 +243,15 @@ class Task
     public function addCommand($command, $alas, $time = 1, $used = 1)
     {
         $uniqueId = md5($alas);
-        if (!ProcessHelper::canUseExcCommand())
-        {
+        if (!ProcessHelper::canUseExcCommand()) {
             Helper::showSysError(Constant::SERVER_PROCESS_OPEN_CLOSE_DISABLED_TIP);
         }
-        if (isset($this->taskList[$uniqueId]))
-        {
+        if (isset($this->taskList[$uniqueId])) {
             Helper::showSysError(Constant::SERVER_TASK_SAME_NAME_TIP);
         }
         Helper::checkTaskTime($time);
         $this->taskList[$uniqueId] = [
-            'type' => 4,
+            'type' => Constant::SERVER_TASK_COMMAND_TYPE,
             'alas' => $alas,
             'time' => $time,
             'used' => $used,
@@ -294,11 +277,15 @@ class Task
      */
     public function start()
     {
-        //task empty tip
-        if (!$this->taskList) Helper::showSysError(Constant::SERVER_TASK_EMPTY_TIP);
+        //empty task tip
+        if (!$this->taskList) {
+            Helper::showSysError(Constant::SERVER_TASK_EMPTY_TIP);
+        }
 
         //exception registration
-        if (!Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY)) Error::register();
+        if (!Env::get(Constant::SERVER_CLOSE_ERROR_REGISTER_SWITCH_KEY)) {
+            Error::register();
+        }
 
         //directory construction
         Helper::initAllPath();
