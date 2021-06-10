@@ -54,8 +54,7 @@ class Helper
     {
         $ds = DIRECTORY_SEPARATOR;
         $codePageBinary = implode($ds,['C:','Windows','System32','chcp.com']);
-        if (file_exists($codePageBinary) && static::canUseExcCommand())
-        {
+        if (file_exists($codePageBinary) && ProcessHelper::canUseExcCommand()) {
             @pclose(@popen("{$codePageBinary} {$code}", 'r'));
         }
     }
