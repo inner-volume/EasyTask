@@ -77,37 +77,42 @@ class Error
      */
     public static function report($type, $exception)
     {
-        //标准化日志
-        $text = Helper::formatException($exception, $type);
+         try {
+            //标准化日志
+            $text = Helper::formatException($exception, $type);
 
-        //本地日志储存
-        Helper::writeLog($text);
+            //本地日志储存
+            Helper::writeLog($text);
 
-        //同步模式输出
-        if (!Env::get('daemon')) echo($text);
+            //同步模式输出
+            if (!Env::get('daemon')) echo($text);
 
-        //回调上报信息
-        $notify = Env::get('notifyHand');
-        if ($notify)
-        {
-            //闭包回调
-            if ($notify instanceof Closure)
+            //回调上报信息
+            $notify = Env::get('notifyHand');
+            if ($notify)
             {
-                $notify($exception);
-                return;
-            }
+                //闭包回调
+                if ($notify instanceof Closure)
+                {
+                    $notify($exception);
+                    return;
+                }
 
-            //Http回调
-            $request = [
-                'errStr' => $exception->getMessage(),
-                'errFile' => $exception->getFile(),
-                'errLine' => $exception->getLine(),
-            ];
-            $result = Helper::curl($notify, $request);
-            if (!$result || $result != 'success')
-            {
-                Helper::showError("request http api $notify failed", false, 'warring', true);
+                //Http回调
+                $request = [
+                    'errStr' => $exception->getMessage(),
+                    'errFile' => $exception->getFile(),
+                    'errLine' => $exception->getLine(),
+                ];
+                $result = Helper::curl($notify, $request);
+                if (!$result || $result != 'success')
+                {
+                    Helper::showError("request http api $notify failed", false, 'warring', true);
+                }
             }
+        }catch (\Throwable $e){
+            echo $e->getMessage();
+            echo "\r\n";
         }
     }
 }
