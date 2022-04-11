@@ -34,16 +34,16 @@ class ThinkSupport
      */
     public function __construct()
     {
-        //save cli Input
+        // save cli Input
         $this->argv = $_SERVER['argv'];
         $this->argc = $_SERVER['argc'];
 
-        //save the command and empty cli Input
+        // save the command and empty cli Input
         $this->action = isset($_SERVER['argv']['1']) ? $_SERVER['argv']['1'] : '';
         $this->force = isset($_SERVER['argv']['2']) ? $_SERVER['argv']['2'] : '';
         $_SERVER['argv'] = [] && $_SERVER['argc'] = 0;
 
-        //suppress think's errors
+        // suppress think's errors
         if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         if (!isset($_SERVER['REQUEST_URI'])) $_SERVER['REQUEST_URI'] = 'localhost';
     }
@@ -67,11 +67,11 @@ class ThinkSupport
      */
     public function invokeYourCode($code)
     {
-        //recover cli Input.
+        // recover cli Input.
         $_SERVER['argv'] = $this->argv;
         $_SERVER['argc'] = $this->argc;
 
-        //invoke
+        // invoke
         $code($this->action, $this->force);
     }
 }
@@ -81,16 +81,16 @@ class ThinkSupport
  */
 (new ThinkSupport())
     ->invokeThink(function () {
-        //include think's code
+        // include think's code
         require './index.php';
     })
     ->invokeYourCode(function ($action, $force) {
-        //include composer
+        // include composer
         require './vendor/autoload.php';
 
-        //$action start|status|stop
+        // $action start|status|stop
 
-        //start coding
+        // start coding
     });
 
 /**
