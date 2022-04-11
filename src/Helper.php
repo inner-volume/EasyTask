@@ -66,13 +66,13 @@ class Helper
      */
     public static function getCliInput($type = 1)
     {
-        //输入参数
+        // 输入参数
         $argv = $_SERVER['argv'];
 
-        //组装PHP路径
+        // 组装PHP路径
         array_unshift($argv, Env::get('phpPath'));
 
-        //自动校正
+        // 自动校正
         foreach ($argv as $key => $value)
         {
             if (file_exists($value))
@@ -81,7 +81,7 @@ class Helper
             }
         }
 
-        //返回
+        // 返回
         if ($type == 1)
         {
             return join(' ', $argv);
