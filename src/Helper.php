@@ -2,7 +2,6 @@
 namespace EasyTask;
 
 use EasyTask\Exception\ErrorException;
-use EasyTask\Helper\ProcessHelper;
 use \Exception as Exception;
 use \Throwable as Throwable;
 
@@ -53,8 +52,9 @@ class Helper
     public static function setCodePage($code = 65001)
     {
         $ds = DIRECTORY_SEPARATOR;
-        $codePageBinary = implode($ds,['C:','Windows','System32','chcp.com']);
-        if (file_exists($codePageBinary) && ProcessHelper::canUseExcCommand()) {
+        $codePageBinary = "C:{$ds}Windows{$ds}System32{$ds}chcp.com";
+        if (file_exists($codePageBinary) && static::canUseExcCommand())
+        {
             @pclose(@popen("{$codePageBinary} {$code}", 'r'));
         }
     }
@@ -66,13 +66,13 @@ class Helper
      */
     public static function getCliInput($type = 1)
     {
-        // 输入参数
+        //输入参数
         $argv = $_SERVER['argv'];
 
-        // 组装PHP路径
+        //组装PHP路径
         array_unshift($argv, Env::get('phpPath'));
 
-        // 自动校正
+        //自动校正
         foreach ($argv as $key => $value)
         {
             if (file_exists($value))
@@ -81,7 +81,7 @@ class Helper
             }
         }
 
-        // 返回
+        //返回
         if ($type == 1)
         {
             return join(' ', $argv);
@@ -117,7 +117,32 @@ class Helper
         return pcntl_async_signals(true);
     }
 
+    /**
+     * 是否支持异步信号
+     * @return bool
+     */
+    public static function canUseAsyncSignal()
+    {
+        return (function_exists('pcntl_async_signals'));
+    }
 
+    /**
+     * 是否支持event事件
+     * @return bool
+     */
+    public static function canUseEvent()
+    {
+        return (extension_loaded('event'));
+    }
+
+    /**
+     * 是否可执行命令
+     * @return bool
+     */
+    public static function canUseExcCommand()
+    {
+        return function_exists('popen') && function_exists('pclose');
+    }
 
     /**
      * 获取运行时目录
@@ -125,12 +150,12 @@ class Helper
      */
     public static function getRunTimePath()
     {
-        $path = Env::get(Constant::SERVER_RUNTIME_PATH) ? Env::get(Constant::SERVER_RUNTIME_PATH) : sys_get_temp_dir();
+        $path = Env::get('runTimePath') ? Env::get('runTimePath') : sys_get_temp_dir();
         if (!is_dir($path))
         {
             static::showSysError('please set runTimePath');
         }
-        $path = $path . DIRECTORY_SEPARATOR . Env::get(Constant::SERVER_PREFIX_KEY) . DIRECTORY_SEPARATOR;
+        $path = $path . DIRECTORY_SEPARATOR . Env::get('prefix') . DIRECTORY_SEPARATOR;
         $path = str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $path);
         return $path;
     }
@@ -207,10 +232,7 @@ class Helper
         {
             if (!is_dir($path))
             {
-                if (!mkdir($path, 0777, true))
-                {
-                    Helper::showSysError("Failed to create $path directory, please check permissions");
-                }
+                mkdir($path, 0777, true);
             }
         }
     }
@@ -313,18 +335,17 @@ class Helper
      */
     public static function checkTaskTime($time)
     {
-        if (!is_numeric($time)) {
-            static::showSysError('the time must be numeric and is currently ' . gettype($time));
-            return;
+        if (is_int($time))
+        {
+            if ($time < 0) static::showSysError('time must be greater than or equal to 0');
         }
-
-        if ($time < 0) {
-            static::showSysError('time must be greater than or equal to 0');
-            return;
+        elseif (is_float($time))
+        {
+            if (!static::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
         }
-
-        if (is_float($time)) {
-            if (!ProcessHelper::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
+        else
+        {
+            static::showSysError('time parameter is an unsupported type');
         }
     }
 

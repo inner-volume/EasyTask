@@ -190,7 +190,7 @@ abstract class Process
         }
         else
         {
-            Helper\ProcessHelper::canUseEvent() ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
+            Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
         }
     }
 
@@ -253,7 +253,7 @@ abstract class Process
             //CPU休息
             Helper::sleep(1);
         }
-        Helper::showInfo('the process may have been closed, please try again');
+        Helper::showInfo('this cpu is too busy,please use status command try again');
         exit;
     }
 }

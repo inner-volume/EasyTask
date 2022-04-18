@@ -67,11 +67,11 @@ class Check
 
     /**
      *  解析运行环境
+     * @param int $currentOs
      */
-    public static function analysis()
+    public static function analysis($currentOs)
     {
         //检查扩展
-        $currentOs = Helper::isWin() ? 1 : 2;
         $waitExtends = static::$waitExtends[$currentOs];
         foreach ($waitExtends as $extend)
         {

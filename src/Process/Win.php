@@ -1,7 +1,6 @@
 <?php
 namespace EasyTask\Process;
 
-use EasyTask\Constant;
 use EasyTask\Wts;
 use EasyTask\Wpc;
 use EasyTask\Env;
@@ -104,7 +103,7 @@ class Win extends Process
     }
 
     /**
-     * 根据进程名称执行任务
+     * 跟进进程名称执行任务
      * @param string $name
      * @throws Exception|Throwable
      */
@@ -277,7 +276,7 @@ class Win extends Process
 
         //输出信息
         $pid = getmypid();
-        $title = Env::get(Constant::SERVER_PREFIX_KEY) . '_' . $item['alas'];
+        $title = Env::get('prefix') . '_' . $item['alas'];
         Helper::showInfo("this worker $title is start");
 
         //设置进程标题

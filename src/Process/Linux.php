@@ -1,7 +1,6 @@
 <?php
 namespace EasyTask\Process;
 
-use EasyTask\Constant;
 use EasyTask\Env;
 use EasyTask\Helper;
 use \Closure as Closure;
@@ -26,7 +25,10 @@ class Linux extends Process
     public function __construct($taskList)
     {
         parent::__construct($taskList);
-        if (Helper\ProcessHelper::canUseAsyncSignal()) Helper::openAsyncSignal();
+        if (Env::get('canAsync'))
+        {
+            Helper::openAsyncSignal();
+        }
     }
 
     /**
@@ -72,7 +74,7 @@ class Linux extends Process
         foreach ($this->taskList as $item)
         {
             //提取参数
-            $prefix = Env::get(Constant::SERVER_PREFIX_KEY);
+            $prefix = Env::get('prefix');
             $item['data'] = date('Y-m-d H:i:s');
             $item['alas'] = "{$prefix}_{$item['alas']}";
             $used = $item['used'];
@@ -176,7 +178,7 @@ class Linux extends Process
             Helper::sleep(1);
 
             //信号处理(同步/异步)
-            if (!Helper\ProcessHelper::canUseAsyncSignal()) pcntl_signal_dispatch();
+            if (!Env::get('canAsync')) pcntl_signal_dispatch();
         }
     }
 
@@ -260,7 +262,7 @@ class Linux extends Process
             }, $this->startTime);
 
             //信号调度
-            if (!Helper\ProcessHelper::canUseAsyncSignal()) pcntl_signal_dispatch();
+            if (!Env::get('canAsync')) pcntl_signal_dispatch();
 
             //检查进程
             if (Env::get('canAutoRec')) $this->processStatus();

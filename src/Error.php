@@ -62,7 +62,8 @@ class Error
     {
         //存在错误
         $type = 'warring';
-        if (($error = error_get_last()) != null) {
+        if (($error = error_get_last()) != null)
+        {
             //日志记录
             $exception = new ErrorException($error['type'], $error['message'], $error['file'], $error['line']);
             static::report($type, $exception);
@@ -76,41 +77,37 @@ class Error
      */
     public static function report($type, $exception)
     {
-        try {
-            //标准化日志
-            $text = Helper::formatException($exception, $type);
+        //标准化日志
+        $text = Helper::formatException($exception, $type);
 
-            //本地日志储存
-            Helper::writeLog($text);
+        //本地日志储存
+        Helper::writeLog($text);
 
-            //同步模式输出
-            if (!Env::get('daemon')) {
-                echo ($text);
+        //同步模式输出
+        if (!Env::get('daemon')) echo($text);
+
+        //回调上报信息
+        $notify = Env::get('notifyHand');
+        if ($notify)
+        {
+            //闭包回调
+            if ($notify instanceof Closure)
+            {
+                $notify($exception);
+                return;
             }
 
-            //回调上报信息
-            $notify = Env::get('notifyHand');
-            if ($notify) {
-                //闭包回调
-                if ($notify instanceof Closure) {
-                    $notify($exception);
-                    return;
-                }
-
-                //Http回调
-                $request = [
-                    'errStr' => $exception->getMessage(),
-                    'errFile' => $exception->getFile(),
-                    'errLine' => $exception->getLine(),
-                ];
-                $result = Helper::curl($notify, $request);
-                if (!$result || $result != 'success') {
-                    Helper::showError("request http api $notify failed", false, 'warring', true);
-                }
+            //Http回调
+            $request = [
+                'errStr' => $exception->getMessage(),
+                'errFile' => $exception->getFile(),
+                'errLine' => $exception->getLine(),
+            ];
+            $result = Helper::curl($notify, $request);
+            if (!$result || $result != 'success')
+            {
+                Helper::showError("request http api $notify failed", false, 'warring', true);
             }
-        } catch (\Throwable$e) {
-            echo $e->getMessage();
-            echo "\r\n";
         }
     }
 }

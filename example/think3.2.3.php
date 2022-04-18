@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Think3.2.3 support
+ * Think3.2.3支持
  */
 class ThinkSupport
 {
@@ -30,26 +30,26 @@ class ThinkSupport
     private $force;
 
     /**
-     * support constructor.
+     * Support constructor.
      */
     public function __construct()
     {
-        // save cli Input
+        //保存Cli_Input
         $this->argv = $_SERVER['argv'];
         $this->argc = $_SERVER['argc'];
 
-        // save the command and empty cli Input
+        //保存命令并清空Cli_Input
         $this->action = isset($_SERVER['argv']['1']) ? $_SERVER['argv']['1'] : '';
         $this->force = isset($_SERVER['argv']['2']) ? $_SERVER['argv']['2'] : '';
         $_SERVER['argv'] = [] && $_SERVER['argc'] = 0;
 
-        // suppress think's errors
+        //抑制Tp错误
         if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         if (!isset($_SERVER['REQUEST_URI'])) $_SERVER['REQUEST_URI'] = 'localhost';
     }
 
     /**
-     * load think's code
+     * 加载Think代码
      * @param Closure $think
      * @return ThinkSupport
      */
@@ -62,16 +62,16 @@ class ThinkSupport
     }
 
     /**
-     * include your code
+     * 加载你的代码
      * @param Closure $code
      */
     public function invokeYourCode($code)
     {
-        // recover cli Input.
+        //恢复Cli_Input.(方便自己扩展)
         $_SERVER['argv'] = $this->argv;
         $_SERVER['argc'] = $this->argc;
 
-        // invoke
+        //执行
         $code($this->action, $this->force);
     }
 }
@@ -81,16 +81,16 @@ class ThinkSupport
  */
 (new ThinkSupport())
     ->invokeThink(function () {
-        // include think's code
+        //加载tp的代码
         require './index.php';
     })
     ->invokeYourCode(function ($action, $force) {
-        // include composer
+        // 加载Composer
         require './vendor/autoload.php';
 
-        // $action start|status|stop
+        // $action值有start|status|stop
 
-        // start coding
+        // 编写你的代码
     });
 
 /**

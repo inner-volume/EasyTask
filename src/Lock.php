@@ -24,7 +24,8 @@ class Lock
         //初始化文件
         $path = Helper::getLokPath();
         $this->file = $path . md5($name);
-        if (!file_exists($this->file)) {
+        if (!file_exists($this->file))
+        {
             @file_put_contents($this->file, '');
         }
     }
@@ -40,7 +41,8 @@ class Lock
         $fp = fopen($this->file, 'r');
         $is_flock = $block ? flock($fp, LOCK_EX) : flock($fp, LOCK_EX | LOCK_NB);
         $call_back = null;
-        if ($is_flock) {
+        if ($is_flock)
+        {
             $call_back = $func();
             flock($fp, LOCK_UN);
         }
