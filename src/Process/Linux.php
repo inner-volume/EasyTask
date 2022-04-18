@@ -36,13 +36,13 @@ class Linux extends Process
      */
     public function start()
     {
-        //发送命令
+        // 发送命令
         $this->commander->send([
             'type' => 'start',
             'msgType' => 2
         ]);
 
-        //异步处理
+        // 异步处理
         if (Env::get('daemon'))
         {
             Helper::setMask();
@@ -62,7 +62,7 @@ class Linux extends Process
             );
         }
 
-        //同步处理
+        // 同步处理
         $this->allocate();
     }
 
@@ -73,20 +73,20 @@ class Linux extends Process
     {
         foreach ($this->taskList as $item)
         {
-            //提取参数
+            // 提取参数
             $prefix = Env::get('prefix');
             $item['data'] = date('Y-m-d H:i:s');
             $item['alas'] = "{$prefix}_{$item['alas']}";
             $used = $item['used'];
 
-            //根据Worker数分配进程
+            // 根据Worker数分配进程
             for ($i = 0; $i < $used; $i++)
             {
                 $this->forkItemExec($item);
             }
         }
 
-        //常驻守护
+        // 常驻守护
         $this->daemonWait();
     }
 
@@ -115,6 +115,7 @@ class Linux extends Process
     /**
      * 创建任务执行的子进程
      * @param array $item
+     * @throws Throwable
      */
     protected function forkItemExec($item)
     {
@@ -123,10 +124,10 @@ class Linux extends Process
                 $this->invoker($item);
             },
             function ($pid) use ($item) {
-                //write_log
+                // 日志记录
                 $ppid = posix_getpid();
                 $this->processList[] = ['pid' => $pid, 'name' => $item['alas'], 'item' => $item, 'started' => $item['data'], 'time' => $item['time'], 'status' => 'active', 'ppid' => $ppid];
-                //set not block
+                // 设置非阻塞
                 pcntl_wait($status, WNOHANG);
             }
         );
@@ -139,20 +140,20 @@ class Linux extends Process
      */
     protected function invoker($item)
     {
-        //输出信息
+        // 输出信息
         $item['ppid'] = posix_getppid();
         $text = "this worker {$item['alas']}";
         Helper::writeTypeLog("$text is start");
 
-        //进程标题
+        // 进程标题
         Helper::cli_set_process_title($item['alas']);
 
-        //Kill信号
+        // Kill信号
         pcntl_signal(SIGTERM, function () use ($text) {
             Helper::writeTypeLog("listened kill command, $text not to exit the program for safety");
         });
 
-        //执行任务
+        // 执行任务
         $this->executeInvoker($item);
     }
 
@@ -162,22 +163,22 @@ class Linux extends Process
      */
     protected function invokeByDefault($item)
     {
-        //安装信号管理
+        // 安装信号管理
         pcntl_signal(SIGALRM, function () use ($item) {
             pcntl_alarm($item['time']);
             $this->execute($item);
         }, false);
 
-        //发送闹钟信号
+        // 发送闹钟信号
         pcntl_alarm($item['time']);
 
-        //挂起进程(同步调用信号,异步CPU休息)
+        // 挂起进程(同步调用信号,异步CPU休息)
         while (true)
         {
-            //CPU休息
+            // CPU休息
             Helper::sleep(1);
 
-            //信号处理(同步/异步)
+            // 信号处理(同步/异步)
             if (!Env::get('canAsync')) pcntl_signal_dispatch();
         }
     }
@@ -199,10 +200,10 @@ class Linux extends Process
      */
     protected function daemonWait()
     {
-        //设置进程标题
+        // 进程标题
         Helper::cli_set_process_title(Env::get('prefix'));
 
-        //输出信息
+        // 输出信息
         $text = "this manager";
         Helper::writeTypeLog("$text is start");
         if (!Env::get('daemon'))
@@ -211,18 +212,18 @@ class Linux extends Process
             Helper::showInfo('start success,press ctrl+c to stop');
         }
 
-        //Kill信号
+        // Kill信号
         pcntl_signal(SIGTERM, function () use ($text) {
             Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
         });
 
-        //挂起进程
+        // 挂起进程
         while (true)
         {
-            //CPU休息
+            // CPU休息
             Helper::sleep(1);
 
-            //接收命令start/status/stop
+            // 接收命令start/status/stop
             $this->commander->waitCommandForExecute(2, function ($command) use ($text) {
                 $exitText = "listened exit command, $text is exiting safely";
                 $statusText = "listened status command, $text is reported";
@@ -261,10 +262,10 @@ class Linux extends Process
 
             }, $this->startTime);
 
-            //信号调度
+            // 信号调度
             if (!Env::get('canAsync')) pcntl_signal_dispatch();
 
-            //检查进程
+            // 检查进程
             if (Env::get('canAutoRec')) $this->processStatus();
         }
     }
@@ -272,23 +273,24 @@ class Linux extends Process
     /**
      * 查看进程状态
      * @return array
+     * @throws Throwable
      */
     protected function processStatus()
     {
         $report = [];
         foreach ($this->processList as $key => $item)
         {
-            //提取参数
+            // 提取参数
             $pid = $item['pid'];
 
-            //进程状态
+            // 进程状态
             $rel = pcntl_waitpid($pid, $status, WNOHANG);
             if ($rel == -1 || $rel > 0)
             {
-                //标记状态
+                // 标记状态
                 $item['status'] = 'stop';
 
-                //进程退出,重新fork
+                // 进程退出,重新fork
                 if (Env::get('canAutoRec'))
                 {
                     $this->forkItemExec($item['item']);
@@ -297,7 +299,7 @@ class Linux extends Process
                 }
             }
 
-            //记录状态
+            // 记录状态
             unset($item['item']);
             $report[] = $item;
         }
