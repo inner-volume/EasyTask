@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask\Process;
 
 use EasyTask\Command;
@@ -63,11 +64,13 @@ abstract class Process
      */
     public function status()
     {
-        //发送命令
-        $this->commander->send([
-            'type' => 'status',
-            'msgType' => 2
-        ]);
+        // 发送命令
+        $this->commander->send(
+            [
+                'type' => 'status',
+                'msgType' => 2
+            ]
+        );
         $this->masterWaitExit();
     }
 
@@ -77,12 +80,14 @@ abstract class Process
      */
     public function stop($force = false)
     {
-        //发送命令
-        $this->commander->send([
-            'type' => 'stop',
-            'force' => $force,
-            'msgType' => 2
-        ]);
+        // 发送命令
+        $this->commander->send(
+            [
+                'type' => 'stop',
+                'force' => $force,
+                'msgType' => 2
+            ]
+        );
     }
 
     /**
@@ -91,8 +96,7 @@ abstract class Process
     protected function setTaskCount()
     {
         $count = 0;
-        foreach ($this->taskList as $key => $item)
-        {
+        foreach ($this->taskList as $key => $item) {
             $count += (int)$item['used'];
         }
         $this->taskCount = $count;
@@ -114,16 +118,16 @@ abstract class Process
      */
     protected function execute($item)
     {
-        //根据任务类型执行
+        // 根据任务类型执行
         $daemon = Env::get('daemon');
 
-        //Std_Start
-        if ($this->canWriteStd()) ob_start();
-        try
-        {
+        // Std_Start
+        if ($this->canWriteStd()) {
+            ob_start();
+        }
+        try {
             $type = $item['type'];
-            switch ($type)
-            {
+            switch ($type) {
                 case 1:
                     $func = $item['func'];
                     $func();
@@ -138,42 +142,36 @@ abstract class Process
                 default:
                     @pclose(@popen($item['command'], 'r'));
             }
-
-        }
-        catch (Exception $exception)
-        {
-            if (Helper::isWin())
-            {
+        } catch (Exception $exception) {
+            if (Helper::isWin()) {
                 Helper::showException($exception, 'exception', !$daemon);
-            }
-            else
-            {
-                if (!$daemon) throw $exception;
+            } else {
+                if (!$daemon) {
+                    throw $exception;
+                }
                 Helper::writeLog(Helper::formatException($exception));
             }
-        }
-        catch (Throwable $exception)
-        {
-            if (Helper::isWin())
-            {
+        } catch (Throwable $exception) {
+            if (Helper::isWin()) {
                 Helper::showException($exception, 'exception', !$daemon);
-            }
-            else
-            {
-                if (!$daemon) throw $exception;
+            } else {
+                if (!$daemon) {
+                    throw $exception;
+                }
                 Helper::writeLog(Helper::formatException($exception));
             }
         }
 
-        //Std_End
-        if ($this->canWriteStd())
-        {
+        // Std_End
+        if ($this->canWriteStd()) {
             $stdChar = ob_get_contents();
-            if ($stdChar) Helper::saveStdChar($stdChar);
+            if ($stdChar) {
+                Helper::saveStdChar($stdChar);
+            }
             ob_end_clean();
         }
 
-        //检查常驻进程存活
+        // 检查常驻进程存活
         $this->checkDaemonForExit($item);
     }
 
@@ -184,12 +182,9 @@ abstract class Process
      */
     protected function executeInvoker($item)
     {
-        if ($item['time'] === 0)
-        {
+        if ($item['time'] === 0) {
             $this->invokerByDirect($item);
-        }
-        else
-        {
+        } else {
             Env::get('canEvent') ? $this->invokeByEvent($item) : $this->invokeByDefault($item);
         }
     }
@@ -200,26 +195,25 @@ abstract class Process
      */
     protected function invokeByEvent($item)
     {
-        //创建Event事件
+        // 创建Event事件
         $eventConfig = new EventConfig();
         $eventBase = new EventBase($eventConfig);
-        $event = new Event($eventBase, -1, Event::TIMEOUT | Event::PERSIST, function () use ($item) {
-            try
-            {
+        $event = new Event(
+            $eventBase, -1, Event::TIMEOUT | Event::PERSIST, function () use ($item) {
+            try {
                 $this->execute($item);
-            }
-            catch (Throwable $exception)
-            {
+            } catch (Throwable $exception) {
                 $type = 'exception';
                 Error::report($type, $exception);
                 $this->checkDaemonForExit($item);
             }
-        });
+        }
+        );
 
-        //添加事件
+        // 添加事件
         $event->add($item['time']);
 
-        //事件循环
+        // 事件循环
         $eventBase->loop();
     }
 
@@ -240,20 +234,22 @@ abstract class Process
     protected function masterWaitExit()
     {
         $i = $this->taskCount + 30;
-        while ($i--)
-        {
-            //接收汇报
-            $this->commander->waitCommandForExecute(1, function ($report) {
-                if ($report['type'] == 'status' && $report['status'])
-                {
-                    Helper::showTable($report['status']);
-                }
-            }, $this->startTime);
+        while ($i--) {
+            // 接收汇报
+            $this->commander->waitCommandForExecute(
+                1,
+                function ($report) {
+                    if ($report['type'] == 'status' && $report['status']) {
+                        Helper::showTable($report['status']);
+                    }
+                },
+                $this->startTime
+            );
 
-            //CPU休息
+            // CPU休息
             Helper::sleep(1);
         }
-        Helper::showInfo('this cpu is too busy,please use status command try again');
+        Helper::showInfo('receive the manage response timeout,please check process status');
         exit;
     }
 }

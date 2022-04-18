@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask\Process;
 
 use EasyTask\Env;
@@ -25,8 +26,7 @@ class Linux extends Process
     public function __construct($taskList)
     {
         parent::__construct($taskList);
-        if (Env::get('canAsync'))
-        {
+        if (Env::get('canAsync')) {
             Helper::openAsyncSignal();
         }
     }
@@ -37,20 +37,20 @@ class Linux extends Process
     public function start()
     {
         // 发送命令
-        $this->commander->send([
-            'type' => 'start',
-            'msgType' => 2
-        ]);
+        $this->commander->send(
+            [
+                'type' => 'start',
+                'msgType' => 2
+            ]
+        );
 
         // 异步处理
-        if (Env::get('daemon'))
-        {
+        if (Env::get('daemon')) {
             Helper::setMask();
             $this->fork(
                 function () {
                     $sid = posix_setsid();
-                    if ($sid < 0)
-                    {
+                    if ($sid < 0) {
                         Helper::showError('set child processForManager failed,please try again');
                     }
                     $this->allocate();
@@ -71,8 +71,7 @@ class Linux extends Process
      */
     protected function allocate()
     {
-        foreach ($this->taskList as $item)
-        {
+        foreach ($this->taskList as $item) {
             // 提取参数
             $prefix = Env::get('prefix');
             $item['data'] = date('Y-m-d H:i:s');
@@ -80,8 +79,7 @@ class Linux extends Process
             $used = $item['used'];
 
             // 根据Worker数分配进程
-            for ($i = 0; $i < $used; $i++)
-            {
+            for ($i = 0; $i < $used; $i++) {
                 $this->forkItemExec($item);
             }
         }
@@ -98,16 +96,11 @@ class Linux extends Process
     protected function fork($childInvoke, $mainInvoke)
     {
         $pid = pcntl_fork();
-        if ($pid == -1)
-        {
+        if ($pid == -1) {
             Helper::showError('fork child process failed,please try again');
-        }
-        elseif ($pid)
-        {
+        } elseif ($pid) {
             $mainInvoke($pid);
-        }
-        else
-        {
+        } else {
             $childInvoke();
         }
     }
@@ -126,7 +119,15 @@ class Linux extends Process
             function ($pid) use ($item) {
                 // 日志记录
                 $ppid = posix_getpid();
-                $this->processList[] = ['pid' => $pid, 'name' => $item['alas'], 'item' => $item, 'started' => $item['data'], 'time' => $item['time'], 'status' => 'active', 'ppid' => $ppid];
+                $this->processList[] = [
+                    'pid' => $pid,
+                    'name' => $item['alas'],
+                    'item' => $item,
+                    'started' => $item['data'],
+                    'time' => $item['time'],
+                    'status' => 'active',
+                    'ppid' => $ppid
+                ];
                 // 设置非阻塞
                 pcntl_wait($status, WNOHANG);
             }
@@ -149,9 +150,12 @@ class Linux extends Process
         Helper::cli_set_process_title($item['alas']);
 
         // Kill信号
-        pcntl_signal(SIGTERM, function () use ($text) {
-            Helper::writeTypeLog("listened kill command, $text not to exit the program for safety");
-        });
+        pcntl_signal(
+            SIGTERM,
+            function () use ($text) {
+                Helper::writeTypeLog("listened kill command, $text not to exit the program for safety");
+            }
+        );
 
         // 执行任务
         $this->executeInvoker($item);
@@ -164,22 +168,27 @@ class Linux extends Process
     protected function invokeByDefault($item)
     {
         // 安装信号管理
-        pcntl_signal(SIGALRM, function () use ($item) {
-            pcntl_alarm($item['time']);
-            $this->execute($item);
-        }, false);
+        pcntl_signal(
+            SIGALRM,
+            function () use ($item) {
+                pcntl_alarm($item['time']);
+                $this->execute($item);
+            },
+            false
+        );
 
         // 发送闹钟信号
         pcntl_alarm($item['time']);
 
         // 挂起进程(同步调用信号,异步CPU休息)
-        while (true)
-        {
+        while (true) {
             // CPU休息
             Helper::sleep(1);
 
             // 信号处理(同步/异步)
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
+            if (!Env::get('canAsync')) {
+                pcntl_signal_dispatch();
+            }
         }
     }
 
@@ -189,8 +198,7 @@ class Linux extends Process
      */
     protected function checkDaemonForExit($item)
     {
-        if (!posix_kill($item['ppid'], 0))
-        {
+        if (!posix_kill($item['ppid'], 0)) {
             Helper::writeTypeLog("listened exit command, this worker {$item['alas']} is exiting safely", 'info', true);
         }
     }
@@ -206,67 +214,70 @@ class Linux extends Process
         // 输出信息
         $text = "this manager";
         Helper::writeTypeLog("$text is start");
-        if (!Env::get('daemon'))
-        {
+        if (!Env::get('daemon')) {
             Helper::showTable($this->processStatus(), false);
             Helper::showInfo('start success,press ctrl+c to stop');
         }
 
         // Kill信号
-        pcntl_signal(SIGTERM, function () use ($text) {
-            Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
-        });
+        pcntl_signal(
+            SIGTERM,
+            function () use ($text) {
+                Helper::writeTypeLog("listened kill command $text is exiting safely", 'info', true);
+            }
+        );
 
         // 挂起进程
-        while (true)
-        {
+        while (true) {
             // CPU休息
             Helper::sleep(1);
 
             // 接收命令start/status/stop
-            $this->commander->waitCommandForExecute(2, function ($command) use ($text) {
-                $exitText = "listened exit command, $text is exiting safely";
-                $statusText = "listened status command, $text is reported";
-                $forceExitText = "listened exit command, $text is exiting unsafely";
-                if ($command['type'] == 'start')
-                {
-                    if ($command['time'] > $this->startTime)
-                    {
-                        Helper::writeTypeLog($forceExitText);
-                        posix_kill(0, SIGKILL);
+            $this->commander->waitCommandForExecute(
+                2,
+                function ($command) use ($text) {
+                    $exitText = "listened exit command, $text is exiting safely";
+                    $statusText = "listened status command, $text is reported";
+                    $forceExitText = "listened exit command, $text is exiting unsafely";
+                    if ($command['type'] == 'start') {
+                        if ($command['time'] > $this->startTime) {
+                            Helper::writeTypeLog($forceExitText);
+                            posix_kill(0, SIGKILL);
+                        }
                     }
-                }
-                if ($command['type'] == 'status')
-                {
-                    $report = $this->processStatus();
-                    $this->commander->send([
-                        'type' => 'status',
-                        'msgType' => 1,
-                        'status' => $report,
-                    ]);
-                    Helper::writeTypeLog($statusText);
-                }
-                if ($command['type'] == 'stop')
-                {
-                    if ($command['force'])
-                    {
-                        Helper::writeTypeLog($forceExitText);
-                        posix_kill(0, SIGKILL);
+                    if ($command['type'] == 'status') {
+                        $report = $this->processStatus();
+                        $this->commander->send(
+                            [
+                                'type' => 'status',
+                                'msgType' => 1,
+                                'status' => $report,
+                            ]
+                        );
+                        Helper::writeTypeLog($statusText);
                     }
-                    else
-                    {
-                        Helper::writeTypeLog($exitText);
-                        exit();
+                    if ($command['type'] == 'stop') {
+                        if ($command['force']) {
+                            Helper::writeTypeLog($forceExitText);
+                            posix_kill(0, SIGKILL);
+                        } else {
+                            Helper::writeTypeLog($exitText);
+                            exit();
+                        }
                     }
-                }
-
-            }, $this->startTime);
+                },
+                $this->startTime
+            );
 
             // 信号调度
-            if (!Env::get('canAsync')) pcntl_signal_dispatch();
+            if (!Env::get('canAsync')) {
+                pcntl_signal_dispatch();
+            }
 
             // 检查进程
-            if (Env::get('canAutoRec')) $this->processStatus();
+            if (Env::get('canAutoRec')) {
+                $this->processStatus();
+            }
         }
     }
 
@@ -278,21 +289,18 @@ class Linux extends Process
     protected function processStatus()
     {
         $report = [];
-        foreach ($this->processList as $key => $item)
-        {
+        foreach ($this->processList as $key => $item) {
             // 提取参数
             $pid = $item['pid'];
 
             // 进程状态
             $rel = pcntl_waitpid($pid, $status, WNOHANG);
-            if ($rel == -1 || $rel > 0)
-            {
+            if ($rel == -1 || $rel > 0) {
                 // 标记状态
                 $item['status'] = 'stop';
 
                 // 进程退出,重新fork
-                if (Env::get('canAutoRec'))
-                {
+                if (Env::get('canAutoRec')) {
                     $this->forkItemExec($item['item']);
                     Helper::writeTypeLog("the worker {$item['name']}(pid:{$pid}) is stop,try to fork a new one");
                     unset($this->processList[$key]);
