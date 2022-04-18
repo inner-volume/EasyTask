@@ -8,6 +8,7 @@
 </p>
 
 ## <h4 style="text-align:left">  项目介绍 </h4>
+
 <p>PHP常驻内存的多进程任务管理器Composer包。以进程管理为出发点，同时也支持为每个进程设置定时执行功能，您可以用它来完成需要重复运行的任务(如订单超时自动取消,短信邮件异步推送,队列/消费者/频道订阅者等等)，甚至处理计划任务。内置任务异常上报功能，异常错误您都可以自定义处理(例如实现异常错误自动短信邮件通知)；还支持任务异常退出自动重启功能，让您的任务运行更稳定 ，工具包同时支持windows、linux、mac环境运行。
 </p>
 
@@ -216,7 +217,7 @@ ppid:守护进程id
 
 ## <h5>【F】. 进阶了解->框架集成教程 </h5>
 
-&ensp;&ensp;[<font size=2>-> thinkphp3.2.x教程</font>](https://www.gaojiufeng.cn/?id=293). 
+&ensp;&ensp;[<font size=2>-> thinkphp3.2.x教程</font>](https://www.gaojiufeng.cn/?id=293).
 
 &ensp;&ensp;[<font size=2>-> thinkPhp5.x.x教程</font>](https://www.gaojiufeng.cn/?id=294).
 
@@ -226,7 +227,7 @@ ppid:守护进程id
 
 ## <h5>【G】. 进阶了解->其他知识学习 </h5>
 
-&ensp;&ensp;[<font size=2>-> 原生PHP+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=346). 
+&ensp;&ensp;[<font size=2>-> 原生PHP+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=346).
 
 &ensp;&ensp;[<font size=2>-> EasyTask+Redis队列学习教程</font>](https://www.gaojiufeng.cn/?id=347).
 
@@ -247,6 +248,7 @@ $task->addFunc(function () {
 ~~~
 
 ## <h5>【I】. 特别感谢 </h5>
+
 ~~~
 (1).ThinkPHP(官方扩展页展示EasyTask),官方地址:http://www.thinkphp.cn/
 (2).ThinkPHP(命令行输出组件基于Tp_Table组件),官方地址:http://www.thinkphp.cn/
@@ -254,14 +256,17 @@ $task->addFunc(function () {
 ~~~
 
 ## <h5>【J】. 使用案例 </h5>
+
 ~~~
 (1).深圳市百木微风科技有限公司(异步HTML转WORD)
 (2).深圳市恒信邦科技有限公司(统一管理所有队列服务)
-(3).深圳红鸾网络科技有限公司(汇率更新|新闻采集|短信服务)
+(3).西安红鸾网络科技有限公司(汇率更新|新闻采集|短信服务)
+(4).深圳歌力思服饰股份有限公司(财务报表|业绩报表|SQLSERVER TO MYSQL同步)
 (N).....欢迎反馈提交
 ~~~
 
 ## <h5>【K】. Bug反馈 </h5>
+
 ~~~
 请反馈至QQ群1073420874,感谢持续反馈的用户,是您的反馈让EasyTask完美无Bug!
 ~~~
