@@ -25,7 +25,7 @@ class Task
      */
     public function __construct()
     {
-        //检查运行环境
+        // 检查运行环境
         $currentOs = Helper::isWin() ? 1 : 2;
         Check::analysis($currentOs);
         $this->initialise($currentOs);
@@ -37,14 +37,14 @@ class Task
      */
     private function initialise($currentOs)
     {
-        //初始化基础配置
+        // 初始化基础配置
         Env::set('prefix', 'Task');
         Env::set('canEvent', Helper::canUseEvent());
         Env::set('currentOs', $currentOs);
         Env::set('canAsync', Helper::canUseAsyncSignal());
         Env::set('closeErrorRegister', false);
 
-        //初始化PHP_BIN|CODE_PAGE
+        // 初始化PHP_BIN|CODE_PAGE
         if ($currentOs == 1)
         {
             Helper::setPhpPath();
@@ -319,16 +319,16 @@ class Task
             Helper::showSysError('please add task to run');
         }
 
-        //异常注册
+        // 异常注册
         if (!Env::get('closeErrorRegister'))
         {
             Error::register();
         }
 
-        //目录构建
+        // 目录构建
         Helper::initAllPath();
 
-        //进程启动
+        // 进程启动
         $process = $this->getProcess();
         $process->start();
     }

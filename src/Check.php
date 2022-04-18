@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 /**
@@ -12,14 +13,14 @@ class Check
      * @var array
      */
     private static $waitExtends = [
-        //Win
+        // Win
         '1' => [
             'json',
             'curl',
             'com_dotnet',
             'mbstring',
         ],
-        //Linux
+        // Linux
         '2' => [
             'json',
             'curl',
@@ -34,7 +35,7 @@ class Check
      * @var array
      */
     private static $waitFunctions = [
-        //Win
+        // Win
         '1' => [
             'umask',
             'sleep',
@@ -43,7 +44,7 @@ class Check
             'ob_end_clean',
             'ob_get_contents',
         ],
-        //Linux
+        // Linux
         '2' => [
             'umask',
             'chdir',
@@ -71,21 +72,17 @@ class Check
      */
     public static function analysis($currentOs)
     {
-        //检查扩展
+        // 检查扩展
         $waitExtends = static::$waitExtends[$currentOs];
-        foreach ($waitExtends as $extend)
-        {
-            if (!extension_loaded($extend))
-            {
+        foreach ($waitExtends as $extend) {
+            if (!extension_loaded($extend)) {
                 Helper::showSysError("php_{$extend}.(dll/so) is not load,please check php.ini file");
             }
         }
-        //检查函数
+        // 检查函数
         $waitFunctions = static::$waitFunctions[$currentOs];
-        foreach ($waitFunctions as $func)
-        {
-            if (!function_exists($func))
-            {
+        foreach ($waitFunctions as $func) {
+            if (!function_exists($func)) {
                 Helper::showSysError("function $func may be disabled,please check disable_functions in php.ini");
             }
         }

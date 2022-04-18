@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 /**
@@ -26,17 +27,15 @@ class Queue
      */
     public function __construct($name = 'queue')
     {
-        //创建进程锁
+        // 创建进程锁
         $this->lock = new Lock($name);
 
-        //创建队列文件
+        // 创建队列文件
         $path = Helper::getQuePath();
         $file = $path . '%s.dat';
         $this->queFile = sprintf($file, md5($name));
-        if (!file_exists($this->queFile))
-        {
-            if (!file_put_contents($this->queFile, '[]', LOCK_EX))
-            {
+        if (!file_exists($this->queFile)) {
+            if (!file_put_contents($this->queFile, '[]', LOCK_EX)) {
                 Helper::showError('crate queFile failed,please try again');
             }
         }
@@ -48,19 +47,20 @@ class Queue
      */
     public function push($item)
     {
-        $this->lock->execute(function () use ($item) {
-            //read
-            $content = file_get_contents($this->queFile);
-            $queue_data = $content ? json_decode($content, true) : [];
-            $queue_data = is_array($queue_data) ? $queue_data : [];
+        $this->lock->execute(
+            function () use ($item) {
+                // read
+                $content = file_get_contents($this->queFile);
+                $queue_data = $content ? json_decode($content, true) : [];
+                $queue_data = is_array($queue_data) ? $queue_data : [];
 
-            //write
-            array_push($queue_data, $item);
-            if (!file_put_contents($this->queFile, json_encode($queue_data)))
-            {
-                Helper::showError('failed to save data to queue file');
+                // write
+                array_push($queue_data, $item);
+                if (!file_put_contents($this->queFile, json_encode($queue_data))) {
+                    Helper::showError('failed to save data to queue file');
+                }
             }
-        });
+        );
     }
 
     /**
@@ -69,19 +69,20 @@ class Queue
      */
     public function shift()
     {
-        return $this->lock->execute(function () {
-            //read
-            $content = file_get_contents($this->queFile);
-            $queue_data = $content ? json_decode($content, true) : [];
-            $queue_data = is_array($queue_data) ? $queue_data : [];
+        return $this->lock->execute(
+            function () {
+                // read
+                $content = file_get_contents($this->queFile);
+                $queue_data = $content ? json_decode($content, true) : [];
+                $queue_data = is_array($queue_data) ? $queue_data : [];
 
-            //shift+write
-            $value = array_shift($queue_data);
-            if (!file_put_contents($this->queFile, json_encode($queue_data)))
-            {
-                Helper::showError('failed to save data to queue file');
+                // shift+write
+                $value = array_shift($queue_data);
+                if (!file_put_contents($this->queFile, json_encode($queue_data))) {
+                    Helper::showError('failed to save data to queue file');
+                }
+                return $value;
             }
-            return $value;
-        });
+        );
     }
 }

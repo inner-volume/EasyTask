@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 use EasyTask\Exception\ErrorException;
@@ -18,7 +19,9 @@ class Helper
      */
     public static function sleep($time, $type = 1)
     {
-        if ($type == 2) $time *= 1000;
+        if ($type == 2) {
+            $time *= 1000;
+        }
         $type == 1 ? sleep($time) : usleep($time);
     }
 
@@ -28,10 +31,11 @@ class Helper
      */
     public static function cli_set_process_title($title)
     {
-        set_error_handler(function () {
-        });
-        if (function_exists('cli_set_process_title'))
-        {
+        set_error_handler(
+            function () {
+            }
+        );
+        if (function_exists('cli_set_process_title')) {
             cli_set_process_title($title);
         }
         restore_error_handler();
@@ -53,8 +57,7 @@ class Helper
     {
         $ds = DIRECTORY_SEPARATOR;
         $codePageBinary = "C:{$ds}Windows{$ds}System32{$ds}chcp.com";
-        if (file_exists($codePageBinary) && static::canUseExcCommand())
-        {
+        if (file_exists($codePageBinary) && static::canUseExcCommand()) {
             @pclose(@popen("{$codePageBinary} {$code}", 'r'));
         }
     }
@@ -66,24 +69,21 @@ class Helper
      */
     public static function getCliInput($type = 1)
     {
-        //输入参数
+        // 输入参数
         $argv = $_SERVER['argv'];
 
-        //组装PHP路径
+        // 组装PHP路径
         array_unshift($argv, Env::get('phpPath'));
 
-        //自动校正
-        foreach ($argv as $key => $value)
-        {
-            if (file_exists($value))
-            {
+        // 自动校正
+        foreach ($argv as $key => $value) {
+            if (file_exists($value)) {
                 $argv[$key] = realpath($value);
             }
         }
 
-        //返回
-        if ($type == 1)
-        {
+        // 返回
+        if ($type == 1) {
             return join(' ', $argv);
         }
         return $argv;
@@ -95,7 +95,9 @@ class Helper
      */
     public static function setPhpPath($path = '')
     {
-        if (!$path) $path = PHP_BINARY;
+        if (!$path) {
+            $path = PHP_BINARY;
+        }
         Env::set('phpPath', $path);
     }
 
@@ -105,7 +107,7 @@ class Helper
      */
     public static function isWin()
     {
-        return (DIRECTORY_SEPARATOR == '\\') ? true : false;
+        return DIRECTORY_SEPARATOR == '\\';
     }
 
     /**
@@ -151,8 +153,7 @@ class Helper
     public static function getRunTimePath()
     {
         $path = Env::get('runTimePath') ? Env::get('runTimePath') : sys_get_temp_dir();
-        if (!is_dir($path))
-        {
+        if (!is_dir($path)) {
             static::showSysError('please set runTimePath');
         }
         $path = $path . DIRECTORY_SEPARATOR . Env::get('prefix') . DIRECTORY_SEPARATOR;
@@ -228,10 +229,8 @@ class Helper
             static::getCsgPath(),
             static::getStdPath(),
         ];
-        foreach ($paths as $path)
-        {
-            if (!is_dir($path))
-            {
+        foreach ($paths as $path) {
+            if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
         }
@@ -255,11 +254,11 @@ class Helper
      */
     public static function writeLog($message)
     {
-        //日志文件
+        // 日志文件
         $path = Helper::getLogPath();
         $file = $path . date('Y_m_d') . '.log';
 
-        //加锁保存
+        // 加锁保存
         $message = static::convert_char($message);
         file_put_contents($file, $message, FILE_APPEND | LOCK_EX);
     }
@@ -272,12 +271,14 @@ class Helper
      */
     public static function writeTypeLog($message, $type = 'info', $isExit = false)
     {
-        //格式化信息
+        // 格式化信息
         $text = Helper::formatMessage($message, $type);
 
-        //记录日志
+        // 记录日志
         static::writeLog($text);
-        if ($isExit) exit();
+        if ($isExit) {
+            exit();
+        }
     }
 
     /**
@@ -290,8 +291,7 @@ class Helper
     {
         $encode_arr = ['UTF-8', 'ASCII', 'GBK', 'GB2312', 'BIG5', 'JIS', 'eucjp-win', 'sjis-win', 'EUC-JP'];
         $encoded = mb_detect_encoding($char, $encode_arr);
-        if ($encoded)
-        {
+        if ($encoded) {
             $char = mb_convert_encoding($char, $coding, $encoded);
         }
         return $char;
@@ -305,12 +305,13 @@ class Helper
      */
     public static function formatException($exception, $type = 'exception')
     {
-        //参数
+        // 参数
         $pid = getmypid();
         $date = date('Y/m/d H:i:s', time());
 
-        //组装
-        return $date . " [$type] : errStr:" . $exception->getMessage() . ',errFile:' . $exception->getFile() . ',errLine:' . $exception->getLine() . " (pid:$pid)" . PHP_EOL;
+        // 组装
+        return $date . " [$type] : errStr:" . $exception->getMessage() . ',errFile:' . $exception->getFile(
+            ) . ',errLine:' . $exception->getLine() . " (pid:$pid)" . PHP_EOL;
     }
 
     /**
@@ -321,11 +322,11 @@ class Helper
      */
     public static function formatMessage($message, $type = 'error')
     {
-        //参数
+        // 参数
         $pid = getmypid();
         $date = date('Y/m/d H:i:s', time());
 
-        //组装
+        // 组装
         return $date . " [$type] : " . $message . " (pid:$pid)" . PHP_EOL;
     }
 
@@ -335,16 +336,15 @@ class Helper
      */
     public static function checkTaskTime($time)
     {
-        if (is_int($time))
-        {
-            if ($time < 0) static::showSysError('time must be greater than or equal to 0');
-        }
-        elseif (is_float($time))
-        {
-            if (!static::canUseEvent()) static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
-        }
-        else
-        {
+        if (is_int($time)) {
+            if ($time < 0) {
+                static::showSysError('time must be greater than or equal to 0');
+            }
+        } elseif (is_float($time)) {
+            if (!static::canUseEvent()) {
+                static::showSysError('please install php_event.(dll/so) extend for using milliseconds');
+            }
+        } else {
             static::showSysError('time parameter is an unsupported type');
         }
     }
@@ -357,7 +357,9 @@ class Helper
     public static function output($char, $exit = false)
     {
         echo $char;
-        if ($exit) exit();
+        if ($exit) {
+            exit();
+        }
     }
 
     /**
@@ -369,13 +371,13 @@ class Helper
      */
     public static function showInfo($message, $isExit = false, $type = 'info')
     {
-        //格式化信息
+        // 格式化信息
         $text = static::formatMessage($message, $type);
 
-        //记录日志
+        // 记录日志
         static::writeLog($text);
 
-        //输出信息
+        // 输出信息
         static::output($text, $isExit);
     }
 
@@ -389,13 +391,15 @@ class Helper
      */
     public static function showError($errStr, $isExit = true, $type = 'error', $log = true)
     {
-        //格式化信息
+        // 格式化信息
         $text = static::formatMessage($errStr, $type);
 
-        //记录日志
-        if ($log) static::writeLog($text);
+        // 记录日志
+        if ($log) {
+            static::writeLog($text);
+        }
 
-        //输出信息
+        // 输出信息
         static::output($text, $isExit);
     }
 
@@ -408,10 +412,10 @@ class Helper
      */
     public static function showSysError($errStr, $isExit = true, $type = 'warring')
     {
-        //格式化信息
+        // 格式化信息
         $text = static::formatMessage($errStr, $type);
 
-        //输出信息
+        // 输出信息
         static::output($text, $isExit);
     }
 
@@ -424,13 +428,13 @@ class Helper
      */
     public static function showException($exception, $type = 'exception', $isExit = true)
     {
-        //格式化信息
+        // 格式化信息
         $text = static::formatException($exception, $type);
 
-        //记录日志
+        // 记录日志
         Helper::writeLog($text);
 
-        //输出信息
+        // 输出信息
         static::output($text, $isExit);
     }
 
@@ -441,23 +445,21 @@ class Helper
      */
     public static function showTable($data, $exit = true)
     {
-        //提取表头
+        // 提取表头
         $header = array_keys($data['0']);
 
-        //组装数据
-        foreach ($data as $key => $row)
-        {
+        // 组装数据
+        foreach ($data as $key => $row) {
             $data[$key] = array_values($row);
         }
 
-        //输出表格
+        // 输出表格
         $table = new Table();
         $table->setHeader($header);
         $table->setStyle('box');
         $table->setRows($data);
         $render = static::convert_char($table->render());
-        if ($exit)
-        {
+        if ($exit) {
             exit($render);
         }
         echo($render);
@@ -475,38 +477,35 @@ class Helper
      */
     public static function curl($url, $data = null, $return_array = false, $header = null)
     {
-        //初始化curl
+        // 初始化curl
         $curl = curl_init();
 
-        //设置超时
+        // 设置超时
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        if (is_array($header))
-        {
+        if (is_array($header)) {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         }
-        if ($data)
-        {
+        if ($data) {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-        //运行curl，获取结果
+        // 运行curl，获取结果
         $result = @curl_exec($curl);
 
-        //关闭句柄
+        // 关闭句柄
         curl_close($curl);
 
-        //转成数组
-        if ($return_array)
-        {
+        // 转成数组
+        if ($return_array) {
             return json_decode($result, true);
         }
 
-        //返回结果
+        // 返回结果
         return $result;
     }
 }

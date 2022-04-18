@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 use \Closure as Closure;
@@ -26,13 +27,12 @@ class Wts
      */
     public function __construct()
     {
-        //创建进程锁
+        // 创建进程锁
         $this->lock = new Lock();
 
-        //创建进程信息文件
+        // 创建进程信息文件
         $processFile = $this->getProcessInfoFile();
-        if (!file_exists($processFile))
-        {
+        if (!file_exists($processFile)) {
             file_put_contents($processFile, '');
         }
     }
@@ -45,8 +45,7 @@ class Wts
     {
         $this->processNames[] = $name;
         $file = $this->getProcessFile($name);
-        if (!file_exists($file))
-        {
+        if (!file_exists($file)) {
             file_put_contents($file, $name);
         }
     }
@@ -81,13 +80,11 @@ class Wts
     public function getProcessStatus($name)
     {
         $file = $this->getProcessFile($name);
-        if (!file_exists($file))
-        {
+        if (!file_exists($file)) {
             return false;
         }
         $fp = fopen($file, "r");
-        if (flock($fp, LOCK_EX | LOCK_NB))
-        {
+        if (flock($fp, LOCK_EX | LOCK_NB)) {
             return false;
         }
         return true;
@@ -110,10 +107,12 @@ class Wts
      */
     public function cleanProcessInfo()
     {
-        //加锁执行
-        $this->lock->execute(function () {
-            @file_put_contents($this->getProcessInfoFile(), '');
-        });
+        // 加锁执行
+        $this->lock->execute(
+            function () {
+                @file_put_contents($this->getProcessInfoFile(), '');
+            }
+        );
     }
 
     /**
@@ -122,21 +121,22 @@ class Wts
      */
     public function saveProcessInfo($info)
     {
-        //加锁执行
-        $this->lock->execute(function () use ($info) {
+        // 加锁执行
+        $this->lock->execute(
+            function () use ($info) {
+                // 进程信息文件
+                $name = $info['name'];
+                $file = $this->getProcessInfoFile();
 
-            //进程信息文件
-            $name = $info['name'];
-            $file = $this->getProcessInfoFile();
+                // 读取原数据
+                $content = @file_get_contents($file);
+                $oldInfo = $content ? json_decode($content, true) : [$name => $info];
 
-            //读取原数据
-            $content = @file_get_contents($file);
-            $oldInfo = $content ? json_decode($content, true) : [$name => $info];
-
-            //追加数据
-            $oldInfo ? $oldInfo[$name] = $info : $oldInfo = $info;
-            file_put_contents($file, json_encode($oldInfo));
-        });
+                // 追加数据
+                $oldInfo ? $oldInfo[$name] = $info : $oldInfo = $info;
+                file_put_contents($file, json_encode($oldInfo));
+            }
+        );
     }
 
     /**
@@ -147,12 +147,10 @@ class Wts
     public function allocateProcess($func)
     {
         $processNames = $this->processNames;
-        foreach ($processNames as $name)
-        {
+        foreach ($processNames as $name) {
             $file = $this->getProcessFile($name);
             $fp = fopen($file, 'w');
-            if (flock($fp, LOCK_EX | LOCK_NB))
-            {
+            if (flock($fp, LOCK_EX | LOCK_NB)) {
                 $func($name);
                 flock($fp, LOCK_UN);
                 return true;

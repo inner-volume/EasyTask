@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 use EasyTask\Exception\ErrorException;
@@ -33,11 +34,11 @@ class Error
      */
     public static function appError($errno, $errStr, $errFile, $errLine)
     {
-        //组装异常
+        // 组装异常
         $type = 'error';
         $exception = new ErrorException($errno, $errStr, $errFile, $errLine);
 
-        //日志记录
+        // 日志记录
         static::report($type, $exception);
     }
 
@@ -48,7 +49,7 @@ class Error
      */
     public static function appException($exception)
     {
-        //日志记录
+        // 日志记录
         $type = 'exception';
         static::report($type, $exception);
     }
@@ -60,11 +61,10 @@ class Error
      */
     public static function appShutdown()
     {
-        //存在错误
+        // 存在错误
         $type = 'warring';
-        if (($error = error_get_last()) != null)
-        {
-            //日志记录
+        if (($error = error_get_last()) != null) {
+            // 日志记录
             $exception = new ErrorException($error['type'], $error['message'], $error['file'], $error['line']);
             static::report($type, $exception);
         }
@@ -77,35 +77,34 @@ class Error
      */
     public static function report($type, $exception)
     {
-        //标准化日志
+        // 标准化日志
         $text = Helper::formatException($exception, $type);
 
-        //本地日志储存
+        // 本地日志储存
         Helper::writeLog($text);
 
-        //同步模式输出
-        if (!Env::get('daemon')) echo($text);
+        // 同步模式输出
+        if (!Env::get('daemon')) {
+            echo($text);
+        }
 
-        //回调上报信息
+        // 回调上报信息
         $notify = Env::get('notifyHand');
-        if ($notify)
-        {
-            //闭包回调
-            if ($notify instanceof Closure)
-            {
+        if ($notify) {
+            // 闭包回调
+            if ($notify instanceof Closure) {
                 $notify($exception);
                 return;
             }
 
-            //Http回调
+            // Http回调
             $request = [
                 'errStr' => $exception->getMessage(),
                 'errFile' => $exception->getFile(),
                 'errLine' => $exception->getLine(),
             ];
             $result = Helper::curl($notify, $request);
-            if (!$result || $result != 'success')
-            {
+            if (!$result || $result != 'success') {
                 Helper::showError("request http api $notify failed", false, 'warring', true);
             }
         }

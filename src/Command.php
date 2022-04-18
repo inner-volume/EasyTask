@@ -1,4 +1,5 @@
 <?php
+
 namespace EasyTask;
 
 use \Closure as Closure;
@@ -28,14 +29,12 @@ class Command
      */
     private function initMsgFile()
     {
-        //创建文件
+        // 创建文件
         $path = Helper::getCsgPath();
         $file = $path . '%s.csg';
         $this->msgFile = sprintf($file, md5(__FILE__));
-        if (!file_exists($this->msgFile))
-        {
-            if (!file_put_contents($this->msgFile, '[]', LOCK_EX))
-            {
+        if (!file_exists($this->msgFile)) {
+            if (!file_put_contents($this->msgFile, '[]', LOCK_EX)) {
                 Helper::showError('failed to create msgFile');
             }
         }
@@ -49,8 +48,7 @@ class Command
     public function get()
     {
         $content = @file_get_contents($this->msgFile);
-        if (!$content)
-        {
+        if (!$content) {
             return [];
         }
         $data = json_decode($content, true);
@@ -98,10 +96,8 @@ class Command
         if (empty($data)) {
             return;
         }
-        foreach ($data as $key => $item)
-        {
-            if ($item['msgType'] == $msgType)
-            {
+        foreach ($data as $key => $item) {
+            if ($item['msgType'] == $msgType) {
                 $command = $item;
                 unset($data[$key]);
                 break;
@@ -120,8 +116,7 @@ class Command
     {
         $command = '';
         $this->receive($msgType, $command);
-        if (!$command || (!empty($command['time']) && $command['time'] < $time))
-        {
+        if (!$command || (!empty($command['time']) && $command['time'] < $time)) {
             return;
         }
         $func($command);

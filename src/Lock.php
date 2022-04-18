@@ -21,7 +21,7 @@ class Lock
      */
     public function __construct($name = 'lock')
     {
-        //初始化文件
+        // 初始化文件
         $path = Helper::getLokPath();
         $this->file = $path . md5($name);
         if (!file_exists($this->file))
