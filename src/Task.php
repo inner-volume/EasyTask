@@ -272,7 +272,7 @@ class Task
         $uniqueId = md5($alas);
         if (!Helper::canUseExcCommand())
         {
-            Helper::showSysError('please open the disabled function of popen and pclose');
+            Helper::showSysError('please open the disabled function of shell_exec');
         }
         if (isset($this->taskList[$uniqueId]))
         {

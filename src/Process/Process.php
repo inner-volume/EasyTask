@@ -140,7 +140,10 @@ abstract class Process
                     call_user_func([$object, $item['func']]);
                     break;
                 default:
-                    pclose(popen($item['command'], 'r'));
+                    $result = shell_exec($item['command']);
+                    if ($result) {
+                        echo $result . PHP_EOL;
+                    }
             }
         } catch (Exception $exception) {
             if (Helper::isWin()) {

@@ -204,7 +204,7 @@ ppid:守护进程id
 (1). 建议您使用绝对路径进行开发,是标准更是规范
 (2). 禁止在任务中使用exit/die语法,否则导致整个进程退出
 (3). Windows安装Wpc扩展时请关闭杀毒软件,避免误报
-(4). Windows建议开启popen,pclose方法,会自动尝试帮您解决CMD输出中文乱码问题,请尽量使用CMD管理员方式运行
+(4). Windows建议开启shell_exec方法,会自动尝试帮您解决CMD输出中文乱码问题,请尽量使用CMD管理员方式运行
 (5). Windows命令行不支持utf8国际标准编码，可切换git_bash来运行,解决乱码问题
 (6). Windows提示Failed to create COM object `Wpc.Core': 无效的语法,请按照文档安装Wpc扩展
 (7). Windows提示com() has been disabled for security reasons,请在php.ini中删除disable_classes = com配置项目

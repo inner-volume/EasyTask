@@ -58,7 +58,7 @@ class Helper
         $ds = DIRECTORY_SEPARATOR;
         $codePageBinary = "C:{$ds}Windows{$ds}System32{$ds}chcp.com";
         if (file_exists($codePageBinary) && static::canUseExcCommand()) {
-            @pclose(@popen("{$codePageBinary} {$code}", 'r'));
+            @shell_exec("{$codePageBinary} {$code}");
         }
     }
 
@@ -96,9 +96,18 @@ class Helper
     public static function setPhpPath($path = '')
     {
         if (!$path) {
-            $path = PHP_BINARY;
+            $path = self::getBinary();
         }
         Env::set('phpPath', $path);
+    }
+
+    /**
+     * 获取进程二进制文件
+     * @return string
+     */
+    public static function getBinary()
+    {
+        return PHP_BINARY;
     }
 
     /**
@@ -143,7 +152,7 @@ class Helper
      */
     public static function canUseExcCommand()
     {
-        return function_exists('popen') && function_exists('pclose');
+        return function_exists('shell_exec');
     }
 
     /**
@@ -310,8 +319,7 @@ class Helper
         $date = date('Y/m/d H:i:s', time());
 
         // 组装
-        return $date . " [$type] : errStr:" . $exception->getMessage() . ',errFile:' . $exception->getFile(
-            ) . ',errLine:' . $exception->getLine() . " (pid:$pid)" . PHP_EOL;
+        return $date . " [$type] : errStr:" . $exception->getMessage() . ',errFile:' . $exception->getFile() . ',errLine:' . $exception->getLine() . " (pid:$pid)" . PHP_EOL;
     }
 
     /**
