@@ -140,7 +140,7 @@ abstract class Process
                     call_user_func([$object, $item['func']]);
                     break;
                 default:
-                    @pclose(@popen($item['command'], 'r'));
+                    pclose(popen($item['command'], 'r'));
             }
         } catch (Exception $exception) {
             if (Helper::isWin()) {
