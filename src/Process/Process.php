@@ -142,7 +142,11 @@ abstract class Process
                 default:
                     $result = shell_exec($item['command']);
                     if ($result) {
-                        echo $result . PHP_EOL;
+                        Helper::output($result);
+                    }
+                    if ($result === false) {
+                        $errorResult = 'failed to execute ' . $item['alas'] . ' task' . PHP_EOL;
+                        Helper::output($errorResult);
                     }
             }
         } catch (Exception $exception) {
